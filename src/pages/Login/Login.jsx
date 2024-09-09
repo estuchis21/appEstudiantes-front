@@ -4,37 +4,39 @@ import React, { useState } from 'react';
 import { Container, Row, Col, Form, Button } from 'react-bootstrap';
 // Importamos los estilos de Bootstrap
 import 'bootstrap/dist/css/bootstrap.min.css';
-
+import App from '../../App.jsx';
 // Importamos la función de login desde el archivo loginService.js
 import loginService from '../../services/loginService';
-import App from '../../App.jsx';
 
 // Definimos un componente funcional llamado Login utilizando una arrow function
 const Login = () => {
   // Declaramos estados locales para manejar los inputs del formulario y el estado de la sesión
-  const [usuario, setUsuario] = useState('');
-  const [clave, setClave] = useState('');
+  const [Documento, setUsuario] = useState('');
+  const [Contrasena, setClave] = useState('');
   const [loginSuccessful, setLoginSuccessful] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  // Función que se ejecuta cuando se envía el formulario
-  const handleLogin = async (e) => {
-    e.preventDefault(); // Prevenimos el comportamiento por defecto del formulario
-    const data = { usuario, clave }; // Creamos un objeto con los datos del formulario
 
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    const data = { Documento, Contrasena };
+
+  
     try {
-      // Llamamos a la función loginService para enviar los datos al servidor y obtener una respuesta
+
       const result = await loginService(data);
 
-      // Si el servidor devuelve un token, lo almacenamos en localStorage y actualizamos el estado
-      if (result.ok) {
+      if (result.documento) {
+        const documento = JSON.stringify(result.documento);
+        const nombre = JSON.stringify(result.nombre);
+        localStorage.setItem('documento', documento); // Guarda el documento aquí
+        localStorage.setItem('nombre', nombre); // Guarda el documento aquí
         setLoginSuccessful(true);
+
       } else {
-        // Si no mostramos un mensaje de error
         setErrorMessage('Usuario o clave incorrecta');
       }
     } catch (error) {
-      // Si ocurre un error durante el login, mostramos un mensaje de error
       setErrorMessage('Error durante el login');
     }
   };
@@ -42,11 +44,11 @@ const Login = () => {
   // Retornamos el JSX para renderizar el componente
   return (
     <>
-      {loginSuccessful ? (
+       {/* Si el login no es exitoso, mostramos el formulario de login */}
+       {loginSuccessful ? (
         // Si el login es exitoso, mostramos el componente APP
         <App/>
       ) : (
-        // Si el login no es exitoso, mostramos el formulario de login
         <Container className="mt-5">
           <Row className="justify-content-center">
             <Col xs={12} md={8} lg={5}>
@@ -56,11 +58,11 @@ const Login = () => {
                 {errorMessage && <p className="text-danger text-center">{errorMessage}</p>}
                 <Form onSubmit={handleLogin}>
                   <Form.Group controlId="formBasicEmail" className="mb-3">
-                    <Form.Label>Usuario</Form.Label>
+                    <Form.Label>Documento</Form.Label>
                     <Form.Control
                       onChange={(event) => setUsuario(event.target.value)}
                       type="text"
-                      placeholder="Usuario"
+                      placeholder="Documento"
                     />
                   </Form.Group>
 
@@ -79,7 +81,7 @@ const Login = () => {
               </div>
             </Col>
           </Row>
-        </Container>
+        </Container>    
       )}
     </>
   );

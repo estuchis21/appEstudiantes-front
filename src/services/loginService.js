@@ -4,7 +4,7 @@
 const loginService = async (data) => {
     try {
       // Enviamos una solicitud POST al servidor con los datos del login
-      const response = await fetch('http://localhost:3000/login', {
+      const response = await fetch('http://localhost:3000/api/login', {
         method: 'POST', // Método HTTP
         headers: {
           'Content-Type': 'application/json', // Especificamos el tipo de contenido como JSON
