@@ -14,6 +14,7 @@ const loginService = async (data) => {
   
       // Convertimos la respuesta del servidor a un objeto JavaScript
       const result = await response.json();
+      console.log("solo aca");
       // Devolvemos el resultado para que pueda ser manejado en el componente de login
       return result;
     } catch (error) {

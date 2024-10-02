@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Container, Row, Col, Form, Button } from 'react-bootstrap';
 // Importamos los estilos de Bootstrap
 import 'bootstrap/dist/css/bootstrap.min.css';
-import App from '../../App.jsx';
+import App from '../../App';
 // Importamos la función de login desde el archivo loginService.js
 import loginService from '../../services/loginService';
 
