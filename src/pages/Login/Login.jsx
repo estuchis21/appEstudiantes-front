@@ -20,24 +20,33 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     const data = { Documento, Contrasena };
-
-  
     try {
-
       const result = await loginService(data);
+      const { datosAlumno, datosCarrera } = result;
 
-      if (result.documento) {
-        const documento = JSON.stringify(result.documento);
-        const nombre = JSON.stringify(result.nombre);
-        localStorage.setItem('documento', documento); // Guarda el documento aquí
-        localStorage.setItem('nombre', nombre); // Guarda el documento aquí
-        setLoginSuccessful(true);
+      if (result && result.datosAlumno && result.datosCarrera) {
+        const { datosAlumno, datosCarrera } = result;
+        
+        // Valida que 'datosAlumno' tenga los campos que necesitas
+        if (datosAlumno.Nombre && datosAlumno.Documento) {
+            setLoginSuccessful(true);
 
+            localStorage.setItem('documento', datosAlumno.Documento);
+            localStorage.setItem('nombre', datosAlumno.Nombre);
+            console.log(datosAlumno.Documento);
+
+            // Si necesitas guardar datos adicionales de la carrera
+            localStorage.setItem('codigoCarrera', datosCarrera.Codigo);
+            localStorage.setItem('nombreCarrera', datosCarrera.Nombre);
+        } else {
+            setErrorMessage('Datos del alumno incompletos');
+        }
       } else {
-        setErrorMessage('Usuario o clave incorrecta');
+          setErrorMessage('Usuario o clave incorrecta');
       }
     } catch (error) {
-      setErrorMessage('Error durante el login');
+        console.log("Error capturado:", error);
+        setErrorMessage('Error durante el login');
     }
   };
 

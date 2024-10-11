@@ -4,7 +4,7 @@
 const loginService = async (data) => {
     try {
       // Enviamos una solicitud POST al servidor con los datos del login
-      const response = await fetch('http://localhost:3000/api/login', {
+      const response = await fetch('http://localhost:3000/api/session/login', {
         method: 'POST', // Método HTTP
         headers: {
           'Content-Type': 'application/json', // Especificamos el tipo de contenido como JSON
@@ -12,9 +12,12 @@ const loginService = async (data) => {
         body: JSON.stringify(data), // Convertimos los datos a una cadena JSON y los enviamos en el cuerpo de la solicitud
       });
   
+      if (!response.ok) {
+        const errorMessage = `Password o Documento erroneo`;
+        throw new Error(errorMessage);
+      }
       // Convertimos la respuesta del servidor a un objeto JavaScript
       const result = await response.json();
-      console.log("solo aca");
       // Devolvemos el resultado para que pueda ser manejado en el componente de login
       return result;
     } catch (error) {

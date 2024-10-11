@@ -10,7 +10,7 @@ const SidebarMenu = ({ setLoginSuccessful }) => {
   const handleLogout = () => {
     localStorage.removeItem('documento'); // Elimina el token de localStorage
     setLoginSuccessful(false); // Actualiza el estado de login
-    navigate('/'); // Redirige al usuario al inicio
+    navigate('/inicio'); // Redirige al usuario al inicio
   };
 
   const nombre = localStorage.getItem('nombre');
