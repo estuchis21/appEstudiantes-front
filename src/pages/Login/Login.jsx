@@ -33,7 +33,7 @@ const Login = () => {
 
             localStorage.setItem('documento', datosAlumno.Documento);
             localStorage.setItem('nombre', datosAlumno.Nombre);
-            console.log(datosAlumno.Documento);
+            localStorage.setItem('permiso', datosAlumno.Permiso);
 
             // Si necesitas guardar datos adicionales de la carrera
             localStorage.setItem('codigoCarrera', datosCarrera.Codigo);

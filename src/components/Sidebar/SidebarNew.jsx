@@ -44,7 +44,7 @@ const SidebarMenu = ({ setLoginSuccessful }) => {
                         <NavLink exact to="/inicio" activeClassName="activeClicked">
                             <CDBSidebarMenuItem icon="home">Inicio</CDBSidebarMenuItem>
                         </NavLink>
-                        <NavLink exact to="/tables" activeClassName="activeClicked">
+                        <NavLink exact to="/cursadas" activeClassName="activeClicked">
                             <CDBSidebarMenuItem icon="book">
                                 Cursada
                             </CDBSidebarMenuItem>
