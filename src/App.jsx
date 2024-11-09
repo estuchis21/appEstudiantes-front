@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Home from './pages/Home/Home';
 import SidebarMenu from './components/Sidebar/SidebarNew'; // Importa el Sidebar
 import ListCourses from './pages/Courses/ListCourses';
+import FinalExams from './pages/Finals/Finals';
 
 
 const App = () => {
@@ -19,7 +20,7 @@ const App = () => {
               <Route path="/" element={loginSuccessful ? <Home /> : <Navigate to="/login" />} />
               <Route path="/login" element={!loginSuccessful ? <Login setLoginSuccessful={setLoginSuccessful} /> : <Navigate to="/" />} />
               <Route path="/cursadas" element={<ListCourses/>} />
-              {/* Otras rutas van aquí */}
+              <Route path="/finales" element={<FinalExams/>} />
             </Routes>
           </div>
         </div>

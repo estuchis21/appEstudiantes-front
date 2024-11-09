@@ -27,44 +27,59 @@ const SidebarMenu = ({ setLoginSuccessful }) => {
     const nombre = localStorage.getItem('nombre');
 
     const toggleDropdown = () => {
-        setDropdownOpen(!dropdownOpen); // Cambia el estado del dropdown
+        setDropdownOpen(!dropdownOpen); 
     };
 
     return (
-        <div style={{ display: 'flex', height: '100vh', overflow: 'scroll initial' }}>
-            <CDBSidebar textColor="#fff" backgroundColor="rgb(10 21 81)" collapsed={isCollapsed}>
+        <div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
+            <CDBSidebar
+                textColor="#fff"
+                backgroundColor="rgb(10 21 81)"
+                collapsed={isCollapsed}
+                style={{
+                    position: 'fixed', 
+                    top: 0,
+                    bottom: 0,
+                    left: 0,
+                    height: '100vh', 
+                    zIndex: 1000, 
+                    transition: 'width 0.3s ease', 
+                }}
+            >
                 <CDBSidebarHeader prefix={<i className="fa fa-bars fa-large" onClick={() => setIsCollapsed(!isCollapsed)}></i>}>
                     <a href="/" className="text-decoration-none" style={{ color: 'inherit' }}>
-                        Instituto20
+                        Instituto N°20
                     </a>
                 </CDBSidebarHeader>
 
-                <CDBSidebarContent className="sidebar-content">
+                <CDBSidebarContent className="sidebar-content" style={{ height: '100%', overflowY: 'auto' }}>
                     <CDBSidebarMenu>
                         <NavLink exact to="/inicio" activeClassName="activeClicked">
-                            <CDBSidebarMenuItem icon="home">Inicio</CDBSidebarMenuItem>
+                            <CDBSidebarMenuItem icon="bi bi-house">Inicio</CDBSidebarMenuItem>
                         </NavLink>
                         <NavLink exact to="/cursadas" activeClassName="activeClicked">
-                            <CDBSidebarMenuItem icon="book">
-                                Cursada
+                            <CDBSidebarMenuItem icon="bi bi-book">
+                                Cursadas
                             </CDBSidebarMenuItem>
                         </NavLink>
-                        <NavLink exact to="/tables" activeClassName="activeClicked">
-                            <CDBSidebarMenuItem icon="file">
-                                Inscripción Materias
+                        <NavLink exact to="/situacionAcademica" activeClassName="activeClicked">
+                            <CDBSidebarMenuItem icon="bi bi-journal-text">
+                                Situación Académica
                             </CDBSidebarMenuItem>
                         </NavLink>
-                        <NavLink exact to="/profile" activeClassName="activeClicked">
-                            <CDBSidebarMenuItem icon="user">Profile page</CDBSidebarMenuItem>
+                        <NavLink exact to="/matriculacion" activeClassName="activeClicked">
+                            <CDBSidebarMenuItem icon="bi bi-pen">
+                                Matriculación
+                            </CDBSidebarMenuItem>
                         </NavLink>
-                        <NavLink exact to="/analytics" activeClassName="activeClicked">
-                            <CDBSidebarMenuItem icon="chart-line">Analytics</CDBSidebarMenuItem>
+                        <NavLink exact to="/finales" activeClassName="activeClicked">
+                            <CDBSidebarMenuItem icon="bi bi-mortarboard">Finales</CDBSidebarMenuItem>
                         </NavLink>
                     </CDBSidebarMenu>
                 </CDBSidebarContent>
 
-                <CDBSidebarFooter className="text-center">
-                    {/* Dropdown con Perfil y Logout */}
+                <CDBSidebarFooter className="text-center" style={{ position: 'absolute', bottom: 0, width: '100%' }}>
+                    
                     <div className="dropdown m-4">
                         <a
                             className="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
@@ -75,7 +90,7 @@ const SidebarMenu = ({ setLoginSuccessful }) => {
                             onClick={toggleDropdown} // Cambia el estado del dropdown al hacer click
                         >
                             <i className="bi bi-person-circle"></i>
-                            {/* Cambia la visibilidad del nombre según el estado del sidebar y si el dropdown está abierto */}
+                            
                             <span className={`cursor-pointer ms-2 ${isCollapsed || dropdownOpen ? 'd-none' : 'd-inline'}`}>{nombre}</span>
                         </a>
                         <ul className="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser">
@@ -95,6 +110,19 @@ const SidebarMenu = ({ setLoginSuccessful }) => {
                     </div>
                 </CDBSidebarFooter>
             </CDBSidebar>
+
+          
+            <div
+                style={{
+                    marginLeft: isCollapsed ? '80px' : '250px', 
+                    width: '100%',
+                    padding: '20px',
+                    transition: 'margin-left 0.3s ease', 
+                    overflowY: 'auto',
+                }}
+            >
+                
+            </div>
         </div>
     );
 };

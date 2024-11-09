@@ -6,7 +6,7 @@ const ListCourses = () => {
 
   const [registros, setRegistros] = useState([]);  // Estado para almacenar los registros
   const [currentPage, setCurrentPage] = useState(1);
-  const recordsPerPage = 4; // Define el número de registros por página
+  const recordsPerPage = 8; // Define el número de registros por página
   const permiso = localStorage.getItem('permiso');
   const codigo = localStorage.getItem('codigoCarrera');
 
@@ -22,7 +22,7 @@ const ListCourses = () => {
         console.error('Error fetching users:', error);// Si ocurre un error, lo mostramos en la consola
     }
   };
-
+  
   // useEffect se ejecuta después del primer renderizado y cuando el componente se actualiza
   useEffect(() => {
     fetchData();// Ejecutamos la función para obtener los datos
@@ -70,12 +70,12 @@ const ListCourses = () => {
             >
               <td className="text-center align-middle">{registro.Curso}</td>
               <td className="text-center align-middle">{registro.Division}</td>
-              <td className="text-center align-middle">{registro["Materias.Nombre"]}</td>
+              <td className="text-center align-middle">{registro["Materia"]}</td>
               <td className="text-center align-middle">{registro.Parcial1}</td>
               <td className="text-center align-middle">{registro.Recuperatorio1}</td>
               <td className="text-center align-middle">{registro.Parcial2}</td>
               <td className="text-center align-middle">{registro.Recuperatorio2}</td>
-              <td className="text-center align-middle">{registro["Personal.Nombre"]}</td>
+              <td className="text-center align-middle">{registro["Profesor"]}</td>
               <td className="text-center align-middle">{registro.AsistenciaPorcentaje} %</td>
             </tr>
           ))}
