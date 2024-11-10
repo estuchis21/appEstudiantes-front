@@ -4,6 +4,7 @@ import Home from './pages/Home/Home';
 import SidebarMenu from './components/Sidebar/SidebarNew'; // Importa el Sidebar
 import ListCourses from './pages/Courses/ListCourses';
 import FinalExams from './pages/Finals/Finals';
+import Profile from './pages/Profile/profile';
 
 
 const App = () => {
@@ -21,6 +22,7 @@ const App = () => {
               <Route path="/login" element={!loginSuccessful ? <Login setLoginSuccessful={setLoginSuccessful} /> : <Navigate to="/" />} />
               <Route path="/cursadas" element={<ListCourses/>} />
               <Route path="/finales" element={<FinalExams/>} />
+              <Route path="/profile" element={<Profile/>} />
             </Routes>
           </div>
         </div>
