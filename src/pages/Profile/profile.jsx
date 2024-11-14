@@ -1,71 +1,161 @@
-import React from "react";
+import { React, useState } from "react";
 import { Container, Button } from "react-bootstrap";
+import ChangePass from '../../components/Profile/ChangePass';
 
 const Profile = () => {
-    const nombre = localStorage.getItem("nombre");
-    const dni = localStorage.getItem("documento");
-    const domicilio = localStorage.getItem("domicilio");
-    const localidad = localStorage.getItem("localidad");
-    const telefono = localStorage.getItem("telefono");
-    const correo = localStorage.getItem("correo");
+    const [nombre, setNombre] = useState(localStorage.getItem("nombre") || "");
+    const [dni, setDni] = useState(localStorage.getItem("documento") || "");
+    const [domicilio, setDomicilio] = useState(localStorage.getItem("domicilio") || "");
+    const [localidad, setLocalidad] = useState(localStorage.getItem("localidad") || "");
+    const [telefono, setTelefono] = useState(localStorage.getItem("telefono") || "");
+    const [correo, setCorreo] = useState(localStorage.getItem("correo") || "");
+    
+    const [isEditing, setIsEditing] = useState(false); // Controla el modo de edición
+    const [showEditModal, setShowEditModal] = useState(false); // Controla la visibilidad del modal de cambio de contraseña
 
+    // Función para activar el modo de edición
+    const handleEditDataClick = () => {
+        setIsEditing(true);
+    };
+
+    // Función para guardar los cambios
+    const handleSaveClick = () => {
+        localStorage.setItem("nombre", nombre);
+        localStorage.setItem("documento", dni);
+        localStorage.setItem("domicilio", domicilio);
+        localStorage.setItem("localidad", localidad);
+        localStorage.setItem("telefono", telefono);
+        localStorage.setItem("correo", correo);
+        
+        setIsEditing(false);
+    };
+
+    // Función para abrir el modal de cambio de contraseña
+    const handleEditClick = () => {
+        setShowEditModal(true);
+    };
+
+    // Función para cerrar el modal de cambio de contraseña
+    const handleCloseEdit = () => {
+        setShowEditModal(false);
+    };
 
     return (
         <Container className="d-flex justify-content-center mt-5">
             <form className="w-100" style={{ maxWidth: "600px" }}>
-                <div className="row d-flex aling-items-center text-center">
-                    <div className="col-md-6 col-12  text-md-end bg-secondary bg-gradient pt-2">
-                        <label className="fw-bold">Nombre</label>
+                <div className="row d-flex align-items-center text-center">
+                    <div className="row bg-secondary bg-gradient py-2">
+                        <div className="col-md-6 col-12 text-md-end">
+                            <label className="fw-bold">Nombre</label>
+                        </div>
+                        <div className="col-md-6 col-12 text-md-start">
+                            <input
+                                type="text"
+                                value={nombre}
+                                onChange={(e) => setNombre(e.target.value)}
+                                disabled={!isEditing}
+                                className="form-control form-control-sm"
+                            />
+                        </div>
                     </div>
-                    <div className="col-md-6 col-12 text-md-start bg-secondary bg-gradient pt-2">
-                        <p className="fs-5">{nombre}</p>
-                    </div>
-
-                    <div className="col-md-6 col-12 text-md-end pt-2">
-                        <label className="fw-bold">Documento</label>
-                    </div>
-                    <div className="col-md-6 col-12 text-md-start pt-2">
-                        <p className="fs-5">{dni}</p>
-                    </div>
-
-                    <div className="col-md-6 col-12 text-md-end bg-secondary bg-gradient pt-2">
-                        <label className="fw-bold">Domicilio</label>
-                    </div>
-                    <div className="col-md-6 col-12 text-md-start bg-secondary bg-gradient pt-2 pb-2">
-                        <input type="text" placeholder={domicilio} disabled />
-                    </div>
-
-                    <div className="col-md-6 col-12 text-md-end pt-2">
-                        <label className="fw-bold">Localidad</label>
-                    </div>
-                    <div className="col-md-6 col-12 text-md-start pt-2 pb-2">
-                        <input type="text" placeholder="Junin" disabled />
-                    </div>
-
-                    <div className="col-md-6 col-12 text-md-end bg-secondary bg-gradient pt-2 pb-2">
-                        <label className="fw-bold">Telefono</label>
-                    </div>
-                    <div className="col-md-6 col-12 text-md-start bg-secondary bg-gradient pt-2 pb-2">
-                        <input type="text" placeholder={telefono} disabled />
+                
+                    <div className="row py-2">
+                        <div className="col-md-6 col-12 text-md-end">
+                            <label className="fw-bold">Documento</label>
+                        </div>
+                        <div className="col-md-6 col-12 text-md-start">
+                            <input
+                                type="text"
+                                value={dni}
+                                onChange={(e) => setDni(e.target.value)}
+                                disabled={!isEditing}
+                                className="form-control form-control-sm"
+                            />
+                        </div>
                     </div>
 
-                    <div className="col-md-6 col-12 text-md-end pt-2">
-                        <label className="fw-bold">Correo</label>
+                    <div className="row bg-secondary bg-gradient py-2">
+                        <div className="col-md-6 col-12 text-md-end">
+                            <label className="fw-bold">Domicilio</label>
+                        </div>
+                        <div className="col-md-6 col-12 text-md-start">
+                            <input
+                                type="text"
+                                value={domicilio}
+                                onChange={(e) => setDomicilio(e.target.value)}
+                                disabled={!isEditing}
+                                className="form-control form-control-sm"
+                            />
+                        </div>
                     </div>
-                    <div className="col-md-6 col-12 text-md-start pt-2 pb-2">
-                    <input type="text" placeholder={correo} disabled />
+
+                    <div className="row py-2">
+                        <div className="col-md-6 col-12 text-md-end">
+                            <label className="fw-bold">Localidad</label>
+                        </div>
+                        <div className="col-md-6 col-12 text-md-start py-1">
+                            <input
+                                type="text"
+                                value={localidad}
+                                onChange={(e) => setLocalidad(e.target.value)}
+                                disabled={!isEditing}
+                                className="form-control form-control-sm"
+                            />
+                        </div>
+                    </div>
+
+                    <div className=" row bg-secondary bg-gradient py-2">
+                        <div className="col-md-6 col-12 text-md-end">
+                            <label className="fw-bold">Telefono</label>
+                        </div>
+                        <div className="col-md-6 col-12 text-md-start">
+                            <input
+                                type="text"
+                                value={telefono}
+                                onChange={(e) => setTelefono(e.target.value)}
+                                disabled={!isEditing}
+                                className="form-control form-control-sm"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="row py-2">
+                        <div className="col-md-6 col-12 text-md-end py-2">
+                            <label className="fw-bold">Correo</label>
+                        </div>
+                        <div className="col-md-6 col-12 text-md-start py-1 mt-1">
+                            <input
+                                type="text"
+                                value={correo}
+                                onChange={(e) => setCorreo(e.target.value)}
+                                disabled={!isEditing}
+                                className="form-control form-control-sm"
+                            />
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="col-12 text-center mt-2">
+                            {!isEditing ? (
+                                <Button variant="primary" className="m-1 btn-sm" onClick={handleEditDataClick}>
+                                    Modificar datos
+                                </Button>
+                            ) : (
+                                <Button variant="success" className="m-1 btn-sm" onClick={handleSaveClick}>
+                                    Guardar cambios
+                                </Button>
+                            )}
+                            <Button variant="primary" className="m-1 btn-sm" onClick={handleEditClick}>
+                                Cambiar contraseña
+                            </Button>
+                        </div>
                     </div>
                 </div>
-                <div className="row">
-                    <div className="col-12 text-center mt-2 ">
-                        <Button variant="primary" className="m-1 btn-sm">
-                            Modificar datos
-                        </Button>
-                        <Button variant="primary" className="m-1 btn-sm">
-                            Cambiar contraseña
-                        </Button>
-                    </div>
-                </div>
+                {/* Modal para Cambiar clave */}
+                <ChangePass
+                    show={showEditModal}
+                    onCreate={handleEditClick}
+                    onClose={handleCloseEdit}
+                />
             </form>
         </Container>
     );
