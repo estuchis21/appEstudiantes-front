@@ -1,16 +1,20 @@
 import React, { useState } from 'react';
 import { Modal, Button, Form , InputGroup , Alert} from 'react-bootstrap';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import { changePass } from '../../services/userService';
 
 const ChangePass = ({ show, onClose, onCreate }) => {
     const [newClave, setnewClave] = useState({
-        claveActual: '',
-        claveNueva: '',
-        claveConfir: ''
+        permisos: localStorage.getItem('permiso'),
+        actPass: '',
+        newPass: '',
+        passConfir: ''
     })
     const [showPassword, setShowPassword] = useState(false); // Estado para manejar la visibilidad de la contraseña
     const [showSuccess, setShowSuccess] = useState(false); // Estado para manejar el mensaje de cambios guardados
-    
+    const [errorMessage, setErrorMessage] = useState("");
+
+
     // Función para manejar cambios en los campos del formulario
     const handleChange = (e) => {
         const {name, value} = e.target;
@@ -19,16 +23,24 @@ const ChangePass = ({ show, onClose, onCreate }) => {
 
      // Función para guardar los cambios y llamar a la función 'onCreate' pasada como prop
      const handleEditPass = async () => {
-        //const editarClaves = await editarClave(newClave);
-        if(editarClaves){
-            setShowSuccess(true); // Muestra la alerta
+        if (newClave.newPass === newClave.passConfir) {
+            delete newClave.passConfir; // Elimina el campo passConfir del objeto
+            const editarClaves = await changePass(newClave);
+            if (editarClaves) {
+                setErrorMessage("Contraseña actualizada con éxito");
+                setShowAlert(true); // Muestra la alerta de éxito
+                setTimeout(() => {
+                    setShowAlert(false); // Oculta la alerta después de 2 segundos
+                    onCreate(newClave); // Llama a onCreate con el nuevo usuario creado
+                    onClose(); // Cierra el modal
+                }, 900);
+            }
+        } else {
+            setErrorMessage("Las claves no coinciden"); // Mensaje de error
+            setShowAlert(true); // Muestra la alerta de error
             setTimeout(() => {
-                setShowSuccess(false); // Oculta la alerta después de 2 segundos
-                onCreate(editarClave); // Llama a onCreate con el nuevo usuario creado
-                onClose();//Cierra el modal
-            },900);
-            
-            
+                setShowAlert(false); // Oculta la alerta después de 2 segundos
+            }, 2000);
         }
     };
 
@@ -46,7 +58,7 @@ const ChangePass = ({ show, onClose, onCreate }) => {
                 {/* Mostrar la alerta si showSuccess es true */}
                 {showSuccess && (
                     <Alert variant="success" className="custom-alert">
-                        Clave cambiada con éxito.
+                        {errorMessage}
                     </Alert>
                 )}
                 <Form>
@@ -56,19 +68,11 @@ const ChangePass = ({ show, onClose, onCreate }) => {
                             <InputGroup>
                                 <Form.Control
                                     type={showPassword ? 'text' : 'password'}
-                                    name="claveActual"
-                                    value={newClave.claveActual}
+                                    name="actPass"
+                                    value={newClave.actPass}
                                     aria-describedby="password-addon"
                                     onChange={handleChange}
                                 />
-                                <Button
-                                    variant="outline-secondary"
-                                    onClick={togglePasswordVisibility}
-                                    id="password-addon"
-                                >   
-                                    {/* Mostrar "Ocultar" si la contraseña está visible, de lo contrario, mostrar "Mostrar" */}
-                                    {showPassword ? <FaEyeSlash /> : <FaEye />}
-                                </Button>
                         </InputGroup>
                     </Form.Group>
                     {/* Campo de formulario para el usuario del usuario */}
@@ -77,20 +81,11 @@ const ChangePass = ({ show, onClose, onCreate }) => {
                             <InputGroup>
                                 <Form.Control
                                     type={showPassword ? 'text' : 'password'}
-                                    name="claveNueva"
-                                    value={newClave.claveNueva}
+                                    name="newPass"
+                                    value={newClave.newPass}
                                     aria-describedby="password-addon"
                                     onChange={handleChange}
                                 />
-
-                                <Button
-                                    variant="outline-secondary"
-                                    onClick={togglePasswordVisibility}
-                                    id="password-addon"
-                                >   
-                                    {/* Mostrar "Ocultar" si la contraseña está visible, de lo contrario, mostrar "Mostrar" */}
-                                    {showPassword ? <FaEyeSlash /> : <FaEye />}
-                                </Button>
                             </InputGroup>
                     </Form.Group>
                     {/* Campo de formulario para la password del usuario */}
@@ -99,22 +94,22 @@ const ChangePass = ({ show, onClose, onCreate }) => {
                         <InputGroup>
                             <Form.Control
                                 type={showPassword ? 'text' : 'password'}
-                                name="claveConfir"
-                                value={newClave.claveConfir}
+                                name="passConfir"
+                                value={newClave.passConfir}
                                 onChange={handleChange}
                                 aria-describedby="password-addon"
                             />
-                            
-                            <Button
-                                variant="outline-secondary"
-                                onClick={togglePasswordVisibility}
-                                id="password-addon"
-                            >   
-                                {/* Mostrar "Ocultar" si la contraseña está visible, de lo contrario, mostrar "Mostrar" */}
-                                {showPassword ? <FaEyeSlash /> : <FaEye />}
-                            </Button>
-                            
                         </InputGroup>
+                    </Form.Group>
+                    <Form.Group className='mt-2 d-flex justify-content-center align-items-center'>
+                        <Button
+                            variant="outline-secondary"
+                            onClick={togglePasswordVisibility}
+                            id="password-addon"
+                        >   
+                            {/* Mostrar "Ocultar" si la contraseña está visible, de lo contrario, mostrar "Mostrar" */}
+                            {showPassword ? <FaEye /> : <FaEyeSlash />}
+                        </Button>
                     </Form.Group>
                 </Form>
             </Modal.Body>

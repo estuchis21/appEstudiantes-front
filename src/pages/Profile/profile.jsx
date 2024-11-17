@@ -1,6 +1,7 @@
 import { React, useState } from "react";
 import { Container, Button } from "react-bootstrap";
 import ChangePass from '../../components/Profile/ChangePass';
+import { editDatos } from "../../services/userService";
 
 const Profile = () => {
     const [nombre, setNombre] = useState(localStorage.getItem("nombre") || "");
@@ -9,6 +10,8 @@ const Profile = () => {
     const [localidad, setLocalidad] = useState(localStorage.getItem("localidad") || "");
     const [telefono, setTelefono] = useState(localStorage.getItem("telefono") || "");
     const [correo, setCorreo] = useState(localStorage.getItem("correo") || "");
+    const permiso =  localStorage.getItem('permiso');
+    const [errorMessage, setErrorMessage] = useState('');
     
     const [isEditing, setIsEditing] = useState(false); // Controla el modo de edición
     const [showEditModal, setShowEditModal] = useState(false); // Controla la visibilidad del modal de cambio de contraseña
@@ -19,15 +22,23 @@ const Profile = () => {
     };
 
     // Función para guardar los cambios
-    const handleSaveClick = () => {
-        localStorage.setItem("nombre", nombre);
-        localStorage.setItem("documento", dni);
-        localStorage.setItem("domicilio", domicilio);
-        localStorage.setItem("localidad", localidad);
-        localStorage.setItem("telefono", telefono);
-        localStorage.setItem("correo", correo);
-        
-        setIsEditing(false);
+    const handleSaveClick = async () => {
+        console.log(permiso);
+        const editarUsuario = await editDatos(domicilio,correo,telefono, permiso);
+        if(editarUsuario){
+            localStorage.setItem("domicilio", domicilio);
+            localStorage.setItem("telefono", telefono);
+            localStorage.setItem("correo", correo);
+            setIsEditing(false);
+            setErrorMessage('Datos del usuario editados correctamente');
+        } else{
+            setErrorMessage('Error al editar datos del usuario');
+        }
+
+        // Oculta el mensaje después de 2 segundos
+        setTimeout(() => {
+            setErrorMessage('');
+        }, 2000);
     };
 
     // Función para abrir el modal de cambio de contraseña
@@ -44,6 +55,8 @@ const Profile = () => {
         <Container className="d-flex justify-content-center mt-5">
             <form className="w-100" style={{ maxWidth: "600px" }}>
                 <div className="row d-flex align-items-center text-center">
+                    {/* Si hay un mensaje de error, lo mostramos */}
+                    {errorMessage && <p className="text-danger text-center">{errorMessage}</p>}
                     <div className="row bg-secondary bg-gradient py-2">
                         <div className="col-md-6 col-12 text-md-end">
                             <label className="fw-bold">Nombre</label>
@@ -52,8 +65,7 @@ const Profile = () => {
                             <input
                                 type="text"
                                 value={nombre}
-                                onChange={(e) => setNombre(e.target.value)}
-                                disabled={!isEditing}
+                                disabled
                                 className="form-control form-control-sm"
                             />
                         </div>
@@ -67,8 +79,7 @@ const Profile = () => {
                             <input
                                 type="text"
                                 value={dni}
-                                onChange={(e) => setDni(e.target.value)}
-                                disabled={!isEditing}
+                                disabled
                                 className="form-control form-control-sm"
                             />
                         </div>
@@ -97,8 +108,7 @@ const Profile = () => {
                             <input
                                 type="text"
                                 value={localidad}
-                                onChange={(e) => setLocalidad(e.target.value)}
-                                disabled={!isEditing}
+                                disabled
                                 className="form-control form-control-sm"
                             />
                         </div>
