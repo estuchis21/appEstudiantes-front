@@ -1,0 +1,52 @@
+.App, body{
+    margin: 0 auto;
+    padding-top: 80px;
+}
+.main-content {
+    padding: 20px;
+    min-height: calc(100vh - 80px);
+}
+.Header-Block{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: rgb(39, 24, 73);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    z-index: 1000;
+    height: 80px;
+}
+.Header-Container{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    height: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+.Header-Title{
+    color: white;
+    font-family: 'Arial';
+    font-size: 25px;
+}
+.Button-Login{
+    border: 0px;
+    font-size: 15px;
+    padding: 15px;
+    font-weight: bolder;
+    background-color: white;
+    color: rgb(26, 26, 58);
+}
+.Moodle-Text{
+    display: flex;
+    align-items: baseline;
+    justify-content: space-around;
+    width: 150px;
+    font-size: 25px;
+    text-decoration: none;
+}
+.Moodle-Text:hover{
+    text-decoration: underline;
+    color: blue;
+}

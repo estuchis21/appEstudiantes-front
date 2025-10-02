@@ -1,0 +1,81 @@
+.sidebar-container {
+    position: fixed;
+    top: 80px; /* Ajusta según la altura de tu header */
+    left: -300px;
+    width: 280px;
+    height: calc(100vh - 80px);
+    background: white;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+    transition: left 0.3s ease;
+    z-index: 1000;
+}
+
+.sidebar-container.open {
+    left: 0;
+}
+
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.5);
+    z-index: 999;
+}
+
+.toggle-button {
+    position: absolute;
+    top: 10px;
+    right: -50px;
+    width: 40px;
+    height: 40px;
+    background: white;
+    border: none;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1001;
+}
+
+.sidebar-content {
+    padding: 20px 0;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.sidebar-options {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar-options li {
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.sidebar-item {
+    width: 100%;
+    padding: 15px 20px;
+    border: none;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s ease;
+}
+
+.sidebar-item:hover {
+    background: #f5f5f5;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .sidebar-container {
+        width: 250px;
+    }
+}
