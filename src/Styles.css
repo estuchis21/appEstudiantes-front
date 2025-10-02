@@ -323,20 +323,36 @@
     margin-bottom: 5px;
 }
 
+/* ===================== */
 /* ===== HOME USER ===== */
-/* Header de bienvenida */
+/* ===================== */
+
+.home-user-container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 40px auto;
+    background-color: #f8f9fa;
+    min-height: calc(100vh - 80px);
+}
+
 .home-user-header {
+    background: linear-gradient(135deg, rgb(59, 53, 107), rgb(52, 47, 97));
+    color: white;
+    padding: 30px;
+    border-radius: 15px;
     margin-bottom: 30px;
-    padding-bottom: 20px;
-    border-bottom: 2px solid #f0f0f0;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 .home-user-header h1 {
-    font-size: 2rem;
+    margin: 0 0 10px 0;
+    font-size: 2.2rem;
+    font-weight: 600;
 }
 
 .user-email {
-    margin-bottom: 20px;
+    margin: 0 0 20px 0;
+    opacity: 0.9;
     font-size: 1.1rem;
 }
 
@@ -347,14 +363,14 @@
 }
 
 .user-info-card {
+    background: rgba(255, 255, 255, 0.2);
     padding: 12px 20px;
-    border: 1px solid #ddd;
     border-radius: 8px;
-    background-color: #f8f9fa;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     font-size: 1rem;
 }
 
-/* Grid principal */
 .home-user-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -364,35 +380,52 @@
 .home-user-column {
     display: flex;
     flex-direction: column;
-    gap: 30px;
+    gap: 25px;
 }
 
 .home-user-card {
+    background: white;
     border: 1px solid #e9ecef;
-    padding: 20px;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.home-user-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.12);
 }
 
 .home-user-card h2 {
+    color: #2c3e50;
+    margin-bottom: 20px;
     font-size: 1.4rem;
-    border-bottom: 2px solid #3498db;
+    border-bottom: 3px solid #667eea;
     padding-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-/* Items de finales */
 .final-item {
-    padding: 15px;
-    margin: 12px 0;
-    border: 1px solid #f0f0f0;
-    background-color: #f8f9fa;
+    padding: 18px;
+    margin: 15px 0;
+    border: 1px solid #e9ecef;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    transition: all 0.3s ease;
+    border-left: 4px solid #667eea;
 }
 
 .final-item:hover {
-    background-color: #e9ecef;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+    transform: translateX(5px);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
 }
 
 .final-item strong {
+    color: #2c3e50;
     font-size: 1.1rem;
     display: block;
     margin-bottom: 8px;
@@ -402,60 +435,221 @@
     margin: 8px 0;
     font-size: 0.95rem;
     color: #495057;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .final-aula {
     margin: 0;
     font-size: 0.85rem;
     color: #6c757d;
+    background: #e9ecef;
+    padding: 4px 8px;
+    border-radius: 4px;
+    display: inline-block;
 }
 
-/* Items de noticias */
 .noticia-item {
-    padding: 16px;
+    padding: 20px;
     margin: 15px 0;
-    border: 1px solid #f0f0f0;
+    border: 1px solid #e9ecef;
+    border-radius: 10px;
+    background: white;
+    transition: all 0.3s ease;
+    border-left: 4px solid #dee2e6;
 }
 
 .noticia-item:hover {
-    background-color: #f8f9fa;
     transform: translateX(5px);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
 }
 
 .noticia-importante {
-    background-color: #fff3cd;
-    border-color: #ffeaa7;
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+    border-left-color: #ffc107;
 }
 
 .noticia-importante:hover {
-    background-color: #ffeaa7;
+    background: linear-gradient(135deg, #ffeaa7 0%, #ffd54f 100%);
 }
 
 .noticia-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
+    gap: 15px;
 }
 
 .noticia-header strong {
+    color: #2c3e50;
     flex: 1;
-    margin-right: 15px;
+    font-size: 1.1rem;
 }
 
 .noticia-fecha {
     font-size: 0.8rem;
     color: #6c757d;
+    background: #f8f9fa;
+    padding: 4px 8px;
+    border-radius: 12px;
     white-space: nowrap;
 }
 
 .noticia-contenido {
-    margin: 8px 0 0 0;
-    font-size: 0.9rem;
+    margin: 12px 0 0 0;
+    font-size: 0.95rem;
     color: #495057;
-    line-height: 1.5;
+    line-height: 1.6;
 }
 
+/* Responsive */
+@media (max-width: 968px) {
+    .home-user-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .home-user-container {
+        padding: 15px;
+    }
+    
+    .home-user-header {
+        padding: 20px;
+    }
+    
+    .home-user-header h1 {
+        font-size: 1.8rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .home-user-header h1 {
+        font-size: 1.6rem;
+    }
+    
+    .noticia-header {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .noticia-header strong {
+        margin-right: 0;
+    }
+    
+    .user-info-container {
+        gap: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .home-user-container {
+        padding: 10px;
+    }
+    
+    .home-user-card {
+        padding: 20px;
+    }
+    
+    .user-info-card {
+        padding: 10px 15px;
+        font-size: 0.9rem;
+    }
+    
+    .final-item,
+    .noticia-item {
+        padding: 15px;
+    }
+}
+/* ======================*/
+/* === LoginPage.css === */
+/* ======================*/
+
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: white;
+    padding: 20px;
+}
+
+.login-form {
+    background: white;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 400px;
+}
+
+.login-form h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 30px;
+    font-size: 28px;
+    font-weight: 600;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #555;
+    font-weight: 500;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e1e1e1;
+    border-radius: 6px;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+    box-sizing: border-box;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.login-button {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #446383 0%, #262d4e 100%);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.login-button:hover {
+    transform: translateY(-2px);
+}
+
+.login-button:active {
+    transform: translateY(0);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .login-form {
+        padding: 30px 20px;
+        margin: 20px;
+    }
+    
+    .login-form h2 {
+        font-size: 24px;
+    }
+}
 /* ===== MEDIA QUERIES REUTILIZABLES ===== */
 @media (max-width: 768px) {
     .hero-section {
