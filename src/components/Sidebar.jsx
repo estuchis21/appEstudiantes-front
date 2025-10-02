@@ -20,6 +20,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         { label: "Analitico", action: () => navigate('/Analitico') },
         { label: "Inscribirse a finales", action: () => navigate('/Finales') },
         { label: "Matriculacion", action: () => navigate('/Matriculacion') },
+        { label: "Moodle", action: () => navigate('/Matriculacion') },
         { label: "Cerrar Sesión", action: () => setShowLogoutPopup(true) }
     ];
 
