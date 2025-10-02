@@ -1,0 +1,16 @@
+Paginas:
+    No logueado =>
+        - Inicio
+        - Carreras
+        - Institucion
+        - Estudiantes
+        - Contactenos
+    Logueado =>
+        - Inicio usuarios
+        - Datos personales
+        - Asistencia
+        - Analitico
+        - Inscribirse a finales
+        - Matriculacion
+        - Cerrar sesión
+    

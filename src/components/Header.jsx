@@ -1,12 +1,35 @@
 import React from "react";
 import "../Styles.css"
-const Header = () => {
+import { useNavigate } from "react-router-dom";
+
+const Header = ({ isLoggedIn, toggleSidebar }) => {
+    const navigate = useNavigate();
+
     return (
         <header className="Header-Block">
             <div className="Header-Container">
-                <img className="Header-Logo"></img>
-                <h1 className="Header-Title">INSTITUTO SUPERIOR de FORMACION DOCENTE y TECNICA N°20</h1>
-                <button className="Button-Login">Iniciar Sesión</button>
+                <img 
+                    src="/src/assets/img/instituto20.jpg" 
+                    alt="Logo Instituto" 
+                    className="Header-Logo"
+                    onClick={() => navigate('/')}
+                />
+                {isLoggedIn ? (
+                    <button 
+                        className="Button-Menu" 
+                        onClick={toggleSidebar}
+                        aria-label="Abrir menú"
+                    >
+                        ☰
+                    </button>
+                ) : (
+                    <button 
+                        className="Button-Login" 
+                        onClick={() => navigate('/Login')}
+                    >
+                        Iniciar Sesión
+                    </button>
+                )}
             </div>
         </header>
     );

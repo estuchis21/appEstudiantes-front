@@ -1,47 +1,58 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Sidebar.css";
+import Popup from "./Popup";
 
-const Sidebar = () => {
-    const [isOpen, setIsOpen] = useState(false);
+const Sidebar = ({ isOpen, toggleSidebar }) => {
+    const [showLogoutPopup, setShowLogoutPopup] = useState(false);
+    const navigate = useNavigate();
 
-    const toggleSidebar = () => {
-        setIsOpen(!isOpen);
+    const handleLogout = () => {
+        localStorage.removeItem('isLoggedIn');
+        toggleSidebar();
+        navigate('/');
+        window.location.reload(); 
     };
 
     const menuItems = [
-        "Datos personales",
-        "Asistencias", 
-        "Analitico",
-        "Inscribirse a finales",
-        "Matriculacion"
+        { label: "Datos personales", action: () => navigate('/DatosPersonales') },
+        { label: "Asistencias", action: () => navigate('/Asistencia') },
+        { label: "Analitico", action: () => navigate('/Analitico') },
+        { label: "Inscribirse a finales", action: () => navigate('/Finales') },
+        { label: "Matriculacion", action: () => navigate('/Matriculacion') },
+        { label: "Cerrar Sesión", action: () => setShowLogoutPopup(true) }
     ];
 
     return (
         <>
-            {/* Overlay para cerrar al hacer click fuera */}
             {isOpen && <div className="sidebar-overlay" onClick={toggleSidebar}></div>}
             
             <div className={`sidebar-container ${isOpen ? "open" : ""}`}>
-                <button 
-                    className="toggle-button"
-                    onClick={toggleSidebar}
-                    aria-label={isOpen ? "Cerrar menú" : "Abrir menú"}
-                >
-                    {isOpen ? "✕" : "☰"}
-                </button>
-                
                 <nav className="sidebar-content">
                     <ul className="sidebar-options">
                         {menuItems.map((item, index) => (
                             <li key={index}>
-                                <button className="sidebar-item">
-                                    {item}
+                                <button 
+                                    className="sidebar-item"
+                                    onClick={item.action}
+                                >
+                                    {item.label}
                                 </button>
                             </li>
                         ))}
                     </ul>
                 </nav>
             </div>
+            {showLogoutPopup && (
+                <Popup
+                    mensaje="¿Estás seguro que deseas cerrar sesión?"
+                    textoAceptar="Sí, deseo salir"
+                    textoCancelar="Cancelar"
+                    onAceptar={handleLogout}
+                    onCancelar={() => setShowLogoutPopup(false)} 
+                    tipo="confirmacion"
+                />
+            )}
         </>
     );
 }

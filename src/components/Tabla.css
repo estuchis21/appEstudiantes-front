@@ -1,0 +1,66 @@
+/* components/TablaReutilizable.css */
+.tabla-contenedor {
+  width: 100%;
+  margin: 20px 0;
+}
+
+.tabla-titulo {
+  margin-bottom: 15px;
+  color: #333;
+  font-size: 1.5rem;
+}
+
+.tabla-reutilizable {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.tabla-reutilizable th {
+  background-color: #f8f9fa;
+  padding: 12px 15px;
+  text-align: left;
+  font-weight: 600;
+  color: #495057;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.tabla-reutilizable td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #dee2e6;
+  vertical-align: middle;
+}
+
+.tabla-reutilizable tr:last-child td {
+  border-bottom: none;
+}
+
+.fila-clickeable:hover {
+  background-color: #f8f9fa;
+  cursor: pointer;
+}
+
+.acciones-celda {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tabla-vacia {
+  text-align: center;
+  padding: 40px;
+  color: #6c757d;
+  font-style: italic;
+  background: white;
+  border-radius: 8px;
+  border: 2px dashed #dee2e6;
+}
+
+.tabla-loading {
+  text-align: center;
+  padding: 40px;
+  color: #6c757d;
+}
