@@ -1,15 +1,31 @@
 // pages/LoginPage.jsx
-import React from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import loginService from "../services/loginService";
 
 const LoginPage = () => {
     const navigate = useNavigate();
+    const [Documento, setDocumento] = useState("");
+    const [Contrasena, setContrasena] = useState("");
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        localStorage.setItem('isLoggedIn', 'true');
-        window.location.href = '/';
+        try {
+        // Llamada al servicio de login
+        const response = await loginService({
+            Documento: String(Documento).trim(),
+            Contrasena: Contrasena.trim(),
+        });
+
+        // Tomamos el primer elemento del array datosAlumno
+        const usuario = response.datosAlumno?.[0];
+        // Redirigir al home
+        navigate("/");
+        } catch (err) {
+        console.error(err);
+        }
     };
+
 
     return (
         <div className="login-container">
@@ -17,11 +33,27 @@ const LoginPage = () => {
                 <h2>Iniciar Sesión</h2>
                 <div className="form-group">
                     <label>DNI:</label>
-                    <input type="number" placeholder="Ingresa tu DNI" />
+                    <input
+                        type="text"
+                        id="documento"
+                        className="login-input"
+                        value={Documento}
+                        onChange={(e) => setDocumento(e.target.value)}
+                        required
+                        autoComplete="DNI"
+                    />
                 </div>
                 <div className="form-group">
                     <label>Contraseña:</label>
-                    <input type="password" placeholder="Ingresa tu contraseña" />
+                    <input
+                        type="password"
+                        id="contrasena"
+                        className="login-input"
+                        value={Contrasena}
+                        onChange={(e) => setContrasena(e.target.value)}
+                        required
+                        autoComplete="current-password"
+                    />
                 </div>
                 <button type="submit" className="login-button">Ingresar</button>
             </form>
