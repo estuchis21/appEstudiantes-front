@@ -17,23 +17,28 @@ const LoginPage = () => {
         Contrasena: Contrasena.trim(),
       });
 
+      // VER TODO EL RESPONSE
+      console.log("📦 Response completo del login:", response);
 
-      // Ahora retornar el objeto del usuario logueado.
       const usuario = response.datosAlumno;
 
       if (usuario) {
+        // VERIFICAR EL OBJETO DEL USUARIO
+        console.log("✅ Usuario recibido del backend:", usuario);
+
         // Guardar login en localStorage
         localStorage.setItem("isLoggedIn", "true");
         localStorage.setItem("usuario", JSON.stringify(usuario));
 
+        console.log("🔎 Usuario guardado en localStorage:", localStorage.getItem("usuario"));
 
-        // Redirigir a home
+        // Redirigir o refrescar
         navigate("/");
-        window.location.reload();
       } else {
         alert("Credenciales incorrectas");
       }
     } catch (err) {
+      console.error("❌ Error en el login:", err);
       alert(err.message);
     }
   };
