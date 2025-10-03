@@ -7,23 +7,23 @@ const LoginPage = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Guardar en localStorage
         localStorage.setItem('isLoggedIn', 'true');
-        // Recargar para que App.js detecte el cambio
         window.location.href = '/';
     };
 
     return (
-        <div style={{ padding: '2rem' }}>
-            <form onSubmit={handleSubmit}>
+        <div className="login-container">
+            <form className="login-form" onSubmit={handleSubmit}>
                 <h2>Iniciar Sesión</h2>
-                <label>DNI: </label>
-                <input type="number" />
-                <br />
-                <label>Contraseña: </label>
-                <input type="password" />
-                <br />
-                <button type="submit">Ingresar</button>
+                <div className="form-group">
+                    <label>DNI:</label>
+                    <input type="number" placeholder="Ingresa tu DNI" />
+                </div>
+                <div className="form-group">
+                    <label>Contraseña:</label>
+                    <input type="password" placeholder="Ingresa tu contraseña" />
+                </div>
+                <button type="submit" className="login-button">Ingresar</button>
             </form>
         </div>
     );
