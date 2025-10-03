@@ -1,4 +1,8 @@
 import React, { useState, useEffect } from "react";
+import { FaCalendarDays } from "react-icons/fa6";
+import { FaClock } from "react-icons/fa";
+
+
 
 const HomeUser = () => {
     const [usuario, setUsuario] = useState({});
@@ -43,7 +47,6 @@ const HomeUser = () => {
 
     return (
         <div className="home-user-container">
-            {/* Header de Bienvenida */}
             <div className="home-user-header">
                 <h1>Bienvenido, {usuario.nombre}</h1>
                 <p className="user-email">{usuario.email}</p>
@@ -55,16 +58,14 @@ const HomeUser = () => {
             </div>
 
             <div className="home-user-grid">
-                {/* Columna Izquierda */}
                 <div className="home-user-column">
-                    {/* Próximos Finales */}
                     <div className="home-user-card">
-                        <h2>📝 Próximos Finales</h2>
+                        <h2>Próximos Finales</h2>
                         {proximosFinales.map((final, index) => (
                             <div key={index} className="final-item">
                                 <strong>{final.materia}</strong>
                                 <p className="final-info">
-                                    📅 {final.fecha} - 🕒 {final.horario}
+                                    <FaCalendarDays />  {final.fecha} - <FaClock /> {final.horario}
                                 </p>
                                 <p className="final-aula">Aula: {final.aula}</p>
                             </div>
@@ -76,7 +77,7 @@ const HomeUser = () => {
                 <div className="home-user-column">
                     {/* Noticias y Avisos */}
                     <div className="home-user-card">
-                        <h2>📢 Noticias y Avisos</h2>
+                        <h2>Noticias y Avisos</h2>
                         {noticias.map((noticia, index) => (
                             <div 
                                 key={index} 

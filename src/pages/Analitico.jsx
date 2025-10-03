@@ -5,7 +5,7 @@ const Analitico = () => {
     const [materias, setMaterias] = useState([]);
 
     useEffect(() => {
-        // Simular historial académico
+
         setMaterias([
             { materia: "Matemática I", año: "2023", nota: 8, estado: "Aprobada" },
             { materia: "Pedagogía", año: "2023", nota: 7, estado: "Aprobada" },

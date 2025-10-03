@@ -5,6 +5,7 @@ import Popup from "./Popup";
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
     const [showLogoutPopup, setShowLogoutPopup] = useState(false);
+    const [showMoodlePopup, setShowMoodlePopup] = useState(false);
     const navigate = useNavigate();
 
     const handleLogout = () => {
@@ -14,13 +15,19 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         window.location.reload(); 
     };
 
+    const handleMoodleRedirect = () => {
+        window.open('http://moodle.isfdyt20.edu.ar/login/index.php', '_blank');
+        setShowMoodlePopup(false);
+        toggleSidebar(); 
+    };
+
     const menuItems = [
         { label: "Datos personales", action: () => navigate('/DatosPersonales') },
         { label: "Asistencias", action: () => navigate('/Asistencia') },
         { label: "Analitico", action: () => navigate('/Analitico') },
         { label: "Inscribirse a finales", action: () => navigate('/Finales') },
         { label: "Matriculacion", action: () => navigate('/Matriculacion') },
-        { label: "Moodle", action: () => navigate('/Matriculacion') },
+        { label: "Moodle", action: () => setShowMoodlePopup(true) },
         { label: "Cerrar Sesión", action: () => setShowLogoutPopup(true) }
     ];
 
@@ -51,6 +58,16 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                     textoCancelar="Cancelar"
                     onAceptar={handleLogout}
                     onCancelar={() => setShowLogoutPopup(false)} 
+                    tipo="confirmacion"
+                />
+            )}
+            {showMoodlePopup && (
+                <Popup
+                    mensaje="¿Estás seguro que deseas ingresar al Moodle?"
+                    textoAceptar="Sí, deseo ingresar"
+                    textoCancelar="Cancelar"
+                    onAceptar={handleMoodleRedirect}
+                    onCancelar={() => setShowMoodlePopup(false)} 
                     tipo="confirmacion"
                 />
             )}

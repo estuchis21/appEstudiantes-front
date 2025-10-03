@@ -5,7 +5,7 @@ const DatosPersonales = () => {
     const [editando, setEditando] = useState(false);
 
     useEffect(() => {
-        // Simular datos del usuario
+        
         setDatos({
             nombre: "Ana García",
             dni: "34.567.890",
