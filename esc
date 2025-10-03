@@ -1,0 +1,84 @@
+[33mcommit 4de609877c880d22e8fe5e5699d854261657baa1[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mestu[m[33m)[m
+Author: estuchis01 <estebansoft.dev2001@gmail.com>
+Date:   Thu Oct 2 21:21:56 2025 -0300
+
+    parte de la logica hecha
+
+[33mcommit 23ffd30545ac3fbc2b44d5e9d51503c41d250aef[m
+Merge: 9198807 da1dcfd
+Author: estuchis01 <estebansoft.dev2001@gmail.com>
+Date:   Thu Oct 2 21:09:07 2025 -0300
+
+    Merge branch 'lauti' of https://github.com/estuchis21/appEstudiantes-front into estu
+
+[33mcommit da1dcfd637901505fa8c1159a5e4cd4321e6b84b[m[33m ([m[1;31morigin/lauti[m[33m)[m
+Author: Lauuti19 <lautibustamante.lomb@gmail.com>
+Date:   Thu Oct 2 20:08:13 2025 -0300
+
+    Estilos Login
+
+[33mcommit 9198807c94bb275cdd2853d4ca801a032a54a431[m[33m ([m[1;31morigin/sol[m[33m, [m[1;31morigin/giordano[m[33m, [m[1;31morigin/gino[m[33m, [m[1;31morigin/estu[m[33m, [m[1;32msol[m[33m, [m[1;32mgiordano[m[33m, [m[1;32mgino[m[33m)[m
+Author: Lauuti19 <lautibustamante.lomb@gmail.com>
+Date:   Thu Oct 2 19:38:29 2025 -0300
+
+    Base del front sin estilos
+
+[33mcommit bfc2e94f7a28d342a1fbfc18c61ac7530c3fd6f5[m
+Author: Lauuti19 <lautibustamante.lomb@gmail.com>
+Date:   Wed Oct 1 23:56:26 2025 -0300
+
+    Base inicio con sidebar nuevos
+
+[33mcommit 59f4f2055a0107a743b06a702c978891f60da2af[m
+Author: Luci <bellomelucia@gmail.com>
+Date:   Sun Nov 17 00:42:25 2024 -0300
+
+    Perfil y clave
+
+[33mcommit 705a68bba0425b1938f12c61839610984b50c580[m
+Author: Lucia <bellomelucia@gmail.com>
+Date:   Thu Nov 14 16:44:20 2024 -0300
+
+    mejoras editar perfil
+
+[33mcommit 78986260a42d0de23c7602ab182f384303523b7a[m
+Author: Lucia <bellomelucia@gmail.com>
+Date:   Sun Nov 10 16:39:40 2024 -0300
+
+    Profile
+
+[33mcommit 5182ce934d15dfec4bbe726b9279f48698822fc4[m
+Author: Tomas Ferrari <tomas_ferrari@outlook.com>
+Date:   Sat Nov 9 19:44:39 2024 -0300
+
+    se agregaron los servicios para ver los finales, poder inscribirse y borrarse, además de agregar un apiClient para poder reutilizarlo en los demás servicios, se agregó página finales para ver estos cambios
+
+[33mcommit 6cf23f7c317d96e0a47246760c8ad6969c8964f2[m
+Author: osvaldo <osvaldoplaza43gmail.com>
+Date:   Thu Oct 17 19:29:18 2024 -0300
+
+    add cursadas
+
+[33mcommit 5f8bef0b4d6cdcce673a1d0e165daa7b0042523e[m
+Author: Lucia <bellomelucia@gmail.com>
+Date:   Fri Oct 11 17:53:09 2024 -0300
+
+    Sidebar
+
+[33mcommit 4e624774bffac56401422135e83ff6c86c1a79c5[m
+Author: Lucia <bellomelucia@gmail.com>
+Date:   Wed Oct 2 11:55:34 2024 -0300
+
+    Sidebar
+
+[33mcommit 6fb61cf70aa8921fe8e77b671897deb78b8e6f04[m
+Author: Lucia <bellomelucia@gmail.com>
+Date:   Mon Sep 9 11:16:37 2024 -0300
+
+    Login funcionando
+
+[33mcommit bcefe62dc9fb9f662f53872264d05d4f761eed6d[m
+Author: Lucia <bellomelucia@gmail.com>
+Date:   Thu Aug 22 20:42:35 2024 -0300
+
+    Login
