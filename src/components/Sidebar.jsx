@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./Sidebar.css";
+import "../Styles/Sidebar.css";
 import Popup from "./Popup";
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {

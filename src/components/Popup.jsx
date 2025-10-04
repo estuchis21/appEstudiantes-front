@@ -1,7 +1,7 @@
 //Este popup puede ser reutilizado en los componentess que se necesiten
 //Hay un ejemplo de como usarlo en Sidebar.jsx
 import React from 'react';
-import './Popup.css'; 
+import '../Styles/PopUp.css'; 
 
 const Popup = ({ 
   mensaje = "¿Estás seguro?",
