@@ -1,4 +1,19 @@
 /* PopupReutilizable.css */
+
+.loader {
+  width: 50px;
+  aspect-ratio: 1;
+  --_c:no-repeat radial-gradient(farthest-side,#25b09b 92%,#0000);
+  background: 
+    var(--_c) top,
+    var(--_c) left,
+    var(--_c) right,
+    var(--_c) bottom;
+  background-size: 12px 12px;
+  animation: l7 1s infinite;
+}
+@keyframes l7 {to{transform: rotate(.5turn)}}
+
 .popup-overlay {
     position: fixed;
     top: 0;
@@ -7,6 +22,7 @@
     bottom: 0;
     background-color: rgba(0, 0, 0, 0.5);
     z-index: 999;
+    animation: fadeInOverlay 0.3s ease;
 }
 
 .popup-container {
@@ -22,6 +38,7 @@
     min-width: 300px;
     max-width: 400px;
     text-align: center;
+    animation: popupAppear 0.3s ease;
 }
 
 .popup-message {
@@ -98,4 +115,24 @@
 
 .popup-info .popup-button-aceptar:hover {
     background-color: #138496;
+}
+
+@keyframes fadeInOverlay {
+    from { 
+        opacity: 0;
+    }
+    to { 
+        opacity: 1;
+    }
+}
+
+@keyframes popupAppear {
+    from { 
+        opacity: 0;
+        transform: translate(-50%, -0%) scale(0.9);
+    }
+    to { 
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
 }

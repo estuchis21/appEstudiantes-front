@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import TablaReutilizable from "../components/Tabla";
+import "../Styles/Asistencia.css";
 
 const Asistencias = () => {
     const [asistencias, setAsistencias] = useState([]);
@@ -8,21 +9,15 @@ const Asistencias = () => {
     useEffect(() => {
         setTimeout(() => {
             setAsistencias([
-                { materia: "Álgebra I", fecha: "01/11/2024", estado: "Presente", profesor: "Dr. López" },
-                { materia: "Geometría", fecha: "02/11/2024", estado: "Ausente", profesor: "Mg. Torres" },
-                { materia: "Pedagogía", fecha: "03/11/2024", estado: "Presente", profesor: "Lic. Díaz" },
-                { materia: "Matemática Discreta", fecha: "04/11/2024", estado: "Presente", profesor: "Dra. García" },
-                { materia: "Programación", fecha: "05/11/2024", estado: "Justificado", profesor: "Ing. Martínez" },
+                { materia: "Álgebra I", fecha: "01/11/2024", Porcentaje: "90", profesor: "Dr. López" },
+                { materia: "Geometría", fecha: "02/11/2024", Porcentaje: "15", profesor: "Mg. Torres" },
+                { materia: "Pedagogía", fecha: "03/11/2024", Porcentaje: "99", profesor: "Lic. Díaz" },
+                { materia: "Matemática Discreta", fecha: "04/11/2024", Porcentaje: "10", profesor: "Dra. García" },
+                { materia: "Programación", fecha: "05/11/2024", Porcentaje: "60", profesor: "Ing. Martínez" },
             ]);
             setLoading(false);
         }, 1000);
     }, []);
-
-    // Calcular estadísticas
-    const totalAsistencias = asistencias.length;
-    const presentes = asistencias.filter(a => a.estado === "Presente").length;
-    const ausentes = asistencias.filter(a => a.estado === "Ausente").length;
-    const porcentajeAsistencia = totalAsistencias > 0 ? Math.round((presentes / totalAsistencias) * 100) : 0;
 
     const columnas = [
         { 
@@ -40,12 +35,12 @@ const Asistencias = () => {
             )
         },
         { 
-            key: "estado", 
-            header: "Estado", 
+            key: "Porcentaje", 
+            header: "Porcentaje", 
             align: "center",
             render: (fila) => (
-                <span className={`estado-asistencia ${fila.estado.toLowerCase()}`}>
-                    {fila.estado}
+                <span className={`porcentaje-asistencia ${getClasePorcentaje(fila.Porcentaje)}`}>
+                    {fila.Porcentaje}%
                 </span>
             )
         },
@@ -58,42 +53,35 @@ const Asistencias = () => {
         }
     ];
 
+    // Función para determinar la clase CSS según el porcentaje
+    const getClasePorcentaje = (porcentaje) => {
+        const num = parseInt(porcentaje);
+        if (num >= 80) return 'alto';
+        if (num >= 60) return 'medio';
+        if (num >= 40) return 'bajo';
+        return 'critico';
+    };
+
     return (
         <div className="asistencias-container">
-            {/* Header con diseño mejorado */}
-            <div className="asistencias-header">
+            <header className="asistencias-header">
                 <h1 className="asistencias-title">Registro de Asistencias</h1>
-                <p className="asistencias-subtitle">Seguimiento detallado de tu asistencia académica</p>
-            </div>
+                <div className="info-badge">
+                    <span className="badge-text">Período Actual</span>
+                </div>
+            </header>
 
-            {/* Estadísticas rápidas */}
-            <div className="asistencias-stats">
-                <div className="stat-card">
-                    <div className="stat-number">{totalAsistencias}</div>
-                    <div className="stat-label">Total Registros</div>
+            <section className="tabla-section">
+                <div className="section-card">
+                    <h2>Detalle de Asistencias por Materia</h2>
+                    <TablaReutilizable
+                        datos={asistencias}
+                        columnas={columnas}
+                        loading={loading}
+                        vacioMensaje="No hay registros de asistencia disponibles"
+                    />
                 </div>
-                <div className="stat-card">
-                    <div className="stat-number">{presentes}</div>
-                    <div className="stat-label">Presentes</div>
-                </div>
-                <div className="stat-card">
-                    <div className="stat-number">{ausentes}</div>
-                    <div className="stat-label">Ausentes</div>
-                </div>
-                <div className="stat-card">
-                    <div className="stat-number">{porcentajeAsistencia}%</div>
-                    <div className="stat-label">Asistencia</div>
-                </div>
-            </div>
-
-            {/* Tabla de asistencias */}
-            <TablaReutilizable
-                datos={asistencias}
-                columnas={columnas}
-                loading={loading}
-                vacioMensaje="No hay registros de asistencia disponibles"
-                titulo="Detalle de Asistencias por Materia"
-            />
+            </section>
         </div>
     );
 };

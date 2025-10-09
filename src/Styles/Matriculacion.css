@@ -1,0 +1,322 @@
+/* Matriculacion.css */
+.matriculacion-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 80px 20px;
+    background-color: #ffffff;
+    min-height: 100vh;
+}
+
+.matriculacion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid rgba(52, 47, 97, 0.1);
+}
+
+.matriculacion-title {
+    color: #343761;
+    margin: 0;
+    font-size: 2.5rem;
+    font-weight: 300;
+}
+
+.info-badge {
+    background: rgba(52, 47, 97, 0.1);
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1px solid rgba(52, 47, 97, 0.3);
+}
+
+.badge-text {
+    color: #343761;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.info-section {
+    margin-bottom: 30px;
+}
+
+.info-card {
+    background: rgba(52, 47, 97, 0.05);
+    padding: 24px;
+    border-radius: 12px;
+    border-left: 4px solid rgba(52, 47, 97, 0.4);
+}
+
+.info-card h3 {
+    color: #343761;
+    margin-top: 0;
+    margin-bottom: 16px;
+    font-size: 1.2rem;
+}
+
+.info-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.info-list li {
+    padding: 8px 0;
+    color: #666;
+    position: relative;
+    padding-left: 20px;
+}
+
+.info-list li:before {
+    content: "•";
+    color: rgba(52, 47, 97, 0.6);
+    position: absolute;
+    left: 0;
+}
+
+.stats-section {
+    margin-bottom: 40px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.stat-card {
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border: 1px solid #f0f0f0;
+    transition: transform 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+}
+
+.stat-limit {
+    border: 2px solid rgba(52, 47, 97, 0.3);
+    background: rgba(52, 47, 97, 0.02);
+}
+
+.stat-number {
+    display: block;
+    font-size: 2.5rem;
+    font-weight: 300;
+    color: #343761;
+    margin-bottom: 8px;
+}
+
+.stat-label {
+    color: #666;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.inscripciones-section,
+.disponibles-section {
+    margin-bottom: 40px;
+}
+
+.section-card {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: 1px solid #f0f0f0;
+}
+
+.section-card h2 {
+    color: #343761;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+    font-weight: 400;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.search-container {
+    flex: 1;
+    max-width: 300px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    background: #fafafa;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: rgba(52, 47, 97, 0.4);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(52, 47, 97, 0.1);
+}
+
+.btn-matricular,
+.btn-desmatricular {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-matricular {
+    background: rgba(52, 47, 97, 0.8);
+    color: white;
+}
+
+.btn-matricular:hover:not(:disabled) {
+    background: rgba(52, 47, 97, 1);
+    transform: translateY(-1px);
+}
+
+.btn-matricular:disabled,
+.btn-disabled {
+    background: #cccccc;
+    color: #666;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-desmatricular {
+    background: rgba(255, 59, 59, 0.1);
+    color: #ff3b3b;
+    border: 1px solid rgba(255, 59, 59, 0.3);
+}
+
+.btn-desmatricular:hover {
+    background: rgba(255, 59, 59, 0.2);
+    transform: translateY(-1px);
+}
+
+.cupos {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+    font-size: 0.85rem;
+}
+
+.sin-cupos {
+    background: rgba(255, 59, 59, 0.1);
+    color: #ff3b3b;
+}
+
+.pocos-cupos {
+    background: rgba(255, 165, 0, 0.1);
+    color: #ff8c00;
+}
+
+/* Mejoras para la tabla */
+.tabla-container {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.tabla-header {
+    background: rgba(52, 47, 97, 0.05);
+    border-bottom: 2px solid rgba(52, 47, 97, 0.1);
+}
+
+.tabla-header-cell {
+    color: #343761;
+    font-weight: 600;
+    padding: 16px;
+    text-align: left;
+}
+
+.tabla-row {
+    border-bottom: 1px solid #f0f0f0;
+    transition: background-color 0.2s ease;
+}
+
+.tabla-row:hover {
+    background: rgba(52, 47, 97, 0.02);
+}
+
+.tabla-cell {
+    padding: 16px;
+    color: #666;
+}
+
+.tabla-vacia {
+    color: #999;
+    text-align: center;
+    padding: 40px;
+}
+
+@media (max-width: 768px) {
+    .matriculacion-container {
+        padding: 60px 16px;
+    }
+
+    .matriculacion-header {
+        flex-direction: column;
+        gap: 16px;
+        text-align: center;
+    }
+
+    .matriculacion-title {
+        font-size: 2rem;
+    }
+
+    .section-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .search-container {
+        max-width: 100%;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .section-card {
+        padding: 20px;
+    }
+
+    .tabla-header-cell,
+    .tabla-cell {
+        padding: 12px 8px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .matriculacion-container {
+        padding: 40px 12px;
+    }
+
+    .matriculacion-title {
+        font-size: 1.75rem;
+    }
+
+    .stat-number {
+        font-size: 2rem;
+    }
+
+    .section-card {
+        padding: 16px;
+    }
+}

@@ -1,4 +1,4 @@
-.asistencias-container {
+.analitico-container {
                     max-width: 1200px;
                     margin: 0 auto;
                     padding: 80px 20px;
@@ -6,7 +6,7 @@
                     min-height: 100vh;
                 }
 
-                .asistencias-header {
+                .analitico-header {
                     display: flex;
                     justify-content: space-between;
                     align-items: center;
@@ -15,7 +15,7 @@
                     border-bottom: 2px solid rgba(52, 47, 97, 0.1);
                 }
 
-                .asistencias-title {
+                .analitico-title {
                     color: #343761;
                     margin: 0;
                     font-size: 2.5rem;
@@ -35,17 +35,17 @@
                     font-size: 0.9rem;
                 }
 
-                .stats-section {
+                .resumen-section {
                     margin-bottom: 40px;
                 }
 
-                .stats-grid {
+                .resumen-grid {
                     display: grid;
                     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
                     gap: 20px;
                 }
 
-                .stat-card {
+                .resumen-card {
                     background: white;
                     padding: 24px;
                     border-radius: 12px;
@@ -55,11 +55,11 @@
                     transition: transform 0.2s ease;
                 }
 
-                .stat-card:hover {
+                .resumen-card:hover {
                     transform: translateY(-2px);
                 }
 
-                .stat-number {
+                .resumen-number {
                     display: block;
                     font-size: 2.5rem;
                     font-weight: 300;
@@ -67,7 +67,7 @@
                     margin-bottom: 8px;
                 }
 
-                .stat-label {
+                .resumen-label {
                     color: #666;
                     font-size: 0.9rem;
                     font-weight: 500;
@@ -93,38 +93,38 @@
                     font-weight: 400;
                 }
 
-                /* Estados de asistencia */
-                .estado-asistencia {
+                /* Estados de materias */
+                .estado-materia {
                     padding: 6px 12px;
-                    border-radius: 20px;
+                    border-radius: 5px;
                     font-size: 0.85rem;
-                    font-weight: 500;
+                    font-weight: 400;
                     text-transform: uppercase;
                     letter-spacing: 0.5px;
                 }
 
-                .estado-asistencia.presente {
+                .estado-materia.aprobada {
                     background: rgba(76, 175, 80, 0.1);
-                    color: #4caf50;
-                    border: 1px solid rgba(76, 175, 80, 0.3);
+                    color: #14aa19;
+                    border: 1px solid rgba(49, 139, 52, 0.836);
                 }
 
-                .estado-asistencia.ausente {
-                    background: rgba(244, 67, 54, 0.1);
-                    color: #f44336;
-                    border: 1px solid rgba(244, 67, 54, 0.3);
+                .estado-materia.cursando {
+                    background: rgba(33, 150, 243, 0.1);
+                    color: #2196f3;
+                    border: 1px solid rgba(33, 149, 243, 0.815);
                 }
 
-                .estado-asistencia.justificado {
+                .estado-materia.regularizada {
                     background: rgba(255, 152, 0, 0.1);
                     color: #ff9800;
-                    border: 1px solid rgba(255, 152, 0, 0.3);
+                    border: 1px solid rgba(255, 153, 0, 0.801);
                 }
 
-                .estado-asistencia.tardanza {
-                    background: rgba(156, 39, 176, 0.1);
-                    color: #9c27b0;
-                    border: 1px solid rgba(156, 39, 176, 0.3);
+                .estado-materia.reprobada {
+                    background: rgba(244, 67, 54, 0.1);
+                    color: #f44336;
+                    border: 1px solid rgba(244, 67, 54, 0.822);
                 }
 
                 /* Mejoras para la tabla */
@@ -166,22 +166,22 @@
                 }
 
                 @media (max-width: 768px) {
-                    .asistencias-container {
+                    .analitico-container {
                         padding: 60px 16px;
                     }
 
-                    .asistencias-header {
+                    .analitico-header {
                         flex-direction: column;
                         gap: 16px;
                         text-align: center;
                     }
 
-                    .asistencias-title {
+                    .analitico-title {
                         font-size: 2rem;
                     }
 
-                    .stats-grid {
-                        grid-template-columns: repeat(2, 1fr);
+                    .resumen-grid {
+                        grid-template-columns: 1fr;
                     }
 
                     .section-card {
@@ -194,26 +194,22 @@
                         font-size: 0.9rem;
                     }
 
-                    .estado-asistencia {
+                    .estado-materia {
                         font-size: 0.8rem;
                         padding: 4px 8px;
                     }
                 }
 
                 @media (max-width: 480px) {
-                    .asistencias-container {
+                    .analitico-container {
                         padding: 40px 12px;
                     }
 
-                    .asistencias-title {
+                    .analitico-title {
                         font-size: 1.75rem;
                     }
 
-                    .stats-grid {
-                        grid-template-columns: 1fr;
-                    }
-
-                    .stat-number {
+                    .resumen-number {
                         font-size: 2rem;
                     }
 

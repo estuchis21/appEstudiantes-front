@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from "react";
 import TablaReutilizable from "../components/Tabla";
+import Popup from "../components/Popup";
+import '../Styles/Finales.css';
 
 const InscripcionFinales = () => {
     const [materiasDisponibles, setMateriasDisponibles] = useState([]);
     const [materiasInscriptas, setMateriasInscriptas] = useState([]);
+    const [showInscripcionPopup, setShowInscripcionPopup] = useState(false);
+    const [showDesinscripcionPopup, setShowDesinscripcionPopup] = useState(false);
+    const [materiaSeleccionada, setMateriaSeleccionada] = useState(null);
     const [loading, setLoading] = useState(true);
     const [filtro, setFiltro] = useState("");
 
@@ -68,20 +73,28 @@ const InscripcionFinales = () => {
     }, []);
 
     const inscribirMateria = (materia) => {
-        if (materia.cupos > 0) {
+        if (materia.cupos > 0 && materiasInscriptas.length < 3) {
             const nuevasDisponibles = materiasDisponibles.filter(m => m.id !== materia.id);
             setMateriasDisponibles(nuevasDisponibles);
             setMateriasInscriptas([...materiasInscriptas, materia]);
-            alert(`✅ Te has inscripto correctamente a ${materia.materia}`);
         }
     };
 
     const desinscribirMateria = (materia) => {
         const nuevasInscriptas = materiasInscriptas.filter(m => m.id !== materia.id);
         setMateriasInscriptas(nuevasInscriptas);
-        const materiaActualizada = { ...materia, cupos: materia.cupos - 1 };
+        const materiaActualizada = { ...materia, cupos: (materia.cupos || 0) + 1 };
         setMateriasDisponibles([...materiasDisponibles, materiaActualizada]);
-        alert(`❌ Te has desinscripto de ${materia.materia}`);
+    };
+
+    const handleInscripcionClick = (materia) => {
+        setMateriaSeleccionada(materia);
+        setShowInscripcionPopup(true);
+    };
+
+    const handleDesinscripcionClick = (materia) => {
+        setMateriaSeleccionada(materia);
+        setShowDesinscripcionPopup(true);
     };
 
     const materiasFiltradas = materiasDisponibles.filter(materia =>
@@ -103,22 +116,25 @@ const InscripcionFinales = () => {
             header: "Fecha y Hora",
             render: (fila) => `${fila.fecha} - ${fila.horario}`
         },
-        { 
-            key: "aula", 
-            header: "Aula"
-        },
+        {/*
         { 
             key: "cupos", 
             header: "Cupos",
-            render: (fila) => fila.cupos > 0 ? fila.cupos : "Sin cupos"
-        },
+            render: (fila) => (
+                <span className={`cupos ${fila.cupos === 0 ? 'sin-cupos' : fila.cupos < 3 ? 'pocos-cupos' : ''}`}>
+                    {fila.cupos > 0 ? fila.cupos : "0"}
+                </span>
+            )
+        },     
+        */},
         { 
             key: "acciones", 
             header: "Acciones",
             render: (fila) => (
                 <button
-                    onClick={() => inscribirMateria(fila)}
-                    disabled={!fila.disponible}
+                    className={`btn-inscribir ${!fila.disponible ? 'btn-disabled' : ''}`}
+                    onClick={() => handleInscripcionClick(fila)}
+                    disabled={!fila.disponible || materiasInscriptas.length >= 3}
                 >
                     {fila.disponible ? 'Inscribirse' : 'Sin cupos'}
                 </button>
@@ -141,15 +157,12 @@ const InscripcionFinales = () => {
             render: (fila) => `${fila.fecha} - ${fila.horario}`
         },
         { 
-            key: "aula", 
-            header: "Aula"
-        },
-        { 
             key: "acciones", 
             header: "Acciones",
             render: (fila) => (
                 <button
-                    onClick={() => desinscribirMateria(fila)}
+                    className="btn-desinscribir"
+                    onClick={() => handleDesinscripcionClick(fila)}
                 >
                     Desinscribirse
                 </button>
@@ -158,58 +171,98 @@ const InscripcionFinales = () => {
     ];
 
     return (
-        <div>
-            <h1>Inscripción a Finales</h1>
+        <div className="inscripcion-container">
+            <header className="inscripcion-header">
+                <h1>Inscripción a Finales</h1>
+                <div className="info-badge">
+                    <span className="badge-text">Período activo</span>
+                </div>
+            </header>
             
-            <div>
-                <h3>Información Importante</h3>
-                <p>• Período de inscripción: 01/12/2024 - 10/12/2024</p>
-                <p>• Máximo de materias por período: 3 materias</p>
-            </div>
-
-            <section>
-                <h2>Tus Inscripciones Actuales</h2>
-                <TablaReutilizable
-                    datos={materiasInscriptas}
-                    columnas={columnasInscriptas}
-                    loading={loading}
-                    vacioMensaje="No tienes materias inscriptas para finales"
-                />
+            <section className="info-section">
+                <div className="info-card">
+                    <h3>Información Importante</h3>
+                    <ul className="info-list">
+                        <li>Período de inscripción: 01/12/2024 - 10/12/2024</li>
+                        <li>Máximo de materias por período: 3 materias</li>
+                        <li>Las inscripciones son sujetas a disponibilidad de cupos</li>
+                    </ul>
+                </div>
             </section>
 
-            <section>
-                <h2>Materias Disponibles para Finales</h2>
-                <div>
-                    <input
-                        type="text"
-                        placeholder="Buscar materia o profesor..."
-                        value={filtro}
-                        onChange={(e) => setFiltro(e.target.value)}
+            <section className="inscripciones-section">
+                <div className="section-card">
+                    <h2>Tus Inscripciones Actuales</h2>
+                    <TablaReutilizable
+                        datos={materiasInscriptas}
+                        columnas={columnasInscriptas}
+                        loading={loading}
+                        vacioMensaje="No tienes materias inscriptas para finales"
                     />
                 </div>
-                
-                <TablaReutilizable
-                    datos={materiasFiltradas}
-                    columnas={columnasDisponibles}
-                    loading={loading}
-                    vacioMensaje="No hay materias disponibles para finales"
-                />
             </section>
 
-            <div>
-                <div>
-                    <span>{materiasInscriptas.length}</span>
-                    <span>Materias Inscriptas</span>
+            <section className="disponibles-section">
+                <div className="section-card">
+                    <div className="section-header">
+                        <h2>Materias Disponibles para Finales</h2>
+                        <div className="search-container">
+                            <input
+                                type="text"
+                                placeholder="Buscar materia o profesor..."
+                                value={filtro}
+                                onChange={(e) => setFiltro(e.target.value)}
+                                className="search-input"
+                            />
+                        </div>
+                    </div>
+                    
+                    <TablaReutilizable
+                        datos={materiasFiltradas}
+                        columnas={columnasDisponibles}
+                        loading={loading}
+                        vacioMensaje="No hay materias disponibles para finales"
+                    />
                 </div>
-                <div>
-                    <span>{materiasDisponibles.filter(m => m.disponible).length}</span>
-                    <span>Materias Disponibles</span>
-                </div>
-                <div>
-                    <span>3</span>
-                    <span>Límite de Inscripciones</span>
-                </div>
-            </div>
+            </section>
+
+            {/* Popup para Inscripción */}
+            {showInscripcionPopup && materiaSeleccionada && (
+                <Popup
+                    mensaje={`¿Deseas inscribirte a ${materiaSeleccionada.materia}?`}
+                    textoAceptar="Sí, inscribirme"
+                    textoCancelar="Cancelar"
+                    onAceptar={() => {
+                        inscribirMateria(materiaSeleccionada);
+                        setShowInscripcionPopup(false);
+                        setMateriaSeleccionada(null);
+                    }}
+                    onCancelar={() => {
+                        setShowInscripcionPopup(false);
+                        setMateriaSeleccionada(null);
+                    }}
+                    tipo="confirmacion"
+                />
+            )}
+
+            {/* Popup para Desinscripción */}
+            {showDesinscripcionPopup && materiaSeleccionada && (
+                <Popup
+                    mensaje={`¿Estás seguro que deseas desinscribirte de ${materiaSeleccionada.materia}?`}
+                    textoAceptar="Sí, desinscribirme"
+                    textoCancelar="Cancelar"
+                    onAceptar={() => {
+                        desinscribirMateria(materiaSeleccionada);
+                        setShowDesinscripcionPopup(false);
+                        setMateriaSeleccionada(null);
+                    }}
+                    onCancelar={() => {
+                        setShowDesinscripcionPopup(false);
+                        setMateriaSeleccionada(null);
+                    }}
+                    tipo="confirmacion"
+                />
+            )}
         </div>
     );
 };

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import TablaReutilizable from "../components/Tabla";
+import "../Styles/Analitico.css";
 
 const Analitico = () => {
     const [materias, setMaterias] = useState([]);
 
     useEffect(() => {
-
         setMaterias([
             { materia: "Matemática I", año: "2023", nota: 8, estado: "Aprobada" },
             { materia: "Pedagogía", año: "2023", nota: 7, estado: "Aprobada" },
@@ -37,12 +37,23 @@ const Analitico = () => {
 
     return (
         <div className="analitico-container">
-            <h1 className="analitico-title">Analítico de Cursadas</h1>
-            <TablaReutilizable
-                datos={materias}
-                columnas={columnas}
-                titulo="Historial Académico"
-            />
+            <header className="analitico-header">
+                <h1 className="analitico-title">Analítico de Cursadas</h1>
+                <div className="info-badge">
+                    <span className="badge-text">Historial Completo</span>
+                </div>
+            </header>
+            
+
+            <section className="tabla-section">
+                <div className="section-card">
+                    <h2>Historial Académico</h2>
+                    <TablaReutilizable
+                        datos={materias}
+                        columnas={columnas}
+                    />
+                </div>
+            </section>
         </div>
     );
 };
