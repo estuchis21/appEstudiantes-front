@@ -1,4 +1,3 @@
-// pages/DatosUser.jsx
 import React, { useState, useEffect } from "react";
 import { editDatos } from "../services/userService";
 import Swal from 'sweetalert2';
@@ -10,7 +9,6 @@ const DatosUser = () => {
   const [editando, setEditando] = useState(false);
   const [cargando, setCargando] = useState(false);
 
-  // Campos editables
   const [formData, setFormData] = useState({
     Telefono: "",
     Correo: "",
@@ -264,7 +262,6 @@ const DatosUser = () => {
           </div>
         )}
 
-        {/* Información de Contacto Editable */}
         <div className="datos-section">
           <h2>📞 Información de Contacto</h2>
           <form onSubmit={handleSubmit}>
