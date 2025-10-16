@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import TablaReutilizable from "../components/Tabla";
+import "../Styles/Matriculacion.css";
 
 const Matriculacion = () => {
     const [materiasDisponibles, setMateriasDisponibles] = useState([]);
@@ -63,18 +64,20 @@ const Matriculacion = () => {
     }, []);
 
     const inscribirMateria = (materia) => {
-        if (materia.cupos > 0) {
+        if (materia.cupos > 0 && materiasInscriptas.length < 5) {
             const nuevasDisponibles = materiasDisponibles.filter(m => m.id !== materia.id);
             setMateriasDisponibles(nuevasDisponibles);
             setMateriasInscriptas([...materiasInscriptas, materia]);
             alert(`✅ Te has matriculado correctamente en ${materia.materia}`);
+        } else if (materiasInscriptas.length >= 5) {
+            alert("❌ Has alcanzado el límite máximo de 5 materias por cuatrimestre");
         }
     };
 
     const desinscribirMateria = (materia) => {
         const nuevasInscriptas = materiasInscriptas.filter(m => m.id !== materia.id);
         setMateriasInscriptas(nuevasInscriptas);
-        const materiaActualizada = { ...materia, cupos: materia.cupos - 1 };
+        const materiaActualizada = { ...materia, cupos: (materia.cupos || 0) + 1 };
         setMateriasDisponibles([...materiasDisponibles, materiaActualizada]);
         alert(`❌ Te has desmatriculado de ${materia.materia}`);
     };
@@ -98,21 +101,13 @@ const Matriculacion = () => {
             header: "Horario"
         },
         { 
-            key: "aula", 
-            header: "Aula"
-        },
-        { 
-            key: "cupos", 
-            header: "Cupos",
-            render: (fila) => fila.cupos > 0 ? fila.cupos : "Sin cupos"
-        },
-        { 
             key: "acciones", 
             header: "Acciones",
             render: (fila) => (
                 <button
+                    className={`btn-matricular ${!fila.disponible ? 'btn-disabled' : ''}`}
                     onClick={() => inscribirMateria(fila)}
-                    disabled={!fila.disponible}
+                    disabled={!fila.disponible || materiasInscriptas.length >= 5}
                 >
                     {fila.disponible ? 'Matricularse' : 'Sin cupos'}
                 </button>
@@ -134,14 +129,11 @@ const Matriculacion = () => {
             header: "Horario"
         },
         { 
-            key: "aula", 
-            header: "Aula"
-        },
-        { 
             key: "acciones", 
             header: "Acciones",
             render: (fila) => (
                 <button
+                    className="btn-desmatricular"
                     onClick={() => desinscribirMateria(fila)}
                 >
                     Desmatricularse
@@ -151,59 +143,60 @@ const Matriculacion = () => {
     ];
 
     return (
-        <div>
-            <h1>Matriculación</h1>
+        <div className="matriculacion-container">
+            <header className="matriculacion-header">
+                <h1 className="matriculacion-title">Matriculación</h1>
+                <div className="info-badge">
+                    <span className="badge-text">Período Activo</span>
+                </div>
+            </header>
             
-            <div>
-                <h3>Información Importante</h3>
-                <p>• Período de matriculación: 15/02/2025 - 28/02/2025</p>
-                <p>• Máximo de materias por cuatrimestre: 5 materias</p>
-                <p>• Verificar correlatividades antes de matricularte</p>
-            </div>
-
-            <section>
-                <h2>Tus Materias Matriculadas</h2>
-                <TablaReutilizable
-                    datos={materiasInscriptas}
-                    columnas={columnasInscriptas}
-                    loading={loading}
-                    vacioMensaje="No tienes materias matriculadas para este cuatrimestre"
-                />
+            <section className="info-section">
+                <div className="info-card">
+                    <h3>📋 Información Importante</h3>
+                    <ul className="info-list">
+                        <li>Período de matriculación: 15/02/2025 - 28/02/2025</li>
+                        <li>Máximo de materias por cuatrimestre: 5 materias</li>
+                        <li>Verificar correlatividades antes de matricularte</li>
+                    </ul>
+                </div>
             </section>
 
-            <section>
-                <h2>Materias Disponibles para Matriculación</h2>
-                <div>
-                    <input
-                        type="text"
-                        placeholder="Buscar materia o profesor..."
-                        value={filtro}
-                        onChange={(e) => setFiltro(e.target.value)}
+            <section className="inscripciones-section">
+                <div className="section-card">
+                    <h2>Tus Materias Matriculadas</h2>
+                    <TablaReutilizable
+                        datos={materiasInscriptas}
+                        columnas={columnasInscriptas}
+                        loading={loading}
+                        vacioMensaje="No tienes materias matriculadas para este cuatrimestre"
                     />
                 </div>
-                
-                <TablaReutilizable
-                    datos={materiasFiltradas}
-                    columnas={columnasDisponibles}
-                    loading={loading}
-                    vacioMensaje="No hay materias disponibles para matriculación"
-                />
             </section>
 
-            <div>
-                <div>
-                    <span>{materiasInscriptas.length}</span>
-                    <span>Materias Matriculadas</span>
+            <section className="disponibles-section">
+                <div className="section-card">
+                    <div className="section-header">
+                        <h2>Materias Disponibles para Matriculación</h2>
+                        <div className="search-container">
+                            <input
+                                type="text"
+                                placeholder="Buscar materia o profesor..."
+                                value={filtro}
+                                onChange={(e) => setFiltro(e.target.value)}
+                                className="search-input"
+                            />
+                        </div>
+                    </div>
+                    
+                    <TablaReutilizable
+                        datos={materiasFiltradas}
+                        columnas={columnasDisponibles}
+                        loading={loading}
+                        vacioMensaje="No hay materias disponibles para matriculación"
+                    />
                 </div>
-                <div>
-                    <span>{materiasDisponibles.filter(m => m.disponible).length}</span>
-                    <span>Materias Disponibles</span>
-                </div>
-                <div>
-                    <span>5</span>
-                    <span>Límite de Matriculación</span>
-                </div>
-            </div>
+            </section>
         </div>
     );
 };

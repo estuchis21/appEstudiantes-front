@@ -1,0 +1,236 @@
+/* ======================== */
+/* === DATOS PERSONALES === */
+/* ======================== */
+
+.datos-personales-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 30px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    min-height: calc(100vh - 80px);
+}
+
+.datos-personales-title {
+    text-align: center;
+    color: rgb(52, 47, 97);
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 40px;
+    position: relative;
+    padding-bottom: 15px;
+}
+
+.datos-personales-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 4px;
+    background: linear-gradient(135deg, rgb(59, 53, 107), rgb(52, 47, 97));
+    border-radius: 2px;
+}
+
+.datos-personales-content {
+    background: white;
+    border-radius: 15px;
+    padding: 40px;
+    margin-bottom: 30px;
+}
+
+.datos-item {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    margin-bottom: 15px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #f7f6f6 0%, #e1e5e9 100%);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+.datos-item:hover::before {
+    left: 100%;
+}
+
+.datos-item:hover {
+    transform: translateX(8px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.datos-label {
+    color: rgb(52, 47, 97);
+    font-weight: 600;
+    font-size: 1.1rem;
+    min-width: 150px;
+    margin-right: 20px;
+    text-transform: capitalize;
+    position: relative;
+    padding-left: 25px;
+}
+
+.datos-value {
+    color: #495057;
+    font-size: 1rem;
+    flex: 1;
+    padding: 8px 15px;
+    background: white;
+    border-radius: 6px;
+    border: 1px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.datos-item:hover .datos-value {
+    background: #f8f9fa;
+    border-color: rgb(52, 47, 97);
+}
+.flex-buttons{
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+.datos-editar-btn {
+    background: linear-gradient(135deg, rgb(59, 53, 107), rgb(52, 47, 97));
+    color: white;
+    border: none;
+    padding: 15px 40px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: block;
+    margin: 0 auto;
+    box-shadow: 0 4px 15px rgba(52, 47, 97, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+
+.datos-editar-btn:hover::before {
+    left: 100%;
+}
+
+.datos-editar-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(52, 47, 97, 0.4);
+}
+
+.datos-editar-btn:active {
+    transform: translateY(-1px);
+}
+
+/* Estados de edición */
+.datos-item.editing {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+    border-left-color: #ffc107;
+}
+
+.datos-value.editing {
+    background: white;
+    border: 2px solid #667eea;
+    color: #2c3e50;
+    font-weight: 500;
+}
+
+.datos-editar-btn.guardando {
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .datos-personales-container {
+        padding: 20px;
+        margin: 20px auto;
+    }
+    
+    .datos-personales-title {
+        font-size: 2rem;
+        margin-bottom: 30px;
+    }
+    
+    .datos-personales-content {
+        padding: 25px;
+    }
+    
+    .datos-item {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 15px;
+    }
+    
+    .datos-label {
+        min-width: auto;
+        margin-right: 0;
+        margin-bottom: 8px;
+        padding-left: 20px;
+    }
+    
+    .datos-value {
+        width: 100%;
+        margin-left: 0;
+    }
+    
+    .datos-editar-btn {
+        width: 100%;
+        max-width: 300px;
+    }
+}
+
+@media (max-width: 480px) {
+    .datos-personales-container {
+        padding: 15px;
+    }
+    
+    .datos-personales-title {
+        font-size: 1.8rem;
+    }
+    
+    .datos-personales-content {
+        padding: 20px;
+    }
+    
+    .datos-item {
+        padding: 12px;
+    }
+    
+    .datos-label {
+        font-size: 1rem;
+    }
+    
+    .datos-value {
+        font-size: 0.95rem;
+        padding: 6px 12px;
+    }
+    
+    .datos-editar-btn {
+        padding: 12px 30px;
+        font-size: 1rem;
+    }
+}
+
+/* Animaciones */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.datos-item {
+    animation: fadeInUp 0.5s ease forwards;
+}
+
+.datos-item:nth-child(1) { animation-delay: 0.1s; }
+.datos-item:nth-child(2) { animation-delay: 0.2s; }
+.datos-item:nth-child(3) { animation-delay: 0.3s; }
+.datos-item:nth-child(4) { animation-delay: 0.4s; }
+.datos-item:nth-child(5) { animation-delay: 0.5s; }
+.datos-item:nth-child(6) { animation-delay: 0.6s; }

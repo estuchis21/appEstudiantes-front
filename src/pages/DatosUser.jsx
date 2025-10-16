@@ -1,6 +1,8 @@
+// pages/DatosUser.jsx
 import React, { useState, useEffect } from "react";
 import { editDatos } from "../services/userService";
 import Swal from 'sweetalert2';
+import "../Styles/Datos.css"; 
 
 const DatosUser = () => {
   const [usuario, setUsuario] = useState(null);
@@ -8,6 +10,7 @@ const DatosUser = () => {
   const [editando, setEditando] = useState(false);
   const [cargando, setCargando] = useState(false);
 
+  // Campos editables
   const [formData, setFormData] = useState({
     Telefono: "",
     Correo: "",
@@ -25,7 +28,6 @@ const DatosUser = () => {
 
       if (usuarioStorage) {
         const usuarioData = JSON.parse(usuarioStorage);
-        console.log("👤 Usuario parseado:", usuarioData);
         setUsuario(usuarioData);
         setFormData({
           Telefono: usuarioData.Telefono || "",
@@ -209,145 +211,148 @@ const DatosUser = () => {
 
   if (!usuario) {
     return (
-      <div className="home-user-container">
+      <div className="datos-personales-container">
         <div className="cargando">Cargando datos del usuario...</div>
       </div>
     );
   }
 
   return (
-    <div className="home-user-container">
-      <div className="home-user-header">
-        <h1>Datos Personales</h1>
-        <p className="user-email">Gestión de información personal</p>
-      </div>
-
-      <div className="home-user-grid">
-        <div className="home-user-column">
-          <div className="home-user-card">
-            <h2>📊 Información Personal</h2>
-            <div className="datos-item">
-              <strong>Nombre:</strong>
-              <span>{usuario.Nombre}</span>
-            </div>
-            <div className="datos-item">
-              <strong>Documento:</strong>
-              <span>{usuario.Documento}</span>
-            </div>
-            <div className="datos-item">
-              <strong>Localidad:</strong>
-              <span>{usuario.Localidad || "No especificado"}</span>
-            </div>
-            <div className="datos-item">
-              <strong>Estado:</strong>
-              <span>{usuario.BloquearAutogestion === "0" ? "Activo" : "Bloqueado"}</span>
-            </div>
+    <div className="datos-personales-container">
+      <h1 className="datos-personales-title">Datos Personales</h1>
+      
+      <div className="datos-personales-content">
+        {/* Información Personal */}
+        <div className="datos-section">
+          <h2>📊 Información Personal</h2>
+          <div className="datos-item">
+            <strong className="datos-label">Nombre:</strong>
+            <span className="datos-value">{usuario.Nombre}</span>
           </div>
-
-          {carrera && (
-            <div className="home-user-card">
-              <h2>🎓 Información Académica</h2>
-              <div className="datos-item">
-                <strong>Carrera:</strong>
-                <span>{carrera.Nombre}</span>
-              </div>
-              <div className="datos-item">
-                <strong>Año de Ingreso:</strong>
-                <span>{carrera.Ingreso}</span>
-              </div>
-              <div className="datos-item">
-                <strong>Código de Carrera:</strong>
-                <span>{carrera.Codigo}</span>
-              </div>
-            </div>
-          )}
+          <div className="datos-item">
+            <strong className="datos-label">Documento:</strong>
+            <span className="datos-value">{usuario.Documento}</span>
+          </div>
+          <div className="datos-item">
+            <strong className="datos-label">Localidad:</strong>
+            <span className="datos-value">{usuario.Localidad || "No especificado"}</span>
+          </div>
+          <div className="datos-item">
+            <strong className="datos-label">Estado:</strong>
+            <span className="datos-value">
+              {usuario.BloquearAutogestion === "0" ? "Activo" : "Bloqueado"}
+            </span>
+          </div>
         </div>
 
-        <div className="home-user-column">
-          <div className="home-user-card">
-            <div className="card-header">
-              <h2>📞 Información de Contacto</h2>
-              {!editando && (
-                <button 
-                  type="button"
-                  className="Button-Login"
-                  onClick={() => setEditando(true)}
-                >
-                  ✏️ Editar
-                </button>
+        {/* Información Académica */}
+        {carrera && (
+          <div className="datos-section">
+            <h2>🎓 Información Académica</h2>
+            <div className="datos-item">
+              <strong className="datos-label">Carrera:</strong>
+              <span className="datos-value">{carrera.Nombre}</span>
+            </div>
+            <div className="datos-item">
+              <strong className="datos-label">Año de Ingreso:</strong>
+              <span className="datos-value">{carrera.Ingreso}</span>
+            </div>
+            <div className="datos-item">
+              <strong className="datos-label">Código de Carrera:</strong>
+              <span className="datos-value">{carrera.Codigo}</span>
+            </div>
+          </div>
+        )}
+
+        {/* Información de Contacto Editable */}
+        <div className="datos-section">
+          <h2>📞 Información de Contacto</h2>
+          <form onSubmit={handleSubmit}>
+            <div className="datos-item">
+              <strong className="datos-label">Teléfono:</strong>
+              {editando ? (
+                <input
+                  type="text"
+                  name="Telefono"
+                  value={formData.Telefono}
+                  onChange={handleInputChange}
+                  placeholder="Ej: 2364444444"
+                  className="datos-value editing"
+                />
+              ) : (
+                <span className="datos-value">
+                  {usuario.Telefono || "No especificado"}
+                </span>
               )}
             </div>
-            
-            <form onSubmit={handleSubmit}>
-              <div className="datos-item">
-                <strong>Teléfono:</strong>
-                {editando ? (
-                  <input
-                    type="text"
-                    name="Telefono"
-                    value={formData.Telefono}
-                    onChange={handleInputChange}
-                    placeholder="Ej: 2364444444"
-                    className="form-input"
-                  />
-                ) : (
-                  <span>{usuario.Telefono || "No especificado"}</span>
-                )}
-              </div>
 
-              <div className="datos-item">
-                <strong>Email:</strong>
-                {editando ? (
-                  <input
-                    type="email"
-                    name="Correo"
-                    value={formData.Correo}
-                    onChange={handleInputChange}
-                    placeholder="Ej: micorreo@instituto20.com.ar"
-                    className="form-input"
-                  />
-                ) : (
-                  <span>{usuario.Correo || "No especificado"}</span>
-                )}
-              </div>
+            <div className="datos-item">
+              <strong className="datos-label">Email:</strong>
+              {editando ? (
+                <input
+                  type="email"
+                  name="Correo"
+                  value={formData.Correo}
+                  onChange={handleInputChange}
+                  placeholder="Ej: micorreo@instituto20.com.ar"
+                  className="datos-value editing"
+                />
+              ) : (
+                <span className="datos-value">
+                  {usuario.Correo || "No especificado"}
+                </span>
+              )}
+            </div>
 
-              <div className="datos-item">
-                <strong>Dirección:</strong>
-                {editando ? (
-                  <input
-                    type="text"
-                    name="Domicilio"
-                    value={formData.Domicilio}
-                    onChange={handleInputChange}
-                    placeholder="Ej: Almafuerte 300"
-                    className="form-input"
-                  />
-                ) : (
-                  <span>{usuario.Domicilio || "No especificado"}</span>
-                )}
-              </div>
+            <div className="datos-item">
+              <strong className="datos-label">Dirección:</strong>
+              {editando ? (
+                <input
+                  type="text"
+                  name="Domicilio"
+                  value={formData.Domicilio}
+                  onChange={handleInputChange}
+                  placeholder="Ej: Almafuerte 300"
+                  className="datos-value editing"
+                />
+              ) : (
+                <span className="datos-value">
+                  {usuario.Domicilio || "No especificado"}
+                </span>
+              )}
+            </div>
 
-              {editando && (
-                <div className="botones-container">
+            <div className="flex-buttons">
+              {!editando ? (
+                <button 
+                  type="button"
+                  className="datos-editar-btn"
+                  onClick={() => setEditando(true)}
+                >
+                  ✏️ Editar Datos
+                </button>
+              ) : (
+                <>
                   <button 
                     type="submit" 
-                    className="cta-button"
+                    className={`datos-editar-btn ${cargando ? 'guardando' : ''}`}
                     disabled={cargando}
                   >
-                    {cargando ? "🔄 Procesando..." : "💾 Guardar Cambios"}
+                    {cargando ? "🔄 Guardando..." : "💾 Guardar Cambios"}
                   </button>
                   <button 
                     type="button"
-                    className="cta-secondary"
+                    className="datos-editar-btn"
                     onClick={cancelarEdicion}
                     disabled={cargando}
+                    style={{background: 'linear-gradient(135deg, #6c757d, #495057)'}}
                   >
                     ❌ Cancelar
                   </button>
-                </div>
+                </>
               )}
-            </form>
-          </div>
+            </div>
+          </form>
         </div>
       </div>
     </div>

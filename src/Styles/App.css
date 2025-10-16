@@ -1,0 +1,80 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
+
+.App, body {
+    margin: 0 auto;
+    padding-top: 20px;
+    font-family: 'Rubik', sans-serif;
+}
+
+.main-content {
+    padding: 20px;
+    min-height: calc(100vh - 80px);
+}
+
+/* ================================= */
+/* ===== BOTONES REUTILIZABLES ===== */
+/* ================================= */
+
+.Button-Login, .Button-Menu {
+    border: 0px;
+    font-weight: bolder;
+    background-color: white;
+    color: rgb(26, 26, 58);
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.Button-Login {
+    font-size: 15px;
+    padding: 15px;
+}
+
+.Button-Menu {
+    font-size: 20px;
+    padding: 10px 15px;
+}
+
+.Button-Login:hover, .Button-Menu:hover {
+    background-color: #f0f0f0;
+}
+
+/* ===== COMPONENTES DE TARJETAS REUTILIZABLES ===== */
+.feature-card,
+.seccion-card,
+.home-user-card,
+.final-item,
+.noticia-item {
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    background-color: #ffffff;
+}
+
+.feature-card,
+.seccion-card,
+.home-user-card {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.feature-card:hover,
+.seccion-card:hover {
+    transform: translateY(-5px);
+}
+
+/* ===== TIPOGRAFÍA Y COLORES REUTILIZABLES ===== */
+.hero-title,
+.section-title,
+.home-user-header h1,
+.home-user-card h2 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+.hero-subtitle,
+.feature-desc,
+.seccion-desc,
+.user-email,
+.contacto-item p {
+    color: #7f8c8d;
+    line-height: 1.6;
+}
