@@ -17,12 +17,15 @@ const LoginPage = () => {
         Contrasena: Contrasena.trim(),
       });
 
-      const usuario = response.datosAlumno;
+      const userData = {
+          usuario: response.datosAlumno,
+          carrera: response.datosCarrera  
+        };
 
-      if (usuario) {
+      if (response.datosAlumno) {
         localStorage.setItem("isLoggedIn", "true");
-        localStorage.setItem("usuario", JSON.stringify(usuario));
-
+        localStorage.setItem("userData", JSON.stringify(userData));
+        
         navigate("/");
         window.location.reload();
       } else {

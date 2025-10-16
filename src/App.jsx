@@ -11,6 +11,8 @@ import Analitico from './pages/Analitico';
 import Asistencias from './pages/Asistencia';
 import InscripcionFinales from './pages/Finales';
 import Matriculacion from './pages/Matriculacion';
+import MisFinales from './pages/MisFinales';
+
 // En App.js
 import './styles/App.css';
 import './styles/Header.css';
@@ -49,6 +51,7 @@ const [loginSuccessful, setLoginSuccessful] = useState(
             <Route path="/Analitico" element={<Analitico />} />
             <Route path="/Asistencia" element={<Asistencias />} />
             <Route path="/Finales" element={<InscripcionFinales />} />
+            <Route path="/MisFinales" element={<MisFinales />} />
             <Route path="/Matriculacion" element={<Matriculacion />} />
           </Routes>
         </div>

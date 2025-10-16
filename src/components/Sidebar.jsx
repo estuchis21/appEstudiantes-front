@@ -23,6 +23,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
 
     const menuItems = [
         { label: "Datos personales", action: () => navigate('/DatosPersonales') },
+        { label: "Mis finales", action: () => navigate('/MisFinales') },
         { label: "Asistencias", action: () => navigate('/Asistencia') },
         { label: "Analitico", action: () => navigate('/Analitico') },
         { label: "Inscribirse a finales", action: () => navigate('/Finales') },

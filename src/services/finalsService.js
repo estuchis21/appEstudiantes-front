@@ -35,3 +35,14 @@ export const registerStudentToFinal = async (Mesa, Alumno, Cursada, Libre) => {
     throw error;
   }
 };
+
+export const getFinalExamsTaken = async (permiso, carrera) => {
+  try {
+    return await apiClient(`/session/finales-rendidos/${permiso}/${carrera}`, {
+      method: 'GET',
+    });
+  } catch (error) {
+    console.error('Error al obtener los finales rendidos', error);
+    throw error;
+  }
+};
