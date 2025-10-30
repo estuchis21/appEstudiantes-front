@@ -24,7 +24,7 @@ const MatriculacionPage = () => {
 
     getCarrerasDelAlumno(usuario.Permiso)
       .then((data) => setCarreras(data))
-      .catch((err) => console.error("Error cargando carreras:", err));
+      .catch((err) => alert("Error cargando carreras: " + err));
   }, []);
 
   // Consultar asignaturas pendientes
@@ -45,19 +45,18 @@ const MatriculacionPage = () => {
     try {
       const response = await getAsignaturasPendientes(permiso, carreraSeleccionada);
 
-      // 🔹 Asegurarnos de que cada asignatura tenga código, división y profesor
+      // Asegurarnos de que cada asignatura tenga código, división y profesor
       const asignaturasConCodigo = response.map((a, index) => ({
         ...a,
-        Codigo: a.Codigo || a.Materia || 490000 + index, // si no tiene código, generamos uno temporal
+        Codigo: a.Codigo || a.Materia || 490000 + index,
         Division: a.Division || 1,
         Profesor: a.Profesor || 447
       }));
 
-      console.log("Asignaturas pendientes con código:", asignaturasConCodigo);
       setAsignaturasPendientes(asignaturasConCodigo);
+      alert("Asignaturas cargadas correctamente.");
     } catch (err) {
-      console.error("Error consultando asignaturas:", err);
-      alert("Error al consultar las asignaturas.");
+      alert("Error al consultar las asignaturas: " + err);
     } finally {
       setCargando(false);
     }
@@ -65,11 +64,8 @@ const MatriculacionPage = () => {
 
   // Matricular asignatura
   const handleMatricular = async (asignatura) => {
-    console.log("Intentando matricular:", asignatura);
-
     if (!asignatura.Codigo) {
-      alert("No se puede matricular. La asignatura no tiene código definido.");
-      console.log("Asignatura sin código:", asignatura);
+      alert("No se puede matricular. La asignatura no tiene código definido:\n" + JSON.stringify(asignatura, null, 2));
       return;
     }
 
@@ -83,14 +79,9 @@ const MatriculacionPage = () => {
 
     try {
       const response = await registerMatriculation(payload);
-      console.log("Respuesta matriculación:", response);
-      alert(response.mensaje);
-
-      // Refrescar lista
-      await handleConsultar();
+      alert(response.mensaje || "Matriculación realizada con éxito.");
     } catch (err) {
-      console.error("Error matriculando:", err);
-      alert("Error al matricular. Revisá la consola.");
+      alert("Error al matricular: " + err);
     }
   };
 
