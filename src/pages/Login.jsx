@@ -7,9 +7,11 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const [Documento, setDocumento] = useState("");
   const [Contrasena, setContrasena] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     try {
       const response = await loginService({
@@ -17,29 +19,25 @@ const LoginPage = () => {
         Contrasena: Contrasena.trim(),
       });
 
-      // VER TODO EL RESPONSE
       console.log("📦 Response completo del login:", response);
 
-      const usuario = response.datosAlumno;
-
-      if (usuario) {
-        // VERIFICAR EL OBJETO DEL USUARIO
-        console.log("✅ Usuario recibido del backend:", usuario);
-
-        // Guardar login en localStorage
+      if (response.permiso) {
+        // Guardamos solo el permiso del usuario
         localStorage.setItem("isLoggedIn", "true");
-        localStorage.setItem("usuario", JSON.stringify(usuario));
+        localStorage.setItem("permiso", response.permiso);
 
-        console.log("🔎 Usuario guardado en localStorage:", localStorage.getItem("usuario"));
+        console.log("🔎 Permiso guardado en localStorage:", response.permiso);
 
-        // Redirigir o refrescar
+        // Redirigir al home o dashboard
         navigate("/");
       } else {
-        alert("Credenciales incorrectas");
+        alert(response.error || "Credenciales incorrectas");
       }
     } catch (err) {
       console.error("❌ Error en el login:", err);
-      alert(err.message);
+      alert(err?.response?.data?.error || err.message || "Error en el login");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -67,8 +65,8 @@ const LoginPage = () => {
             autoComplete="current-password"
           />
         </div>
-        <button type="submit" className="login-button">
-          Ingresar
+        <button type="submit" className="login-button" disabled={loading}>
+          {loading ? "Ingresando..." : "Ingresar"}
         </button>
       </form>
     </div>

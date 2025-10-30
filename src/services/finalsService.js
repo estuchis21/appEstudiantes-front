@@ -35,3 +35,14 @@ export const registerStudentToFinal = async (Mesa, Alumno, Cursada, Libre) => {
     throw error;
   }
 };
+
+export const obtenerAsignaturasPendientes = async (permiso, carrera) => {
+  try {
+    const response = await api.get(`/asignaturasPendientes/${permiso}/${carrera}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error al obtener asignaturas pendientes:', error);
+    throw error;
+  }
+};
+
