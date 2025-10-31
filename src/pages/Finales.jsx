@@ -1,217 +1,258 @@
-import React, { useState, useEffect } from "react";
-import TablaReutilizable from "../components/Tabla";
+import { useState, useEffect } from "react";
+import {
+  getFinalExamsByStudentAndCareer,
+  registerStudentToFinal,
+  deleteFinalInscription,
+} from "../services/finalsService";
+import { useMediaQuery } from "react-responsive";
+import {
+  FaCalendarAlt,
+  FaClock,
+  FaMapMarkerAlt,
+  FaUserGraduate,
+} from "react-icons/fa";
 
-const InscripcionFinales = () => {
-    const [materiasDisponibles, setMateriasDisponibles] = useState([]);
-    const [materiasInscriptas, setMateriasInscriptas] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [filtro, setFiltro] = useState("");
+const FinalExams = () => {
+  const [finals, setFinals] = useState([]);
+  const permiso = localStorage.getItem("permiso");
+  const codigo = localStorage.getItem("codigoCarrera");
+  const nombreCarrera = formatCarreraName(
+    localStorage.getItem("nombreCarrera")
+  );
 
-    useEffect(() => {
-        setTimeout(() => {
-            setMateriasDisponibles([
-                { 
-                    id: 1, 
-                    materia: "Matemática I", 
-                    profesor: "Dr. García", 
-                    fecha: "15/12/2024", 
-                    horario: "09:00",
-                    aula: "A-201",
-                    cupos: 5,
-                    disponible: true
-                },
-                { 
-                    id: 2, 
-                    materia: "Álgebra", 
-                    profesor: "Mg. López", 
-                    fecha: "18/12/2024", 
-                    horario: "14:00",
-                    aula: "B-105",
-                    cupos: 3,
-                    disponible: true
-                },
-                { 
-                    id: 3, 
-                    materia: "Geometría", 
-                    profesor: "Lic. Martínez", 
-                    fecha: "20/12/2024", 
-                    horario: "10:30",
-                    aula: "C-302",
-                    cupos: 0,
-                    disponible: false
-                },
-                { 
-                    id: 4, 
-                    materia: "Pedagogía", 
-                    profesor: "Dra. Rodríguez", 
-                    fecha: "22/12/2024", 
-                    horario: "16:00",
-                    aula: "A-101",
-                    cupos: 8,
-                    disponible: true
-                }
-            ]);
+  const isMobile = useMediaQuery({ maxWidth: 768 });
 
-            setMateriasInscriptas([
-                { 
-                    id: 5, 
-                    materia: "Historia de la Educación", 
-                    profesor: "Prof. González", 
-                    fecha: "12/12/2024", 
-                    horario: "11:00",
-                    aula: "D-205"
-                }
-            ]);
-            
-            setLoading(false);
-        }, 1000);
-    }, []);
+  // Función para darle formato al nombre de la carrera
+  function formatCarreraName(nombre) {
+    const palabrasMin = ["en", "de", "y"];
+    return nombre
+      .toLowerCase()
+      .split(" ")
+      .map((palabra) =>
+        palabrasMin.includes(palabra)
+          ? palabra
+          : palabra.charAt(0).toUpperCase() + palabra.slice(1)
+      )
+      .join(" ");
+  }
 
-    const inscribirMateria = (materia) => {
-        if (materia.cupos > 0) {
-            const nuevasDisponibles = materiasDisponibles.filter(m => m.id !== materia.id);
-            setMateriasDisponibles(nuevasDisponibles);
-            setMateriasInscriptas([...materiasInscriptas, materia]);
-            alert(`✅ Te has inscripto correctamente a ${materia.materia}`);
-        }
+  // Función para mostrar abreviatura en móvil
+  const getAbreviatura = () => {
+    return "Tec. Sup. en Análisis, Desarrollo y Prog. de Aplicaciones";
+  };
+
+  // Cargar exámenes cuando el componente se monta
+  useEffect(() => {
+    const fetchFinalExams = async () => {
+      try {
+        const result = await getFinalExamsByStudentAndCareer(permiso, codigo);
+        setFinals(result);
+      } catch (error) {
+        console.error("Error al obtener los exámenes:", error);
+      }
     };
 
-    const desinscribirMateria = (materia) => {
-        const nuevasInscriptas = materiasInscriptas.filter(m => m.id !== materia.id);
-        setMateriasInscriptas(nuevasInscriptas);
-        const materiaActualizada = { ...materia, cupos: materia.cupos - 1 };
-        setMateriasDisponibles([...materiasDisponibles, materiaActualizada]);
-        alert(`❌ Te has desinscripto de ${materia.materia}`);
-    };
+    fetchFinalExams();
+  }, [permiso, codigo]);
 
-    const materiasFiltradas = materiasDisponibles.filter(materia =>
-        materia.materia.toLowerCase().includes(filtro.toLowerCase()) ||
-        materia.profesor.toLowerCase().includes(filtro.toLowerCase())
-    );
+  const handleRegister = async (final) => {
+    try {
+      await registerStudentToFinal(
+        final.Numero,
+        permiso,
+        final.Curso,
+        final.Libre
+      );
+      alert("Inscripción realizada con éxito");
+      setFinals((prev) =>
+        prev.map((f) =>
+          f.Numero === final.Numero ? { ...f, Inscripto: 1 } : f
+        )
+      );
+    } catch (error) {
+      alert("Error al inscribirse al final");
+      console.error(error);
+    }
+  };
 
-    const columnasDisponibles = [
-        { 
-            key: "materia", 
-            header: "Materia"
-        },
-        { 
-            key: "profesor", 
-            header: "Profesor" 
-        },
-        { 
-            key: "fecha", 
-            header: "Fecha y Hora",
-            render: (fila) => `${fila.fecha} - ${fila.horario}`
-        },
-        { 
-            key: "aula", 
-            header: "Aula"
-        },
-        { 
-            key: "cupos", 
-            header: "Cupos",
-            render: (fila) => fila.cupos > 0 ? fila.cupos : "Sin cupos"
-        },
-        { 
-            key: "acciones", 
-            header: "Acciones",
-            render: (fila) => (
-                <button
-                    onClick={() => inscribirMateria(fila)}
-                    disabled={!fila.disponible}
-                >
-                    {fila.disponible ? 'Inscribirse' : 'Sin cupos'}
-                </button>
-            )
-        }
-    ];
+  const handleDeregister = async (final) => {
+    try {
+      await deleteFinalInscription(final.Numero, permiso);
+      alert("Borrado de inscripción exitoso");
+      setFinals((prev) =>
+        prev.map((f) =>
+          f.Numero === final.Numero ? { ...f, Inscripto: 0 } : f
+        )
+      );
+    } catch (error) {
+      alert("Error al borrarse del final");
+      console.error(error);
+    }
+  };
 
-    const columnasInscriptas = [
-        { 
-            key: "materia", 
-            header: "Materia"
-        },
-        { 
-            key: "profesor", 
-            header: "Profesor" 
-        },
-        { 
-            key: "fecha", 
-            header: "Fecha y Hora",
-            render: (fila) => `${fila.fecha} - ${fila.horario}`
-        },
-        { 
-            key: "aula", 
-            header: "Aula"
-        },
-        { 
-            key: "acciones", 
-            header: "Acciones",
-            render: (fila) => (
-                <button
-                    onClick={() => desinscribirMateria(fila)}
-                >
-                    Desinscribirse
-                </button>
-            )
-        }
-    ];
+  const materiasDisponibles = finals.filter((final) => final.Inscripto === 0);
+  const materiasInscriptas = finals.filter((final) => final.Inscripto === 1);
 
-    return (
-        <div>
-            <h1>Inscripción a Finales</h1>
-            
-            <div>
-                <h3>Información Importante</h3>
-                <p>• Período de inscripción: 01/12/2024 - 10/12/2024</p>
-                <p>• Máximo de materias por período: 3 materias</p>
-            </div>
-
-            <section>
-                <h2>Tus Inscripciones Actuales</h2>
-                <TablaReutilizable
-                    datos={materiasInscriptas}
-                    columnas={columnasInscriptas}
-                    loading={loading}
-                    vacioMensaje="No tienes materias inscriptas para finales"
-                />
-            </section>
-
-            <section>
-                <h2>Materias Disponibles para Finales</h2>
-                <div>
-                    <input
-                        type="text"
-                        placeholder="Buscar materia o profesor..."
-                        value={filtro}
-                        onChange={(e) => setFiltro(e.target.value)}
-                    />
-                </div>
-                
-                <TablaReutilizable
-                    datos={materiasFiltradas}
-                    columnas={columnasDisponibles}
-                    loading={loading}
-                    vacioMensaje="No hay materias disponibles para finales"
-                />
-            </section>
-
-            <div>
-                <div>
-                    <span>{materiasInscriptas.length}</span>
-                    <span>Materias Inscriptas</span>
-                </div>
-                <div>
-                    <span>{materiasDisponibles.filter(m => m.disponible).length}</span>
-                    <span>Materias Disponibles</span>
-                </div>
-                <div>
-                    <span>3</span>
-                    <span>Límite de Inscripciones</span>
-                </div>
-            </div>
+  return (
+    <div className="home-user-container">
+      <div className="home-user-header">
+        <h1>{isMobile ? getAbreviatura(nombreCarrera) : nombreCarrera}</h1>
+        <div className="user-info-container">
+          <div className="user-info-card">
+            <span>📚 Exámenes Finales</span>
+          </div>
         </div>
-    );
+      </div>
+
+      <div className="home-user-grid">
+        <div className="home-user-column">
+          <div className="home-user-card">
+            <h2>
+              <span>✅</span> Materias Inscriptas ({materiasInscriptas.length})
+            </h2>
+            {materiasInscriptas.length > 0 ? (
+              materiasInscriptas.map((final) => (
+                <div key={final.Numero} className="final-item">
+                  <strong>{final.Abreviatura}</strong>
+                  <div className="final-info">
+                    <span className="final-aula">
+                      <FaCalendarAlt /> {final.Fecha}
+                    </span>
+                    <span className="final-aula">
+                      <FaClock /> {final.Hora}
+                    </span>
+                  </div>
+                  <div className="final-info">
+                    <span className="final-aula">
+                      <FaMapMarkerAlt /> {final.Lugar}
+                    </span>
+                    <span className="final-aula">
+                      <FaUserGraduate /> {final.Titular}
+                    </span>
+                  </div>
+                  <div className="mt-3">
+                    <button
+                      className="cta-button"
+                      onClick={() => handleDeregister(final)}
+                      style={{
+                        backgroundColor: "#dc3545",
+                        padding: "8px 20px",
+                        fontSize: "0.9rem",
+                      }}
+                    >
+                      Desinscribirse
+                    </button>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-center text-muted py-4">
+                <p>No hay materias inscriptas</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="home-user-column">
+          <div className="home-user-card">
+            <h2>
+              <span>📖</span> Materias Disponibles ({materiasDisponibles.length}
+              )
+            </h2>
+            {materiasDisponibles.length > 0 ? (
+              materiasDisponibles.map((final) => (
+                <div
+                  key={final.Numero}
+                  className="final-item"
+                  style={{
+                    borderLeftColor:
+                      final.Libre === "1" ? "#ffc107" : "#667eea",
+                    opacity:
+                      final.Asistencia === "0" || final.PerdioTurno === "1"
+                        ? 0.6
+                        : 1,
+                  }}
+                >
+                  <strong>
+                    {final.Abreviatura}
+                    {final.Libre === "1" && (
+                      <span
+                        style={{
+                          marginLeft: "10px",
+                          fontSize: "0.8rem",
+                          color: "#ffc107",
+                          backgroundColor: "#fff3cd",
+                          padding: "2px 8px",
+                          borderRadius: "12px",
+                        }}
+                      >
+                        Libre
+                      </span>
+                    )}
+                  </strong>
+                  <div className="final-info">
+                    <span className="final-aula">
+                      <FaCalendarAlt /> {final.Fecha}
+                    </span>
+                    <span className="final-aula">
+                      <FaClock /> {final.Hora}
+                    </span>
+                  </div>
+                  <div className="final-info">
+                    <span className="final-aula">
+                      <FaMapMarkerAlt /> {final.Lugar}
+                    </span>
+                    <span className="final-aula">
+                      <FaUserGraduate /> {final.Titular}
+                    </span>
+                  </div>
+                  <div className="mt-3">
+                    <button
+                      className={
+                        final.Libre === "1" ? "cta-primary" : "cta-button"
+                      }
+                      onClick={() => handleRegister(final)}
+                      disabled={
+                        final.Asistencia === "0" || final.PerdioTurno === "1"
+                      }
+                      style={{
+                        padding: "8px 20px",
+                        fontSize: "0.9rem",
+                        backgroundColor:
+                          final.Libre === "1" ? "#ffc107" : "#667eea",
+                        color: final.Libre === "1" ? "#000" : "#fff",
+                        border: final.Libre === "1" ? "none" : "none",
+                        cursor:
+                          final.Asistencia === "0" || final.PerdioTurno === "1"
+                            ? "not-allowed"
+                            : "pointer",
+                      }}
+                    >
+                      {final.Libre === "1"
+                        ? "Inscribirse (Libre)"
+                        : "Inscribirse"}
+                    </button>
+                    {(final.Asistencia === "0" ||
+                      final.PerdioTurno === "1") && (
+                      <small className="text-muted d-block mt-2">
+                        {final.Asistencia === "0"
+                          ? "No tiene asistencia suficiente"
+                          : "Perdió el turno anterior"}
+                      </small>
+                    )}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-center text-muted py-4">
+                <p>No hay materias disponibles</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
 
-export default InscripcionFinales;
+export default FinalExams;
