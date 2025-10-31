@@ -46,7 +46,8 @@ const [loginSuccessful, setLoginSuccessful] = useState(
         {loginSuccessful && <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />}
         <div className='main-content'>
           <Routes>
-            <Route path="/" element={loginSuccessful ? <HomeUser  /> : <LoginPage /> } />
+            <Route path="/" element={loginSuccessful ? <HomeUser /> : <LoginPage/>} />
+            <Route path="/Login" element={<LoginPage />} />
             <Route path="/DatosPersonales" element={<DatosPersonales />} />
             <Route path="/Analitico" element={<Analitico />} />
             <Route path="/Asistencia" element={<Asistencias />} />

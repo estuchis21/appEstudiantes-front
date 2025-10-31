@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { getFinalExamsTaken } from "../services/finalsService";
-import "../Styles/Finales.css";
+import "../Styles/MisFinales.css";
 
 const MisFinales = () => {
   const [finalesRendidos, setFinalesRendidos] = useState([]);
@@ -187,7 +187,7 @@ const MisFinales = () => {
                     <div className="info-item">
                       <strong>Estado:</strong>
                       <span className={`estado ${final.Nota >= 4 ? 'estado-aprobado' : 'estado-desaprobado'}`}>
-                        {final.Nota >= 4 ? "✅ Aprobado" : "❌ Desaprobado"}
+                        {final.Nota >= 4 ? "Aprobado" : "Desaprobado"}
                       </span>
                     </div>
                     <div className="info-item">

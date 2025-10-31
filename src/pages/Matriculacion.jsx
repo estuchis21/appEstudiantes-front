@@ -1,204 +1,156 @@
-import React, { useState, useEffect } from "react";
-import TablaReutilizable from "../components/Tabla";
+import { useEffect, useState } from "react";
 import "../Styles/Matriculacion.css";
+import {
+  getAsignaturasPendientes,
+  getCarrerasDelAlumno,
+  registerMatriculation
+} from "../services/matriculationService";
 
-const Matriculacion = () => {
-    const [materiasDisponibles, setMateriasDisponibles] = useState([]);
-    const [materiasInscriptas, setMateriasInscriptas] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [filtro, setFiltro] = useState("");
+const MatriculacionPage = () => {
+  const [carreras, setCarreras] = useState([]);
+  const [carreraSeleccionada, setCarreraSeleccionada] = useState("");
+  const [permiso, setPermiso] = useState(null);
+  const [asignaturasPendientes, setAsignaturasPendientes] = useState([]);
+  const [cargando, setCargando] = useState(false);
 
-    useEffect(() => {
-        setTimeout(() => {
-            setMateriasDisponibles([
-                { 
-                    id: 1, 
-                    materia: "Matemática II", 
-                    profesor: "Dr. García", 
-                    horario: "Lunes y Miércoles 09:00-11:00",
-                    aula: "A-201",
-                    cupos: 15,
-                    disponible: true
-                },
-                { 
-                    id: 2, 
-                    materia: "Física I", 
-                    profesor: "Mg. López", 
-                    horario: "Martes y Jueves 14:00-16:00",
-                    aula: "B-105",
-                    cupos: 12,
-                    disponible: true
-                },
-                { 
-                    id: 3, 
-                    materia: "Programación", 
-                    profesor: "Lic. Martínez", 
-                    horario: "Lunes y Viernes 10:30-12:30",
-                    aula: "Lab-302",
-                    cupos: 0,
-                    disponible: false
-                },
-                { 
-                    id: 4, 
-                    materia: "Inglés Técnico", 
-                    profesor: "Dra. Rodríguez", 
-                    horario: "Miércoles 16:00-18:00",
-                    aula: "A-101",
-                    cupos: 20,
-                    disponible: true
-                }
-            ]);
+  // Obtener usuario logueado y sus carreras
+  useEffect(() => {
+    const usuario = JSON.parse(localStorage.getItem("usuario"));
+    if (!usuario || !usuario.Permiso) {
+      alert("No se encontró información válida del usuario. Por favor logueate.");
+      return;
+    }
 
-            setMateriasInscriptas([
-                { 
-                    id: 5, 
-                    materia: "Matemática I", 
-                    profesor: "Prof. González", 
-                    horario: "Lunes y Miércoles 08:00-10:00",
-                    aula: "D-205"
-                }
-            ]);
-            
-            setLoading(false);
-        }, 1000);
-    }, []);
+    setPermiso(usuario.Permiso);
 
-    const inscribirMateria = (materia) => {
-        if (materia.cupos > 0 && materiasInscriptas.length < 5) {
-            const nuevasDisponibles = materiasDisponibles.filter(m => m.id !== materia.id);
-            setMateriasDisponibles(nuevasDisponibles);
-            setMateriasInscriptas([...materiasInscriptas, materia]);
-            alert(`✅ Te has matriculado correctamente en ${materia.materia}`);
-        } else if (materiasInscriptas.length >= 5) {
-            alert("❌ Has alcanzado el límite máximo de 5 materias por cuatrimestre");
-        }
+    getCarrerasDelAlumno(usuario.Permiso)
+      .then((data) => setCarreras(data))
+      .catch((err) => alert("Error cargando carreras: " + err));
+  }, []);
+
+  // Consultar asignaturas pendientes
+  const handleConsultar = async (e) => {
+    if (e) e.preventDefault();
+
+    if (!carreraSeleccionada) {
+      alert("Por favor, seleccioná una carrera.");
+      return;
+    }
+
+    if (!permiso) {
+      alert("No se puede consultar asignaturas sin usuario logueado.");
+      return;
+    }
+
+    setCargando(true);
+    try {
+      const response = await getAsignaturasPendientes(permiso, carreraSeleccionada);
+
+      // Asegurarnos de que cada asignatura tenga código, división y profesor
+      const asignaturasConCodigo = response.map((a, index) => ({
+        ...a,
+        Codigo: a.Codigo || a.Materia || 490000 + index,
+        Division: a.Division || 1,
+        Profesor: a.Profesor || 447
+      }));
+
+      setAsignaturasPendientes(asignaturasConCodigo);
+      alert("Asignaturas cargadas correctamente.");
+    } catch (err) {
+      alert("Error al consultar las asignaturas: " + err);
+    } finally {
+      setCargando(false);
+    }
+  };
+
+  // Matricular asignatura
+  const handleMatricular = async (asignatura) => {
+    if (!asignatura.Codigo) {
+      alert("No se puede matricular. La asignatura no tiene código definido:\n" + JSON.stringify(asignatura, null, 2));
+      return;
+    }
+
+    const payload = {
+      Alumno: permiso,
+      Materia: asignatura.Codigo,
+      Division: asignatura.Division,
+      Libre: false,
+      Profesor: asignatura.Profesor
     };
 
-    const desinscribirMateria = (materia) => {
-        const nuevasInscriptas = materiasInscriptas.filter(m => m.id !== materia.id);
-        setMateriasInscriptas(nuevasInscriptas);
-        const materiaActualizada = { ...materia, cupos: (materia.cupos || 0) + 1 };
-        setMateriasDisponibles([...materiasDisponibles, materiaActualizada]);
-        alert(`❌ Te has desmatriculado de ${materia.materia}`);
-    };
+    try {
+      const response = await registerMatriculation(payload);
+      alert(response.mensaje || "Matriculación realizada con éxito.");
+    } catch (err) {
+      alert("Error al matricular: " + err);
+    }
+  };
 
-    const materiasFiltradas = materiasDisponibles.filter(materia =>
-        materia.materia.toLowerCase().includes(filtro.toLowerCase()) ||
-        materia.profesor.toLowerCase().includes(filtro.toLowerCase())
-    );
-
-    const columnasDisponibles = [
-        { 
-            key: "materia", 
-            header: "Materia"
-        },
-        { 
-            key: "profesor", 
-            header: "Profesor" 
-        },
-        { 
-            key: "horario", 
-            header: "Horario"
-        },
-        { 
-            key: "acciones", 
-            header: "Acciones",
-            render: (fila) => (
-                <button
-                    className={`btn-matricular ${!fila.disponible ? 'btn-disabled' : ''}`}
-                    onClick={() => inscribirMateria(fila)}
-                    disabled={!fila.disponible || materiasInscriptas.length >= 5}
-                >
-                    {fila.disponible ? 'Matricularse' : 'Sin cupos'}
-                </button>
-            )
-        }
-    ];
-
-    const columnasInscriptas = [
-        { 
-            key: "materia", 
-            header: "Materia"
-        },
-        { 
-            key: "profesor", 
-            header: "Profesor" 
-        },
-        { 
-            key: "horario", 
-            header: "Horario"
-        },
-        { 
-            key: "acciones", 
-            header: "Acciones",
-            render: (fila) => (
-                <button
-                    className="btn-desmatricular"
-                    onClick={() => desinscribirMateria(fila)}
-                >
-                    Desmatricularse
-                </button>
-            )
-        }
-    ];
-
+  if (!permiso) {
     return (
-        <div className="matriculacion-container">
-            <header className="matriculacion-header">
-                <h1 className="matriculacion-title">Matriculación</h1>
-                <div className="info-badge">
-                    <span className="badge-text">Período Activo</span>
-                </div>
-            </header>
-            
-            <section className="info-section">
-                <div className="info-card">
-                    <h3>📋 Información Importante</h3>
-                    <ul className="info-list">
-                        <li>Período de matriculación: 15/02/2025 - 28/02/2025</li>
-                        <li>Máximo de materias por cuatrimestre: 5 materias</li>
-                        <li>Verificar correlatividades antes de matricularte</li>
-                    </ul>
-                </div>
-            </section>
-
-            <section className="inscripciones-section">
-                <div className="section-card">
-                    <h2>Tus Materias Matriculadas</h2>
-                    <TablaReutilizable
-                        datos={materiasInscriptas}
-                        columnas={columnasInscriptas}
-                        loading={loading}
-                        vacioMensaje="No tienes materias matriculadas para este cuatrimestre"
-                    />
-                </div>
-            </section>
-
-            <section className="disponibles-section">
-                <div className="section-card">
-                    <div className="section-header">
-                        <h2>Materias Disponibles para Matriculación</h2>
-                        <div className="search-container">
-                            <input
-                                type="text"
-                                placeholder="Buscar materia o profesor..."
-                                value={filtro}
-                                onChange={(e) => setFiltro(e.target.value)}
-                                className="search-input"
-                            />
-                        </div>
-                    </div>
-                    
-                    <TablaReutilizable
-                        datos={materiasFiltradas}
-                        columnas={columnasDisponibles}
-                        loading={loading}
-                        vacioMensaje="No hay materias disponibles para matriculación"
-                    />
-                </div>
-            </section>
-        </div>
+      <div style={{ textAlign: "center", marginTop: 50 }}>
+        <h2>No hay usuario logueado</h2>
+        <p>Por favor, inicia sesión para acceder a esta página.</p>
+      </div>
     );
+  }
+
+  return (
+    <div style={{ maxWidth: 600, margin: "0 auto", padding: "20px" }}>
+      <h2>📘 Consultar Asignaturas Pendientes</h2>
+
+      <form onSubmit={handleConsultar} style={{ marginBottom: "20px" }}>
+        <div>
+          <label>Seleccioná tu carrera:</label>
+          <select
+            value={carreraSeleccionada}
+            onChange={(e) => setCarreraSeleccionada(e.target.value)}
+            required
+          >
+            <option value="">-- Seleccionar --</option>
+            {carreras.map((c) => (
+              <option key={c.Codigo} value={c.Codigo}>
+                {c.Nombre}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <button type="submit" disabled={cargando}>
+          {cargando ? "Cargando..." : "Consultar"}
+        </button>
+      </form>
+
+      <h3>Asignaturas Pendientes</h3>
+      {asignaturasPendientes.length === 0 ? (
+        <p>No hay asignaturas pendientes o no se consultó ninguna carrera aún.</p>
+      ) : (
+        <ul>
+          {asignaturasPendientes.map((a) => (
+            <li key={a.Codigo} style={{ marginBottom: "10px" }}>
+              <strong>{a.Asignatura}</strong> — Matriculado: {a.Matriculado}
+              {a.Matriculado === "No" && (
+                <button
+                  onClick={() => handleMatricular(a)}
+                  style={{
+                    marginLeft: "10px",
+                    background: "#007bff",
+                    color: "white",
+                    border: "none",
+                    padding: "5px 10px",
+                    borderRadius: "4px",
+                    cursor: "pointer"
+                  }}
+                >
+                  Matricular
+                </button>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
 };
 
-export default Matriculacion;
+export default MatriculacionPage;
