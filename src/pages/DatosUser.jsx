@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { editDatos } from "../services/userService";
 import Swal from 'sweetalert2';
+import { FaClipboardUser } from "react-icons/fa6";
+import { MdContacts } from "react-icons/md";
 import "../Styles/Datos.css"; 
 
 const DatosUser = () => {
@@ -222,7 +224,7 @@ const DatosUser = () => {
       <div className="datos-personales-content">
         {/* Información Personal */}
         <div className="datos-section">
-          <h2>📊 Información Personal</h2>
+          <h2><FaClipboardUser/> Información Personal</h2>
           <div className="datos-item">
             <strong className="datos-label">Nombre:</strong>
             <span className="datos-value">{usuario.Nombre}</span>
@@ -263,7 +265,7 @@ const DatosUser = () => {
         )}
 
         <div className="datos-section">
-          <h2>📞 Información de Contacto</h2>
+          <h2><MdContacts /> Información de Contacto</h2>
           <form onSubmit={handleSubmit}>
             <div className="datos-item">
               <strong className="datos-label">Teléfono:</strong>
@@ -326,7 +328,7 @@ const DatosUser = () => {
                   className="datos-editar-btn"
                   onClick={() => setEditando(true)}
                 >
-                  ✏️ Editar Datos
+                  Editar Datos
                 </button>
               ) : (
                 <>
@@ -335,7 +337,7 @@ const DatosUser = () => {
                     className={`datos-editar-btn ${cargando ? 'guardando' : ''}`}
                     disabled={cargando}
                   >
-                    {cargando ? "🔄 Guardando..." : "💾 Guardar Cambios"}
+                    {cargando ? "Guardando..." : "Guardar Cambios"}
                   </button>
                   <button 
                     type="button"
@@ -344,7 +346,7 @@ const DatosUser = () => {
                     disabled={cargando}
                     style={{background: 'linear-gradient(135deg, #6c757d, #495057)'}}
                   >
-                    ❌ Cancelar
+                    Cancelar
                   </button>
                 </>
               )}

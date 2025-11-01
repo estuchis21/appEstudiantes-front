@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { getFinalExamsTaken } from "../services/finalsService";
+import { FaCalendarAlt } from "react-icons/fa";
 import "../Styles/MisFinales.css";
 
 const MisFinales = () => {
@@ -107,11 +108,6 @@ const MisFinales = () => {
     <div className="inscripcion-container">
       <div className="inscripcion-header">
         <h1>Mis Finales Rendidos</h1>
-        <div className="info-badge">
-          <span className="badge-text">
-            {carrera.Nombre}
-          </span>
-        </div>
       </div>
 
       <div className="info-section">
@@ -141,12 +137,6 @@ const MisFinales = () => {
           </div>
           <div className="stat-card">
             <span className="stat-number">
-              {finalesRendidos.filter(f => f.Nota >= 4).length}
-            </span>
-            <span className="stat-label">Aprobados</span>
-          </div>
-          <div className="stat-card">
-            <span className="stat-number">
               {finalesRendidos.filter(f => f.Nota >= 8).length}
             </span>
             <span className="stat-label">Nota ≥ 8</span>
@@ -164,15 +154,12 @@ const MisFinales = () => {
       {añosOrdenados.map(año => (
         <div key={año} className="inscripciones-section">
           <div className="section-card">
-            <h2>📅 Año {año}</h2>
+            <h2><FaCalendarAlt />Año {año}</h2>
             <div className="mesas-grid">
               {finalesPorAnio[año].map((final) => (
                 <div key={final.Codigo} className="mesa-card">
                   <div className="mesa-header">
                     <h3>{final.Materia}</h3>
-                    <span className={`nota ${final.Nota >= 4 ? 'nota-aprobada' : 'nota-desaprobada'}`}>
-                      {final.Nota}
-                    </span>
                   </div>
                   
                   <div className="mesa-info">
@@ -180,10 +167,9 @@ const MisFinales = () => {
                       <strong>Año cursada:</strong>
                       <span>{obtenerAñoMateria(final.Codigo)}</span>
                     </div>
-                    <div className="info-item">
-                      <strong>Código:</strong>
-                      <span>{final.Codigo}</span>
-                    </div>
+                    <span className={`nota ${final.Nota >= 4 ? 'nota-aprobada' : 'nota-desaprobada'}`}>
+                      {final.Nota}
+                    </span>
                     <div className="info-item">
                       <strong>Estado:</strong>
                       <span className={`estado ${final.Nota >= 4 ? 'estado-aprobado' : 'estado-desaprobado'}`}>
