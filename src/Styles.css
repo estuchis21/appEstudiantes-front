@@ -504,6 +504,152 @@
     line-height: 1.6;
 }
 
+/*matriculación*/
+/* ==============================
+   Estilos generales del contenedor
+   ============================== */
+.matriculacion-container {
+  max-width: 700px;
+  margin: 40px auto;
+  padding: 30px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+}
+
+/* ==============================
+   Títulos
+   ============================== */
+.matriculacion-container h2 {
+  font-size: 1.8rem;
+  color: #2c3e50;
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.matriculacion-container h3 {
+  font-size: 1.4rem;
+  color: #34495e;
+  border-bottom: 2px solid #007bff;
+  padding-bottom: 6px;
+  margin-top: 30px;
+}
+
+/* ==============================
+   Formulario de selección
+   ============================== */
+.matriculacion-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.matriculacion-form label {
+  font-weight: 600;
+  color: #444;
+}
+
+.matriculacion-form select {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.matriculacion-form select:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+/* ==============================
+   Botones
+   ============================== */
+.matriculacion-form button,
+.matricular-btn {
+  background-color: #007bff;
+  color: #fff;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 15px;
+  cursor: pointer;
+  transition: background-color 0.25s ease, transform 0.1s ease;
+}
+
+.matriculacion-form button:hover,
+.matricular-btn:hover {
+  background-color: #0056b3;
+  transform: scale(1.02);
+}
+
+.matriculacion-form button:disabled {
+  background-color: #aaa;
+  cursor: not-allowed;
+}
+
+/* ==============================
+   Lista de asignaturas
+   ============================== */
+.asignaturas-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 15px 0;
+}
+
+.asignaturas-list li {
+  background-color: #f8f9fa;
+  border: 1px solid #ddd;
+  padding: 12px 15px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.asignaturas-list li strong {
+  color: #2c3e50;
+}
+
+.asignaturas-list li span {
+  font-size: 0.95rem;
+  color: #555;
+}
+
+/* ==============================
+   Estado vacío
+   ============================== */
+.asignaturas-vacias {
+  text-align: center;
+  color: #777;
+  font-style: italic;
+  margin-top: 10px;
+}
+
+/* ==============================
+   Responsividad
+   ============================== */
+@media (max-width: 600px) {
+  .matriculacion-container {
+    padding: 20px;
+  }
+
+  .asignaturas-list li {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .matricular-btn {
+    width: 100%;
+  }
+}
+
+
 /* Responsive */
 @media (max-width: 968px) {
     .home-user-grid {

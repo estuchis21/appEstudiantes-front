@@ -95,25 +95,23 @@ const MatriculacionPage = () => {
   }
 
   return (
-    <div style={{ maxWidth: 600, margin: "0 auto", padding: "20px" }}>
+    <div className="matriculacion-container">
       <h2>📘 Consultar Asignaturas Pendientes</h2>
 
-      <form onSubmit={handleConsultar} style={{ marginBottom: "20px" }}>
-        <div>
-          <label>Seleccioná tu carrera:</label>
-          <select
-            value={carreraSeleccionada}
-            onChange={(e) => setCarreraSeleccionada(e.target.value)}
-            required
-          >
-            <option value="">-- Seleccionar --</option>
-            {carreras.map((c) => (
-              <option key={c.Codigo} value={c.Codigo}>
-                {c.Nombre}
-              </option>
-            ))}
-          </select>
-        </div>
+      <form onSubmit={handleConsultar} className="matriculacion-form">
+        <label>Seleccioná tu carrera:</label>
+        <select
+          value={carreraSeleccionada}
+          onChange={(e) => setCarreraSeleccionada(e.target.value)}
+          required
+        >
+          <option value="">-- Seleccionar --</option>
+          {carreras.map((c) => (
+            <option key={c.Codigo} value={c.Codigo}>
+              {c.Nombre}
+            </option>
+          ))}
+        </select>
 
         <button type="submit" disabled={cargando}>
           {cargando ? "Cargando..." : "Consultar"}
@@ -121,25 +119,22 @@ const MatriculacionPage = () => {
       </form>
 
       <h3>Asignaturas Pendientes</h3>
+
       {asignaturasPendientes.length === 0 ? (
-        <p>No hay asignaturas pendientes o no se consultó ninguna carrera aún.</p>
+        <p className="asignaturas-vacias">
+          No hay asignaturas pendientes o no se consultó ninguna carrera aún.
+        </p>
       ) : (
-        <ul>
+        <ul className="asignaturas-list">
           {asignaturasPendientes.map((a) => (
-            <li key={a.Codigo} style={{ marginBottom: "10px" }}>
-              <strong>{a.Asignatura}</strong> — Matriculado: {a.Matriculado}
+            <li key={a.Codigo}>
+              <div>
+                <strong>{a.Asignatura}</strong> — Matriculado: {a.Matriculado}
+              </div>
               {a.Matriculado === "No" && (
                 <button
                   onClick={() => handleMatricular(a)}
-                  style={{
-                    marginLeft: "10px",
-                    background: "#007bff",
-                    color: "white",
-                    border: "none",
-                    padding: "5px 10px",
-                    borderRadius: "4px",
-                    cursor: "pointer"
-                  }}
+                  className="matricular-btn"
                 >
                   Matricular
                 </button>
@@ -150,6 +145,7 @@ const MatriculacionPage = () => {
       )}
     </div>
   );
+
 };
 
 export default MatriculacionPage;
