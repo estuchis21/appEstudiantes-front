@@ -1,0 +1,54 @@
+//Este popup puede ser reutilizado en los componentess que se necesiten
+//Hay un ejemplo de como usarlo en Sidebar.jsx
+import { useState } from 'react';
+import '../Styles/PopUp.css'; 
+
+const Popup = ({ 
+  mensaje = "¿Estás seguro?",
+  textoAceptar = "Aceptar", 
+  textoCancelar = "Cancelar",
+  onAceptar, 
+  onCancelar,
+  mostrarCancelar = true,
+  tipo = "confirmacion", // 'confirmacion', 'info', 'advertencia', 'error'
+  loading = false // Nueva prop para controlar el estado de carga
+}) => {
+    return (
+        <>
+            <div className="popup-overlay" onClick={onCancelar}></div>
+            <div className={`popup-container popup-${tipo}`}>
+                {loading ? (
+                    // Mostrar loader cuando está cargando
+                    <div className="popup-loading">
+                        <div className="loader"></div>
+                        <p className="popup-loading-message">Cargando...</p>
+                    </div>
+                ) : (
+                    // Mostrar contenido normal cuando no está cargando
+                    <>
+                        <p className="popup-message">{mensaje}</p>
+                        <div className="popup-buttons">
+                            <button 
+                                className={`popup-button popup-button-aceptar popup-button-${tipo}`}
+                                onClick={onAceptar}
+                            >
+                                {textoAceptar}
+                            </button>
+                            
+                            {mostrarCancelar && (
+                                <button 
+                                    className="popup-button popup-button-cancelar"
+                                    onClick={onCancelar}
+                                >
+                                    {textoCancelar}
+                                </button>
+                            )}
+                        </div>
+                    </>
+                )}
+            </div>
+        </>
+    );
+};
+
+export default Popup;

@@ -1,0 +1,356 @@
+/* Finales.css - Basado en MisFinales.css */
+
+.final-exams-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 80px 20px;
+    background-color: #ffffff;
+    min-height: 100vh;
+}
+
+.final-exams-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid rgba(52, 47, 97, 0.1);
+}
+
+.final-exams-header h1 {
+    color: #343761;
+    margin: 0;
+    font-size: 2.5rem;
+    font-weight: 300;
+}
+
+.user-info-container {
+    display: flex;
+    justify-content: center;
+}
+
+.user-info-card {
+    background: rgba(52, 47, 97, 0.1);
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1px solid rgba(52, 47, 97, 0.3);
+}
+
+.user-info-card span {
+    color: #343761;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.final-exams-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-top: 20px;
+}
+
+.final-exams-column {
+    display: flex;
+    flex-direction: column;
+}
+
+.final-exams-card {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: 1px solid #f0f0f0;
+    flex: 1;
+}
+
+.card-title {
+    color: #343761;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+    font-weight: 400;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Final Items */
+.final-item {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-left: 4px solid;
+    transition: all 0.3s ease;
+    border: 1px solid #e2e8f0;
+}
+
+.final-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.final-item.inscripta {
+    border-left-color: #48bb78;
+}
+
+.final-item.disponible {
+    border-left-color: #667eea;
+}
+
+.final-item:last-child {
+    margin-bottom: 0;
+}
+
+/* Final Header */
+.final-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.final-subject {
+    color: #343761;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.libre-badge {
+    background: #fff3cd;
+    color: #856404;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border: 1px solid #ffeaa7;
+}
+
+/* Info Grid */
+.final-info-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.final-info-row {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.final-info-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #4a5568;
+    font-size: 0.95rem;
+    flex: 1;
+    min-width: 120px;
+}
+
+.final-info-item svg {
+    color: #667eea;
+    font-size: 0.9rem;
+}
+
+/* Actions */
+.final-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.action-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Rubik', sans-serif;
+    width: fit-content;
+    min-width: 140px;
+}
+
+.action-button.regular {
+    background: rgba(52, 47, 97, 0.8);
+    color: white;
+}
+
+.action-button.regular:hover:not(.disabled) {
+    background: rgba(52, 47, 97, 1);
+    transform: translateY(-1px);
+}
+
+.action-button.libre {
+    background: #ffc107;
+    color: #000;
+}
+
+.action-button.libre:hover:not(.disabled) {
+    background: #e0a800;
+    transform: translateY(-1px);
+}
+
+.action-button.disabled {
+    background: #cccccc;
+    color: #666;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.disabled-reason {
+    color: #ff3b3b;
+    font-size: 0.85rem;
+    font-style: italic;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #666;
+    font-style: italic;
+}
+
+.empty-state p {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .final-exams-container {
+        padding: 20px;
+    }
+
+    .final-exams-header {
+        flex-direction: column;
+        gap: 16px;
+        text-align: center;
+    }
+
+    .final-exams-header h1 {
+        font-size: 2rem;
+    }
+
+    .final-exams-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .final-exams-card {
+        padding: 20px;
+    }
+
+    .final-info-row {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .final-info-item {
+        min-width: auto;
+    }
+
+    .final-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .action-button {
+        width: 100%;
+        min-width: auto;
+    }
+
+    .user-info-card {
+        padding: 6px 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .final-exams-container {
+        padding: 16px;
+    }
+
+    .final-exams-card {
+        padding: 16px;
+    }
+
+    .final-item {
+        padding: 16px;
+    }
+
+    .card-title {
+        font-size: 1.3rem;
+    }
+
+    .final-subject {
+        font-size: 1.1rem;
+    }
+}
+
+/* Estados de hover mejorados */
+.final-exams-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.final-exams-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+/* Scroll suave para columnas con mucho contenido */
+.final-exams-column {
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.final-exams-column::-webkit-scrollbar {
+    width: 6px;
+}
+
+.final-exams-column::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.final-exams-column::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+.final-exams-column::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Animaciones de entrada */
+.final-item {
+    animation: fadeInUp 0.4s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Estados de focus para accesibilidad */
+.action-button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(52, 47, 97, 0.3);
+}
+
+.action-button.libre:focus {
+    box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.3);
+}

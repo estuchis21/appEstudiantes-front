@@ -1,0 +1,138 @@
+/* PopupReutilizable.css */
+
+.loader {
+  width: 50px;
+  aspect-ratio: 1;
+  --_c:no-repeat radial-gradient(farthest-side,#25b09b 92%,#0000);
+  background: 
+    var(--_c) top,
+    var(--_c) left,
+    var(--_c) right,
+    var(--_c) bottom;
+  background-size: 12px 12px;
+  animation: l7 1s infinite;
+}
+@keyframes l7 {to{transform: rotate(.5turn)}}
+
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    animation: fadeInOverlay 0.3s ease;
+}
+
+.popup-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    min-width: 300px;
+    max-width: 400px;
+    text-align: center;
+    animation: popupAppear 0.3s ease;
+}
+
+.popup-message {
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+    color: #333;
+    line-height: 1.4;
+}
+
+.popup-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.popup-button {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    min-width: 120px;
+}
+
+.popup-button-aceptar {
+    background-color: #007bff;
+    color: white;
+}
+
+.popup-button-aceptar:hover {
+    background-color: #0056b3;
+}
+
+.popup-button-cancelar {
+    background-color: #6c757d;
+    color: white;
+}
+
+.popup-button-cancelar:hover {
+    background-color: #545b62;
+}
+
+/* Estilos por tipo */
+.popup-confirmacion .popup-button-aceptar {
+    background-color: #007bff;
+}
+
+.popup-advertencia .popup-button-aceptar {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.popup-error .popup-button-aceptar {
+    background-color: #dc3545;
+}
+
+.popup-info .popup-button-aceptar {
+    background-color: #17a2b8;
+}
+
+.popup-confirmacion .popup-button-aceptar:hover {
+    background-color: #0056b3;
+}
+
+.popup-advertencia .popup-button-aceptar:hover {
+    background-color: #e0a800;
+}
+
+.popup-error .popup-button-aceptar:hover {
+    background-color: #c82333;
+}
+
+.popup-info .popup-button-aceptar:hover {
+    background-color: #138496;
+}
+
+@keyframes fadeInOverlay {
+    from { 
+        opacity: 0;
+    }
+    to { 
+        opacity: 1;
+    }
+}
+
+@keyframes popupAppear {
+    from { 
+        opacity: 0;
+        transform: translate(-50%, -0%) scale(0.9);
+    }
+    to { 
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
