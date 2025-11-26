@@ -137,12 +137,6 @@ const MisFinales = () => {
           </div>
           <div className="stat-card">
             <span className="stat-number">
-              {finalesRendidos.filter(f => f.Nota >= 8).length}
-            </span>
-            <span className="stat-label">Nota ≥ 8</span>
-          </div>
-          <div className="stat-card">
-            <span className="stat-number">
               {(finalesRendidos.reduce((sum, f) => sum + parseFloat(f.Nota), 0) / finalesRendidos.length).toFixed(1)}
             </span>
             <span className="stat-label">Promedio</span>

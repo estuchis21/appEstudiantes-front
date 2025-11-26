@@ -1,17 +1,97 @@
 import React, { useState, useEffect } from "react";
 import TablaReutilizable from "../components/Tabla";
 import listCoursesService from "../services/listCoursesService";
+import Swal from "sweetalert2";
 import "../Styles/Analitico.css";
 
 const Analitico = () => {
   const [materias, setMaterias] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedMateria, setSelectedMateria] = useState(null); // for modal
 
   const storedUser = JSON.parse(localStorage.getItem("userData")) || {};
   const permiso = storedUser?.usuario?.Permiso || "";
   const codigo = storedUser?.carrera?.Codigo || "";
+
+  const showMateriaDetails = (materia) => {
+    const notasContent = `
+      <div class="swal-notas-container">
+        <div class="swal-info-grid">
+          <div class="swal-info-item">
+            <strong>Profesor:</strong> ${materia.Profesor}
+          </div>
+          <div class="swal-info-item">
+            <strong>Curso:</strong> ${materia.Curso}
+          </div>
+          <div class="swal-info-item">
+            <strong>División:</strong> ${materia.Division}
+          </div>
+          <div class="swal-info-item">
+            <strong>Asistencia:</strong> ${materia.AsistenciaPorcentaje}%
+          </div>
+          <div class="swal-info-item">
+            <strong>Asistencia Hasta:</strong> ${materia.AsistenciaHasta || "-"}
+          </div>
+        </div>
+
+        <div class="swal-notas-section">
+          <h4>Notas</h4>
+          <div class="swal-notas-grid">
+            <div class="swal-nota-item">
+              <span>Parcial 1</span>
+              <span class="swal-nota-valor">${materia.Parcial1 || "-"}</span>
+            </div>
+            <div class="swal-nota-item">
+              <span>Recuperatorio 1</span>
+              <span class="swal-nota-valor">${materia.Recuperatorio1 || "-"}</span>
+            </div>
+            <div class="swal-nota-item">
+              <span>Parcial 2</span>
+              <span class="swal-nota-valor">${materia.Parcial2 || "-"}</span>
+            </div>
+            <div class="swal-nota-item">
+              <span>Recuperatorio 2</span>
+              <span class="swal-nota-valor">${materia.Recuperatorio2 || "-"}</span>
+            </div>
+            <div class="swal-nota-item">
+              <span>Práctico 1</span>
+              <span class="swal-nota-valor">${materia.Practico1 || "-"}</span>
+            </div>
+            <div class="swal-nota-item">
+              <span>Práctico 2</span>
+              <span class="swal-nota-valor">${materia.Practico2 || "-"}</span>
+            </div>
+            <div class="swal-nota-item">
+              <span>Práctico 3</span>
+              <span class="swal-nota-valor">${materia.Practico3 || "-"}</span>
+            </div>
+            <div class="swal-nota-item">
+              <span>Práctico 4</span>
+              <span class="swal-nota-valor">${materia.Practico4 || "-"}</span>
+            </div>
+            <div class="swal-nota-item">
+              <span>Práctico 5</span>
+              <span class="swal-nota-valor">${materia.Practico5 || "-"}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    Swal.fire({
+      title: materia.Materia,
+      html: notasContent,
+      customClass: {
+        popup: 'swal-custom-popup',
+        title: 'swal-custom-title',
+        htmlContainer: 'swal-custom-html',
+        confirmButton: 'swal-custom-confirm'
+      },
+      showCloseButton: true,
+      showConfirmButton: true,
+      confirmButtonText: 'Cerrar',
+    });
+  };
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -100,7 +180,7 @@ const Analitico = () => {
       render: (fila) => (
         <button
           className="ver-detalle-btn"
-          onClick={() => setSelectedMateria(fila)}
+          onClick={() => showMateriaDetails(fila)}
         >
           Ver detalle
         </button>
@@ -122,7 +202,10 @@ const Analitico = () => {
           <h2>Historial Académico</h2>
 
           {loading ? (
-            <p>Cargando materias...</p>
+            <div className="loading-container">
+              <div className="loading-spinner"></div>
+              <p>Cargando materias...</p>
+            </div>
           ) : error ? (
             <p className="error-text">{error}</p>
           ) : (
@@ -130,51 +213,6 @@ const Analitico = () => {
           )}
         </div>
       </section>
-
-      {selectedMateria && (
-        <div className="modal-overlay" onClick={() => setSelectedMateria(null)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <h2>{selectedMateria.Materia}</h2>
-            <p>
-              <strong>Profesor:</strong> {selectedMateria.Profesor}
-            </p>
-            <p>
-              <strong>Curso:</strong> {selectedMateria.Curso}
-            </p>
-            <p>
-              <strong>División:</strong> {selectedMateria.Division}
-            </p>
-            <p>
-              <strong>Asistencia:</strong>{" "}
-              {selectedMateria.AsistenciaPorcentaje}%
-            </p>
-            <p>
-              <strong>Asistencia Hasta:</strong>{" "}
-              {selectedMateria.AsistenciaHasta || "-"}
-            </p>
-
-            <h3>Notas</h3>
-            <ul className="detalle-lista">
-              <li>Parcial 1: {selectedMateria.Parcial1}</li>
-              <li>Recuperatorio 1: {selectedMateria.Recuperatorio1}</li>
-              <li>Parcial 2: {selectedMateria.Parcial2}</li>
-              <li>Recuperatorio 2: {selectedMateria.Recuperatorio2}</li>
-              <li>Práctico 1: {selectedMateria.Practico1}</li>
-              <li>Práctico 2: {selectedMateria.Practico2}</li>
-              <li>Práctico 3: {selectedMateria.Practico3}</li>
-              <li>Práctico 4: {selectedMateria.Practico4}</li>
-              <li>Práctico 5: {selectedMateria.Practico5}</li>
-            </ul>
-
-            <button
-              className="cerrar-btn"
-              onClick={() => setSelectedMateria(null)}
-            >
-              Cerrar
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
