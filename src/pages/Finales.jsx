@@ -19,11 +19,11 @@ const FinalExams = () => {
   const [finals, setFinals] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // ✅ CORREGIDO: Obtener datos como en HomeUser.jsx
+  //  CORREGIDO: Obtener datos como en HomeUser.jsx
   const userData = JSON.parse(localStorage.getItem("userData")) || {};
   const careerData = JSON.parse(localStorage.getItem("careerData")) || {};
   
-  // ✅ Datos directos como en HomeUser
+  //  Datos directos como en HomeUser
   const permiso = userData?.Permiso || userData?.permiso || "";
   const codigo = careerData?.Codigo || careerData?.codigo || "";
   const nombreCarrera = formatCarreraName(careerData?.Nombre || careerData?.nombre || "");
