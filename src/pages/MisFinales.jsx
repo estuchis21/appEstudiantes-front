@@ -17,11 +17,14 @@ const MisFinales = () => {
   const cargarDatosUsuario = () => {
     try {
       const userDataStorage = localStorage.getItem("userData");
+      const careerDataStorage = localStorage.getItem("careerData");
 
-      if (userDataStorage) {
+      if (userDataStorage && careerDataStorage) {
         const userData = JSON.parse(userDataStorage);
-        setUsuario(userData.usuario);
-        setCarrera(userData.carrera);
+        const careerData = JSON.parse(careerDataStorage);
+        
+        setUsuario(userData);       
+        setCarrera(careerData);      
       } else {
         setError("No se encontraron datos de usuario. Por favor, inicie sesión nuevamente.");
       }

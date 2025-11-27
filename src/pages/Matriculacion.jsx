@@ -3,7 +3,8 @@ import "../Styles/Matriculacion.css";
 import {
   getAsignaturasPendientes,
   getCarrerasDelAlumno,
-  registerMatriculation
+  registerMatriculation,
+  deleteMatriculation
 } from "../services/matriculationService";
 
 const MatriculacionPage = () => {
@@ -12,20 +13,50 @@ const MatriculacionPage = () => {
   const [permiso, setPermiso] = useState(null);
   const [asignaturasPendientes, setAsignaturasPendientes] = useState([]);
   const [cargando, setCargando] = useState(false);
+  const [mensaje, setMensaje] = useState("");
+  const [tipoMensaje, setTipoMensaje] = useState(""); // "exito" | "error"
 
   // Obtener usuario logueado y sus carreras
   useEffect(() => {
-    const usuario = JSON.parse(localStorage.getItem("usuario"));
-    if (!usuario || !usuario.Permiso) {
-      alert("No se encontró información válida del usuario. Por favor logueate.");
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    const careerData = JSON.parse(localStorage.getItem("careerData"));
+    
+    if (!userData || !userData.Permiso) {
+      setMensaje("No se encontró información válida del usuario. Por favor inicia sesión.");
+      setTipoMensaje("error");
       return;
     }
 
-    setPermiso(usuario.Permiso);
+    console.log("🔍 Usuario logueado:", userData);
+    console.log("🔍 Carrera del usuario:", careerData);
+    
+    setPermiso(userData.Permiso);
 
-    getCarrerasDelAlumno(usuario.Permiso)
-      .then((data) => setCarreras(data))
-      .catch((err) => alert("Error cargando carreras: " + err));
+    // Si hay carreraData, establecerla como seleccionada
+    if (careerData && careerData.Codigo) {
+      setCarreraSeleccionada(careerData.Codigo.toString());
+    }
+
+    // Cargar carreras del alumno
+    setCargando(true);
+    getCarrerasDelAlumno(userData.Permiso)
+      .then((data) => {
+        console.log("📦 Carreras recibidas:", data);
+        setCarreras(data);
+        
+        // Si no hay carrera seleccionada y hay carreras, seleccionar la primera
+        if (!careerData && data.length > 0) {
+          setCarreraSeleccionada(data[0].Codigo.toString());
+        }
+      })
+      .catch((err) => {
+        console.error("❌ Error cargando carreras:", err);
+        setMensaje("Error cargando carreras: " + (err.message || "Error desconocido"));
+        setTipoMensaje("error");
+      })
+      .finally(() => {
+        setCargando(false);
+      });
   }, []);
 
   // Consultar asignaturas pendientes
@@ -33,31 +64,45 @@ const MatriculacionPage = () => {
     if (e) e.preventDefault();
 
     if (!carreraSeleccionada) {
-      alert("Por favor, seleccioná una carrera.");
+      setMensaje("Por favor, seleccioná una carrera.");
+      setTipoMensaje("error");
       return;
     }
 
     if (!permiso) {
-      alert("No se puede consultar asignaturas sin usuario logueado.");
+      setMensaje("No se puede consultar asignaturas sin usuario logueado.");
+      setTipoMensaje("error");
       return;
     }
 
     setCargando(true);
+    setMensaje("");
+    setTipoMensaje("");
+    
     try {
+      console.log("📡 Consultando asignaturas con:", { 
+        permiso, 
+        carrera: carreraSeleccionada 
+      });
+      
       const response = await getAsignaturasPendientes(permiso, carreraSeleccionada);
-
-      // Asegurarnos de que cada asignatura tenga código, división y profesor
-      const asignaturasConCodigo = response.map((a, index) => ({
-        ...a,
-        Codigo: a.Codigo || a.Materia || 490000 + index,
-        Division: a.Division || 1,
-        Profesor: a.Profesor || 447
-      }));
-
-      setAsignaturasPendientes(asignaturasConCodigo);
-      alert("Asignaturas cargadas correctamente.");
+      console.log("📦 Asignaturas recibidas:", response);
+      
+      // Si el backend devuelve un mensaje en lugar de array
+      if (response.mensaje) {
+        setMensaje(response.mensaje);
+        setTipoMensaje("info");
+        setAsignaturasPendientes([]);
+      } else {
+        setAsignaturasPendientes(response);
+        setMensaje(`✅ Se encontraron ${response.length} asignaturas pendientes`);
+        setTipoMensaje("exito");
+      }
     } catch (err) {
-      alert("Error al consultar las asignaturas: " + err);
+      console.error("❌ Error al consultar las asignaturas:", err);
+      setMensaje("Error al consultar las asignaturas: " + (err.message || "Error desconocido"));
+      setTipoMensaje("error");
+      setAsignaturasPendientes([]);
     } finally {
       setCargando(false);
     }
@@ -66,87 +111,207 @@ const MatriculacionPage = () => {
   // Matricular asignatura
   const handleMatricular = async (asignatura) => {
     if (!asignatura.Codigo) {
-      alert("No se puede matricular. La asignatura no tiene código definido:\n" + JSON.stringify(asignatura, null, 2));
+      setMensaje("No se puede matricular. La asignatura no tiene código definido.");
+      setTipoMensaje("error");
       return;
     }
 
     const payload = {
       Alumno: permiso,
       Materia: asignatura.Codigo,
-      Division: asignatura.Division,
+      Division: asignatura.Division || 1, // Valor por defecto
       Libre: false,
-      Profesor: asignatura.Profesor
+      Profesor: asignatura.Profesor || 447 // Valor por defecto
     };
 
+    setCargando(true);
+    setMensaje("");
+    setTipoMensaje("");
+    
     try {
+      console.log("🎯 Intentando matricular:", payload);
+      
       const response = await registerMatriculation(payload);
-      alert(response.mensaje || "Matriculación realizada con éxito.");
+      console.log("✅ Respuesta del servidor:", response);
+      
+      if (response.mensaje) {
+        setMensaje(response.mensaje);
+        setTipoMensaje("exito");
+        
+        // Si la matriculación fue exitosa, actualizar la lista
+        if (response.mensaje.includes("exitosa") || !response.mensaje.includes("Error")) {
+          // Recargar las asignaturas pendientes
+          const nuevasAsignaturas = await getAsignaturasPendientes(permiso, carreraSeleccionada);
+          setAsignaturasPendientes(nuevasAsignaturas.mensaje ? [] : nuevasAsignaturas);
+        }
+      } else {
+        throw new Error("No se recibió confirmación del servidor");
+      }
+      
     } catch (err) {
-      alert("Error al matricular: " + err);
+      console.error("❌ Error al matricular:", err);
+      setMensaje(err.message || "Error al realizar la matriculación");
+      setTipoMensaje("error");
+    } finally {
+      setCargando(false);
+    }
+  };
+
+  // Desmatricular asignatura
+  const handleDesmatricular = async (asignatura) => {
+    if (!asignatura.Codigo) {
+      setMensaje("No se puede desmatricular. La asignatura no tiene código definido.");
+      setTipoMensaje("error");
+      return;
+    }
+
+    setCargando(true);
+    setMensaje("");
+    setTipoMensaje("");
+    
+    try {
+      console.log("🎯 Intentando desmatricular:", { 
+        Alumno: permiso, 
+        Materia: asignatura.Codigo, 
+        Division: asignatura.Division || 1 
+      });
+      
+      const response = await deleteMatriculation(
+        permiso, 
+        asignatura.Codigo, 
+        asignatura.Division || 1
+      );
+      
+      console.log("✅ Respuesta del servidor:", response);
+      
+      if (response.mensaje) {
+        setMensaje(response.mensaje);
+        setTipoMensaje("exito");
+        
+        // Recargar las asignaturas pendientes
+        const nuevasAsignaturas = await getAsignaturasPendientes(permiso, carreraSeleccionada);
+        setAsignaturasPendientes(nuevasAsignaturas.mensaje ? [] : nuevasAsignaturas);
+      }
+      
+    } catch (err) {
+      console.error("❌ Error al desmatricular:", err);
+      setMensaje(err.message || "Error al desmatricular");
+      setTipoMensaje("error");
+    } finally {
+      setCargando(false);
     }
   };
 
   if (!permiso) {
     return (
-      <div style={{ textAlign: "center", marginTop: 50 }}>
-        <h2>No hay usuario logueado</h2>
-        <p>Por favor, inicia sesión para acceder a esta página.</p>
+      <div className="matriculacion-container">
+        <div className="mensaje error">
+          <h2>No hay usuario logueado</h2>
+          <p>Por favor, inicia sesión para acceder a esta página.</p>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="matriculacion-container">
-      <h2>📘 Consultar Asignaturas Pendientes</h2>
+      <div className="matriculacion-header">
+        <h1>🎓 Sistema de Matriculación</h1>
+        <p>Gestioná tu inscripción a las materias de la carrera</p>
+      </div>
 
-      <form onSubmit={handleConsultar} className="matriculacion-form">
-        <label>Seleccioná tu carrera:</label>
-        <select
-          value={carreraSeleccionada}
-          onChange={(e) => setCarreraSeleccionada(e.target.value)}
-          required
-        >
-          <option value="">-- Seleccionar --</option>
-          {carreras.map((c) => (
-            <option key={c.Codigo} value={c.Codigo}>
-              {c.Nombre}
-            </option>
-          ))}
-        </select>
+      {mensaje && (
+        <div className={`mensaje ${tipoMensaje}`}>
+          {mensaje}
+        </div>
+      )}
 
-        <button type="submit" disabled={cargando}>
-          {cargando ? "Cargando..." : "Consultar"}
-        </button>
-      </form>
+      <div className="matriculacion-form-container">
+        <h2>📘 Consultar Asignaturas Pendientes</h2>
+        
+        <form onSubmit={handleConsultar} className="matriculacion-form">
+          <div className="form-group">
+            <label htmlFor="carrera-select">Seleccioná tu carrera:</label>
+            <select
+              id="carrera-select"
+              value={carreraSeleccionada}
+              onChange={(e) => setCarreraSeleccionada(e.target.value)}
+              required
+              disabled={cargando}
+            >
+              <option value="">-- Seleccionar Carrera --</option>
+              {carreras.map((carrera) => (
+                <option key={carrera.Codigo} value={carrera.Codigo}>
+                  {carrera.Nombre}
+                </option>
+              ))}
+            </select>
+          </div>
 
-      <h3>Asignaturas Pendientes</h3>
+          <button 
+            type="submit" 
+            className="consultar-btn"
+            disabled={cargando || !carreraSeleccionada}
+          >
+            {cargando ? "⏳ Buscando..." : "🔍 Consultar Asignaturas"}
+          </button>
+        </form>
+      </div>
 
-      {asignaturasPendientes.length === 0 ? (
-        <p className="asignaturas-vacias">
-          No hay asignaturas pendientes o no se consultó ninguna carrera aún.
-        </p>
-      ) : (
-        <ul className="asignaturas-list">
-          {asignaturasPendientes.map((a) => (
-            <li key={a.Codigo}>
-              <div>
-                <strong>{a.Asignatura}</strong> — Matriculado: {a.Matriculado}
+      {asignaturasPendientes.length > 0 && (
+        <div className="asignaturas-section">
+          <h2>📚 Asignaturas Pendientes ({asignaturasPendientes.length})</h2>
+          
+          <div className="asignaturas-grid">
+            {asignaturasPendientes.map((asignatura) => (
+              <div key={asignatura.Codigo} className="asignatura-card">
+                <div className="asignatura-header">
+                  <h3>{asignatura.Asignatura || asignatura.Nombre}</h3>
+                  <span className={`badge ${asignatura.Matriculado === "Sí" ? "matriculado" : "pendiente"}`}>
+                    {asignatura.Matriculado === "Sí" ? "✅ Matriculado" : "❌ Pendiente"}
+                  </span>
+                </div>
+                
+                <div className="asignatura-info">
+                  <p><strong>Código:</strong> {asignatura.Codigo}</p>
+                  <p><strong>Curso:</strong> {asignatura.Curso}° año</p>
+                  {asignatura.Division && <p><strong>División:</strong> {asignatura.Division}</p>}
+                  {asignatura.Profesor && <p><strong>Profesor:</strong> {asignatura.Profesor}</p>}
+                </div>
+                
+                <div className="asignatura-actions">
+                  {asignatura.Matriculado === "No" ? (
+                    <button
+                      onClick={() => handleMatricular(asignatura)}
+                      className="btn-matricular"
+                      disabled={cargando}
+                    >
+                      {cargando ? "Matriculando..." : "📝 Matricular"}
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => handleDesmatricular(asignatura)}
+                      className="btn-desmatricular"
+                      disabled={cargando}
+                    >
+                      {cargando ? "Desmatriculando..." : "🗑️ Desmatricular"}
+                    </button>
+                  )}
+                </div>
               </div>
-              {a.Matriculado === "No" && (
-                <button
-                  onClick={() => handleMatricular(a)}
-                  className="matricular-btn"
-                >
-                  Matricular
-                </button>
-              )}
-            </li>
-          ))}
-        </ul>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {cargando && asignaturasPendientes.length === 0 && (
+        <div className="cargando">
+          <div className="spinner"></div>
+          <p>Buscando asignaturas pendientes...</p>
+        </div>
       )}
     </div>
   );
-
 };
 
 export default MatriculacionPage;

@@ -9,9 +9,21 @@ const Analitico = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const storedUser = JSON.parse(localStorage.getItem("userData")) || {};
-  const permiso = storedUser?.usuario?.Permiso || "";
-  const codigo = storedUser?.carrera?.Codigo || "";
+  // ✅ CORREGIDO: Obtener datos correctamente
+  const userData = JSON.parse(localStorage.getItem("userData")) || {};
+  const careerData = JSON.parse(localStorage.getItem("careerData")) || {};
+  
+  const permiso = userData?.Permiso || "";
+  const codigo = careerData?.Codigo || "";
+
+  // Para debuggear - agrega esto temporalmente
+  useEffect(() => {
+    console.log("🔍 Debug - Datos del localStorage:");
+    console.log("userData:", userData);
+    console.log("careerData:", careerData);
+    console.log("permiso:", permiso);
+    console.log("codigo:", codigo);
+  }, []);
 
   const showMateriaDetails = (materia) => {
     const notasContent = `
@@ -95,14 +107,19 @@ const Analitico = () => {
 
   useEffect(() => {
     const fetchCourses = async () => {
+      // ✅ Ahora con los datos corregidos
       if (!permiso || !codigo) {
         console.warn("⚠️ Missing permiso or codigo; skipping fetch.");
+        console.log("permiso:", permiso, "codigo:", codigo);
+        setError("No se encontraron los datos del usuario. Por favor, inicie sesión nuevamente.");
         setLoading(false);
         return;
       }
 
       try {
+        console.log("📡 Llamando a listCoursesService con:", { permiso, codigo });
         const data = await listCoursesService(permiso, codigo);
+        console.log("📦 Datos recibidos:", data);
 
         const transformed = data.map((item) => {
           const parciales = [
@@ -145,8 +162,8 @@ const Analitico = () => {
 
         setMaterias(transformed);
       } catch (err) {
-        console.error("Error fetching courses:", err);
-        setError("No se pudo cargar la lista de materias.");
+        console.error("❌ Error fetching courses:", err);
+        setError("No se pudo cargar la lista de materias: " + (err.message || "Error desconocido"));
       } finally {
         setLoading(false);
       }
@@ -207,7 +224,15 @@ const Analitico = () => {
               <p>Cargando materias...</p>
             </div>
           ) : error ? (
-            <p className="error-text">{error}</p>
+            <div className="error-container">
+              <p className="error-text">{error}</p>
+              <button 
+                className="retry-btn"
+                onClick={() => window.location.reload()}
+              >
+                Reintentar
+              </button>
+            </div>
           ) : (
             <TablaReutilizable datos={materias} columnas={columnas} />
           )}
