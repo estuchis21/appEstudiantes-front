@@ -1,61 +1,220 @@
 import React, { useState, useEffect } from "react";
 import TablaReutilizable from "../components/Tabla";
+import listCoursesService from "../services/listCoursesService";
+import Swal from "sweetalert2";
 import "../Styles/Analitico.css";
 
 const Analitico = () => {
-    const [materias, setMaterias] = useState([]);
+  const [materias, setMaterias] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-    useEffect(() => {
-        setMaterias([
-            { materia: "Matemática I", año: "2023", nota: 8, estado: "Aprobada" },
-            { materia: "Pedagogía", año: "2023", nota: 7, estado: "Aprobada" },
-            { materia: "Álgebra", año: "2024", nota: 9, estado: "Aprobada" },
-            { materia: "Geometría", año: "2024", nota: null, estado: "Cursando" },
-        ]);
-    }, []);
+  const storedUser = JSON.parse(localStorage.getItem("userData")) || {};
+  const permiso = storedUser?.usuario?.Permiso || "";
+  const codigo = storedUser?.carrera?.Codigo || "";
 
-    const columnas = [
-        { key: "materia", header: "Materia" },
-        { key: "año", header: "Año", align: "center" },
-        { 
-            key: "nota", 
-            header: "Nota", 
-            align: "center",
-            render: (fila) => fila.nota || "-"
-        },
-        { 
-            key: "estado", 
-            header: "Estado", 
-            align: "center",
-            render: (fila) => (
-                <span className={`estado-materia ${fila.estado.toLowerCase()}`}>
-                    {fila.estado}
-                </span>
-            )
-        }
-    ];
-
-    return (
-        <div className="analitico-container">
-            <header className="analitico-header">
-                <h1 className="analitico-title">Analítico de Cursadas</h1>
-                <div className="info-badge">
-                    <span className="badge-text">Historial Completo</span>
-                </div>
-            </header>
-            
-
-            <section className="tabla-section">
-                <div className="section-card">
-                    <h2>Historial Académico</h2>
-                    <TablaReutilizable
-                        datos={materias}
-                        columnas={columnas}
-                    />
-                </div>
-            </section>
+  const showMateriaDetails = (materia) => {
+    const notasContent = `
+      <div class="swal-notas-container">
+        <div class="swal-info-grid">
+          <div class="swal-info-item">
+            <strong>Profesor:</strong> ${materia.Profesor}
+          </div>
+          <div class="swal-info-item">
+            <strong>Curso:</strong> ${materia.Curso}
+          </div>
+          <div class="swal-info-item">
+            <strong>División:</strong> ${materia.Division}
+          </div>
+          <div class="swal-info-item">
+            <strong>Asistencia:</strong> ${materia.AsistenciaPorcentaje}%
+          </div>
+          <div class="swal-info-item">
+            <strong>Asistencia Hasta:</strong> ${materia.AsistenciaHasta || "-"}
+          </div>
         </div>
-    );
+
+        <div class="swal-notas-section">
+          <h4>Notas</h4>
+          <div class="swal-notas-grid">
+            <div class="swal-nota-item">
+              <span>Parcial 1</span>
+              <span class="swal-nota-valor">${materia.Parcial1 || "-"}</span>
+            </div>
+            <div class="swal-nota-item">
+              <span>Recuperatorio 1</span>
+              <span class="swal-nota-valor">${materia.Recuperatorio1 || "-"}</span>
+            </div>
+            <div class="swal-nota-item">
+              <span>Parcial 2</span>
+              <span class="swal-nota-valor">${materia.Parcial2 || "-"}</span>
+            </div>
+            <div class="swal-nota-item">
+              <span>Recuperatorio 2</span>
+              <span class="swal-nota-valor">${materia.Recuperatorio2 || "-"}</span>
+            </div>
+            <div class="swal-nota-item">
+              <span>Práctico 1</span>
+              <span class="swal-nota-valor">${materia.Practico1 || "-"}</span>
+            </div>
+            <div class="swal-nota-item">
+              <span>Práctico 2</span>
+              <span class="swal-nota-valor">${materia.Practico2 || "-"}</span>
+            </div>
+            <div class="swal-nota-item">
+              <span>Práctico 3</span>
+              <span class="swal-nota-valor">${materia.Practico3 || "-"}</span>
+            </div>
+            <div class="swal-nota-item">
+              <span>Práctico 4</span>
+              <span class="swal-nota-valor">${materia.Practico4 || "-"}</span>
+            </div>
+            <div class="swal-nota-item">
+              <span>Práctico 5</span>
+              <span class="swal-nota-valor">${materia.Practico5 || "-"}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    Swal.fire({
+      title: materia.Materia,
+      html: notasContent,
+      customClass: {
+        popup: 'swal-custom-popup',
+        title: 'swal-custom-title',
+        htmlContainer: 'swal-custom-html',
+        confirmButton: 'swal-custom-confirm'
+      },
+      showCloseButton: true,
+      showConfirmButton: true,
+      confirmButtonText: 'Cerrar',
+    });
+  };
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      if (!permiso || !codigo) {
+        console.warn("⚠️ Missing permiso or codigo; skipping fetch.");
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const data = await listCoursesService(permiso, codigo);
+
+        const transformed = data.map((item) => {
+          const parciales = [
+            item.Parcial1,
+            item.Parcial2,
+            item.Recuperatorio1,
+            item.Recuperatorio2,
+          ];
+          const practicos = [
+            item.Practico1,
+            item.Practico2,
+            item.Practico3,
+            item.Practico4,
+            item.Practico5,
+          ];
+          const totalNotas = [...parciales, ...practicos].filter(
+            (n) => n > 0
+          ).length;
+
+          let estado = "Pendiente";
+          if (
+            totalNotas > 0 &&
+            totalNotas < parciales.length + practicos.length
+          )
+            estado = "Cursando";
+          if (
+            totalNotas === parciales.length + practicos.length &&
+            totalNotas > 0
+          )
+            estado = "Aprobada";
+
+          return {
+            materia: item.Materia,
+            año: new Date().getFullYear(),
+            estado,
+            profesor: item.Profesor,
+            ...item,
+          };
+        });
+
+        setMaterias(transformed);
+      } catch (err) {
+        console.error("Error fetching courses:", err);
+        setError("No se pudo cargar la lista de materias.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCourses();
+  }, [permiso, codigo]);
+
+  const columnas = [
+    { key: "materia", header: "Materia" },
+    { key: "año", header: "Año", align: "center" },
+    {
+      key: "estado",
+      header: "Estado",
+      align: "center",
+      render: (fila) => (
+        <span className={`estado-materia ${fila.estado.toLowerCase()}`}>
+          {fila.estado}
+        </span>
+      ),
+    },
+    {
+      key: "profesor",
+      header: "Profesor",
+      align: "center",
+    },
+    {
+      key: "acciones",
+      header: "Acciones",
+      align: "center",
+      render: (fila) => (
+        <button
+          className="ver-detalle-btn"
+          onClick={() => showMateriaDetails(fila)}
+        >
+          Ver detalle
+        </button>
+      ),
+    },
+  ];
+
+  return (
+    <div className="analitico-container">
+      <header className="analitico-header">
+        <h1 className="analitico-title">Analítico de Cursadas</h1>
+        <div className="info-badge">
+          <span className="badge-text">Historial Completo</span>
+        </div>
+      </header>
+
+      <section className="tabla-section">
+        <div className="section-card">
+          <h2>Historial Académico</h2>
+
+          {loading ? (
+            <div className="loading-container">
+              <div className="loading-spinner"></div>
+              <p>Cargando materias...</p>
+            </div>
+          ) : error ? (
+            <p className="error-text">{error}</p>
+          ) : (
+            <TablaReutilizable datos={materias} columnas={columnas} />
+          )}
+        </div>
+      </section>
+    </div>
+  );
 };
 
 export default Analitico;

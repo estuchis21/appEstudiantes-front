@@ -19,20 +19,27 @@ const Asistencias = () => {
         }, 1000);
     }, []);
 
+    // Función para determinar la clase CSS según el porcentaje
+    const getClasePorcentaje = (porcentaje) => {
+        const num = parseInt(porcentaje);
+        if (num >= 80) return 'alto';
+        if (num >= 60) return 'medio';
+        if (num >= 40) return 'bajo';
+        return 'critico';
+    };
+
     const columnas = [
         { 
             key: "materia", 
             header: "Materia", 
             width: "250px",
-            render: (fila) => <strong>{fila.materia}</strong>
+            render: (fila) => <span className="materia-nombre">{fila.materia}</span>
         },
         { 
             key: "fecha", 
             header: "Fecha", 
             align: "center",
-            render: (fila) => (
-                <span style={{ fontWeight: '500' }}>{fila.fecha}</span>
-            )
+            render: (fila) => <span className="fecha-asistencia">{fila.fecha}</span>
         },
         { 
             key: "Porcentaje", 
@@ -47,20 +54,9 @@ const Asistencias = () => {
         { 
             key: "profesor", 
             header: "Profesor",
-            render: (fila) => (
-                <span style={{ color: '#6c757d' }}>{fila.profesor}</span>
-            )
+            render: (fila) => <span className="profesor-nombre">{fila.profesor}</span>
         }
     ];
-
-    // Función para determinar la clase CSS según el porcentaje
-    const getClasePorcentaje = (porcentaje) => {
-        const num = parseInt(porcentaje);
-        if (num >= 80) return 'alto';
-        if (num >= 60) return 'medio';
-        if (num >= 40) return 'bajo';
-        return 'critico';
-    };
 
     return (
         <div className="asistencias-container">
