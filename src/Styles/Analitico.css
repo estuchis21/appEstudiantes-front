@@ -157,8 +157,8 @@
 .swal-custom-html {
   width: 100% !important;
   max-width: 100% !important;
+  padding: 0px;
 }
-
 .swal-custom-confirm {
   background: linear-gradient(135deg, #343761 0%, #4a457a 100%) !important;
   border: none !important;
@@ -178,7 +178,7 @@
 /* SweetAlert Content Styles */
 .swal-notas-container {
   text-align: left;
-  max-width: 100%;
+  
 }
 
 .swal-info-grid {
@@ -211,6 +211,8 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 10px;
+  padding: 0px;
+  margin: 0 auto;
 }
 
 .swal-nota-item {
