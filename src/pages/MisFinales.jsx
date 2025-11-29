@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { getFinalExamsTaken } from "../services/finalsService";
+import { useEffect, useState } from "react";
 import { FaCalendarAlt } from "react-icons/fa";
+import { getFinalExamsTaken } from "../services/finalsService";
 import "../Styles/MisFinales.css";
 
 const MisFinales = () => {
@@ -10,18 +10,23 @@ const MisFinales = () => {
   const [usuario, setUsuario] = useState(null);
   const [carrera, setCarrera] = useState(null);
 
+  const userDataStorage = localStorage.getItem("datosAlumno");
+  const carreraDataStorage = localStorage.getItem("datosCarrera");
+
   useEffect(() => {
     cargarDatosUsuario();
   }, []);
 
   const cargarDatosUsuario = () => {
     try {
-      const userDataStorage = localStorage.getItem("userData");
-
-      if (userDataStorage) {
+      if (userDataStorage && carreraDataStorage) {
         const userData = JSON.parse(userDataStorage);
-        setUsuario(userData.usuario);
-        setCarrera(userData.carrera);
+        const carreraData = JSON.parse(carreraDataStorage);
+
+        setUsuario(userData);
+        setCarrera(carreraData);
+
+        console.log("✅ Datos del usuario cargados:", userData, carreraData);
       } else {
         setError("No se encontraron datos de usuario. Por favor, inicie sesión nuevamente.");
       }
@@ -43,11 +48,11 @@ const MisFinales = () => {
       setError("");
 
       const finalesRendidosData = await getFinalExamsTaken(
-        usuario.Permiso,
-        carrera.Codigo
+        usuario.Permiso,   // ← CORRECTO
+        carrera.Codigo     // ← CORRECTO
       );
-      setFinalesRendidos(finalesRendidosData || []);
 
+      setFinalesRendidos(finalesRendidosData || []);
     } catch (error) {
       console.error("❌ Error cargando finales rendidos:", error);
       setError("Error al cargar los finales rendidos: " + (error.message || "Error desconocido"));
@@ -74,7 +79,6 @@ const MisFinales = () => {
     if (ultimosTres >= 200 && ultimosTres < 300) return "2do Año";
     if (ultimosTres >= 300 && ultimosTres < 400) return "3er Año";
     if (ultimosTres >= 400 && ultimosTres < 500) return "4to Año";
-
     return "Otro";
   };
 
@@ -150,11 +154,11 @@ const MisFinales = () => {
         </div>
       </div>
 
-      {/* Finales agrupados por año */}
+      {/* Finales agrupados */}
       {añosOrdenados.map(año => (
         <div key={año} className="inscripciones-section">
           <div className="section-card">
-            <h2><FaCalendarAlt />Año {año}</h2>
+            <h2><FaCalendarAlt /> Año {año}</h2>
             <div className="mesas-grid">
               {finalesPorAnio[año].map((final) => (
                 <div key={final.Codigo} className="mesa-card">
@@ -167,19 +171,23 @@ const MisFinales = () => {
                       <strong>Año cursada:</strong>
                       <span>{obtenerAñoMateria(final.Codigo)}</span>
                     </div>
+
                     <span className={`nota ${final.Nota >= 4 ? 'nota-aprobada' : 'nota-desaprobada'}`}>
                       {final.Nota}
                     </span>
+
                     <div className="info-item">
                       <strong>Estado:</strong>
                       <span className={`estado ${final.Nota >= 4 ? 'estado-aprobado' : 'estado-desaprobado'}`}>
                         {final.Nota >= 4 ? "Aprobado" : "Desaprobado"}
                       </span>
                     </div>
+
                     <div className="info-item">
                       <strong>Modalidad:</strong>
                       <span>{final.Libre === "1" ? "Libre" : "Regular"}</span>
                     </div>
+
                   </div>
                 </div>
               ))}
@@ -193,7 +201,7 @@ const MisFinales = () => {
           <div className="section-card">
             <div className="no-results">
               <h3>No hay finales rendidos</h3>
-              <p>Aquí aparecerán los finales que hayas rendido una vez que los curses y des los exámenes.</p>
+              <p>Aquí aparecerán los finales cuando los rindas.</p>
             </div>
           </div>
         </div>
