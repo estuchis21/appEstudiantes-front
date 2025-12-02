@@ -10,6 +10,8 @@ const MatriculacionPage = () => {
   const [carrera, setCarrera] = useState(null);
   const [asignaturasPendientes, setAsignaturasPendientes] = useState([]);
   const [cargando, setCargando] = useState(false);
+  const [mensaje, setMensaje] = useState("");
+  const [tipoMensaje, setTipoMensaje] = useState(""); // "exito" | "error"
 
   // Cargar datos del login
   useEffect(() => {
@@ -60,20 +62,90 @@ const MatriculacionPage = () => {
     const payload = {
       Alumno: permiso,
       Materia: asignatura.Codigo,
-      Division: asignatura.Division,
+      Division: asignatura.Division || 1, // Valor por defecto
       Libre: false,
-      Profesor: asignatura.Profesor
+      Profesor: asignatura.Profesor || 447 // Valor por defecto
     };
 
+    setCargando(true);
+    setMensaje("");
+    setTipoMensaje("");
+    
     try {
+      console.log("🎯 Intentando matricular:", payload);
+      
       const response = await registerMatriculation(payload);
-      alert(response.mensaje || "Matriculación realizada con éxito.");
+      console.log("✅ Respuesta del servidor:", response);
+      
+      if (response.mensaje) {
+        setMensaje(response.mensaje);
+        setTipoMensaje("exito");
+        
+        // Si la matriculación fue exitosa, actualizar la lista
+        if (response.mensaje.includes("exitosa") || !response.mensaje.includes("Error")) {
+          // Recargar las asignaturas pendientes
+          const nuevasAsignaturas = await getAsignaturasPendientes(permiso, carreraSeleccionada);
+          setAsignaturasPendientes(nuevasAsignaturas.mensaje ? [] : nuevasAsignaturas);
+        }
+      } else {
+        throw new Error("No se recibió confirmación del servidor");
+      }
+      
     } catch (err) {
-      alert("Error al matricular: " + err);
+      console.error("❌ Error al matricular:", err);
+      setMensaje(err.message || "Error al realizar la matriculación");
+      setTipoMensaje("error");
+    } finally {
+      setCargando(false);
     }
   };
 
-  if (!permiso || !carrera) {
+  // Desmatricular asignatura
+  const handleDesmatricular = async (asignatura) => {
+    if (!asignatura.Codigo) {
+      setMensaje("No se puede desmatricular. La asignatura no tiene código definido.");
+      setTipoMensaje("error");
+      return;
+    }
+
+    setCargando(true);
+    setMensaje("");
+    setTipoMensaje("");
+    
+    try {
+      console.log("🎯 Intentando desmatricular:", { 
+        Alumno: permiso, 
+        Materia: asignatura.Codigo, 
+        Division: asignatura.Division || 1 
+      });
+      
+      const response = await deleteMatriculation(
+        permiso, 
+        asignatura.Codigo, 
+        asignatura.Division || 1
+      );
+      
+      console.log("✅ Respuesta del servidor:", response);
+      
+      if (response.mensaje) {
+        setMensaje(response.mensaje);
+        setTipoMensaje("exito");
+        
+        // Recargar las asignaturas pendientes
+        const nuevasAsignaturas = await getAsignaturasPendientes(permiso, carreraSeleccionada);
+        setAsignaturasPendientes(nuevasAsignaturas.mensaje ? [] : nuevasAsignaturas);
+      }
+      
+    } catch (err) {
+      console.error("❌ Error al desmatricular:", err);
+      setMensaje(err.message || "Error al desmatricular");
+      setTipoMensaje("error");
+    } finally {
+      setCargando(false);
+    }
+  };
+
+    if (!permiso || !carrera) {
     return (
       <div style={{ textAlign: "center", marginTop: 50 }}>
         <h2>No hay usuario logueado</h2>
@@ -97,21 +169,19 @@ const MatriculacionPage = () => {
               <div>
                 <strong>{a.Asignatura}</strong> — Matriculado: {a.Matriculado}
               </div>
-              {a.Matriculado === "No" && (
-                <button
-                  onClick={() => handleMatricular(a)}
-                  className="matricular-btn"
-                >
-                  Matricular
-                </button>
-              )}
             </li>
           ))}
         </ul>
       )}
+
+      {cargando && asignaturasPendientes.length === 0 && (
+        <div className="cargando">
+          <div className="spinner"></div>
+          <p>Buscando asignaturas pendientes...</p>
+        </div>
+      )}
     </div>
   );
-
 };
 
 export default MatriculacionPage;
