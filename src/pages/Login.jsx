@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Swal from 'sweetalert2';
 import loginService from '../services/loginService';
 
-const LoginPage = () => {
+const Login = () => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         Documento: '',
@@ -93,6 +93,6 @@ const LoginPage = () => {
             </form>
         </div>
     );
-}
+};
 
-export default LoginPage;
+export default Login;

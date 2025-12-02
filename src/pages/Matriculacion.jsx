@@ -2,71 +2,58 @@ import { useEffect, useState } from "react";
 import "../Styles/Matriculacion.css";
 import {
   getAsignaturasPendientes,
-  getCarrerasDelAlumno,
   registerMatriculation
 } from "../services/matriculationService";
 
 const MatriculacionPage = () => {
-  const [carreras, setCarreras] = useState([]);
-  const [carreraSeleccionada, setCarreraSeleccionada] = useState("");
   const [permiso, setPermiso] = useState(null);
+  const [carrera, setCarrera] = useState(null);
   const [asignaturasPendientes, setAsignaturasPendientes] = useState([]);
   const [cargando, setCargando] = useState(false);
 
-  // Obtener usuario logueado y sus carreras
+  // Cargar datos del login
   useEffect(() => {
-    const usuario = JSON.parse(localStorage.getItem("usuario"));
-    if (!usuario || !usuario.Permiso) {
-      alert("No se encontró información válida del usuario. Por favor logueate.");
+    const datosAlumno = JSON.parse(localStorage.getItem("datosAlumno"));
+    const datosCarrera = JSON.parse(localStorage.getItem("datosCarrera"));
+
+    if (!datosAlumno || !datosCarrera) {
+      alert("No hay información de sesión. Iniciá sesión nuevamente.");
       return;
     }
 
-    setPermiso(usuario.Permiso);
+    setPermiso(datosAlumno.Permiso);
+    setCarrera(datosCarrera.Nombre);
 
-    getCarrerasDelAlumno(usuario.Permiso)
-      .then((data) => setCarreras(data))
-      .catch((err) => alert("Error cargando carreras: " + err));
+    // Cargar asignaturas automáticamente
+    cargarAsignaturas(datosAlumno.Permiso, datosCarrera.Codigo);
   }, []);
 
-  // Consultar asignaturas pendientes
-  const handleConsultar = async (e) => {
-    if (e) e.preventDefault();
-
-    if (!carreraSeleccionada) {
-      alert("Por favor, seleccioná una carrera.");
-      return;
-    }
-
-    if (!permiso) {
-      alert("No se puede consultar asignaturas sin usuario logueado.");
-      return;
-    }
-
+  // Función para traer asignaturas pendientes
+  const cargarAsignaturas = async (permiso, carreraCodigo) => {
     setCargando(true);
-    try {
-      const response = await getAsignaturasPendientes(permiso, carreraSeleccionada);
 
-      // Asegurarnos de que cada asignatura tenga código, división y profesor
+    try {
+      const response = await getAsignaturasPendientes(permiso, carreraCodigo);
+
       const asignaturasConCodigo = response.map((a, index) => ({
         ...a,
         Codigo: a.Codigo || a.Materia || 490000 + index,
         Division: a.Division || 1,
-        Profesor: a.Profesor || 447
+        Profesor: a.Profesor || 447,
       }));
 
       setAsignaturasPendientes(asignaturasConCodigo);
-      alert("Asignaturas cargadas correctamente.");
     } catch (err) {
-      alert("Error al consultar las asignaturas: " + err);
+      alert("Error al consultar asignaturas: " + err);
     } finally {
       setCargando(false);
     }
   };
 
-  // Matricular asignatura
+  // Matricular
   const handleMatricular = async (asignatura) => {
     if (!asignatura.Codigo) {
-      alert("No se puede matricular. La asignatura no tiene código definido:\n" + JSON.stringify(asignatura, null, 2));
+      alert("La asignatura no tiene código definido.");
       return;
     }
 
@@ -86,45 +73,23 @@ const MatriculacionPage = () => {
     }
   };
 
-  if (!permiso) {
+  if (!permiso || !carrera) {
     return (
       <div style={{ textAlign: "center", marginTop: 50 }}>
         <h2>No hay usuario logueado</h2>
-        <p>Por favor, inicia sesión para acceder a esta página.</p>
       </div>
     );
   }
 
   return (
-    <div className="matriculacion-container">
-      <h2>📘 Consultar Asignaturas Pendientes</h2>
+    <div style={{ maxWidth: 600, margin: "0 auto", padding: "20px" }}>
+      <h2>📘 Asignaturas Pendientes</h2>
+      <p><strong>Carrera:</strong> {carrera}</p>
 
-      <form onSubmit={handleConsultar} className="matriculacion-form">
-        <label>Seleccioná tu carrera:</label>
-        <select
-          value={carreraSeleccionada}
-          onChange={(e) => setCarreraSeleccionada(e.target.value)}
-          required
-        >
-          <option value="">-- Seleccionar --</option>
-          {carreras.map((c) => (
-            <option key={c.Codigo} value={c.Codigo}>
-              {c.Nombre}
-            </option>
-          ))}
-        </select>
-
-        <button type="submit" disabled={cargando}>
-          {cargando ? "Cargando..." : "Consultar"}
-        </button>
-      </form>
-
-      <h3>Asignaturas Pendientes</h3>
-
-      {asignaturasPendientes.length === 0 ? (
-        <p className="asignaturas-vacias">
-          No hay asignaturas pendientes o no se consultó ninguna carrera aún.
-        </p>
+      {cargando ? (
+        <p>Cargando...</p>
+      ) : asignaturasPendientes.length === 0 ? (
+        <p>No hay asignaturas pendientes.</p>
       ) : (
         <ul className="asignaturas-list">
           {asignaturasPendientes.map((a) => (
