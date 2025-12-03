@@ -13,10 +13,21 @@ const apiClient = async (endpoint, options = {}) => {
 
   try {
     const response = await fetch(url, config);
+    
     if (!response.ok) {
-      throw new Error(`Error: ${response.status}`);
+      throw new Error(`Error ${response.status}: ${response.statusText}`);
     }
-    return await response.json();
+
+    // Verificar si la respuesta tiene contenido
+    const contentType = response.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      return await response.json();
+    } else {
+      // Si no es JSON, devolver el texto o un objeto vacío
+      const text = await response.text();
+      return text ? { message: text } : {};
+    }
+    
   } catch (error) {
     console.error(`API request error: ${error}`);
     throw error;

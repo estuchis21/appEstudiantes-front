@@ -19,14 +19,12 @@ const MisFinales = () => {
 
   const cargarDatosUsuario = () => {
     try {
-      if (userDataStorage && carreraDataStorage) {
+      const userDataStorage = localStorage.getItem("userData");
+
+      if (userDataStorage) {
         const userData = JSON.parse(userDataStorage);
-        const carreraData = JSON.parse(carreraDataStorage);
-
-        setUsuario(userData);
-        setCarrera(carreraData);
-
-        console.log("✅ Datos del usuario cargados:", userData, carreraData);
+        setUsuario(userData.usuario);
+        setCarrera(userData.carrera);
       } else {
         setError("No se encontraron datos de usuario. Por favor, inicie sesión nuevamente.");
       }
@@ -138,12 +136,6 @@ const MisFinales = () => {
           <div className="stat-card">
             <span className="stat-number">{finalesRendidos.length}</span>
             <span className="stat-label">Total Finales</span>
-          </div>
-          <div className="stat-card">
-            <span className="stat-number">
-              {finalesRendidos.filter(f => f.Nota >= 8).length}
-            </span>
-            <span className="stat-label">Nota ≥ 8</span>
           </div>
           <div className="stat-card">
             <span className="stat-number">

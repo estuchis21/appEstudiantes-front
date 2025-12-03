@@ -1,10 +1,4 @@
-import { useState, useEffect } from "react";
-import {
-  getFinalExamsByStudentAndCareer,
-  registerStudentToFinal,
-  deleteFinalInscription,
-} from "../services/finalsService";
-import { useMediaQuery } from "react-responsive";
+import { useEffect, useState } from "react";
 import {
   FaCalendarAlt,
   FaClock,
@@ -12,18 +6,41 @@ import {
   FaUserGraduate,
 } from "react-icons/fa";
 import { FaBook, FaBookBookmark } from "react-icons/fa6";
+import { useMediaQuery } from "react-responsive";
 import Swal from "sweetalert2";
+import {
+  deleteFinalInscription,
+  getFinalExamsByStudentAndCareer,
+  registerStudentToFinal,
+} from "../services/finalsService";
 import "../styles/Finales.css";
 
 const FinalExams = () => {
   const [finals, setFinals] = useState([]);
-  const permiso = localStorage.getItem("permiso");
-  const codigo = localStorage.getItem("codigoCarrera");
-  const nombreCarrera = formatCarreraName(localStorage.getItem("nombreCarrera"));
+  const [loading, setLoading] = useState(true);
+
+  //  CORREGIDO: Obtener datos como en HomeUser.jsx
+  const userData = JSON.parse(localStorage.getItem("userData")) || {};
+  const careerData = JSON.parse(localStorage.getItem("careerData")) || {};
+  
+  //  Datos directos como en HomeUser
+  const permiso = userData?.Permiso || userData?.permiso || "";
+  const codigo = careerData?.Codigo || careerData?.codigo || "";
+  const nombreCarrera = formatCarreraName(careerData?.Nombre || careerData?.nombre || "");
+
+  // Para debug - agrega esto
+  useEffect(() => {
+    console.log("🔍 FinalExams - Debug datos:");
+    console.log("userData:", userData);
+    console.log("careerData:", careerData);
+    console.log("permiso:", permiso);
+    console.log("codigo:", codigo);
+  }, []);
 
   const isMobile = useMediaQuery({ maxWidth: 768 });
 
   function formatCarreraName(nombre) {
+    if (!nombre) return "";
     const palabrasMin = ["en", "de", "y"];
     return nombre
       .toLowerCase()
@@ -43,22 +60,29 @@ const FinalExams = () => {
   // CARGA CON LOCALSTORAGE
   // =====================
   useEffect(() => {
-    const saved = localStorage.getItem("finalsData");
+    const fetchFinalExams = async () => {
+      // Verificar que tenemos datos válidos
+      if (!permiso || !codigo) {
+        console.warn("⚠️ Faltan datos en FinalExams:", { permiso, codigo });
+        setLoading(false);
+        return;
+      }
 
-    if (saved) {
-      setFinals(JSON.parse(saved));
-    } else {
-      const fetchFinalExams = async () => {
-        try {
-          const result = await getFinalExamsByStudentAndCareer(permiso, codigo);
-          setFinals(result);
-          localStorage.setItem("finalsData", JSON.stringify(result));
-        } catch (error) {
-          console.error("Error al obtener los exámenes:", error);
-        }
-      };
-      fetchFinalExams();
-    }
+      try {
+        setLoading(true);
+        console.log("📡 FinalExams llamando servicio con:", { permiso, codigo });
+        const result = await getFinalExamsByStudentAndCareer(permiso, codigo);
+        console.log("📦 FinalExams - Finales recibidos:", result);
+        setFinals(result || []);
+      } catch (error) {
+        console.error("❌ Error en FinalExams:", error);
+        Swal.fire("Error", "No se pudieron cargar los finales", "error");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFinalExams();
   }, [permiso, codigo]);
 
   // ==================================
@@ -70,7 +94,7 @@ const FinalExams = () => {
   const handleRegister = async (final) => {
     const confirm = await Swal.fire({
       title: "¿Confirmar inscripción?",
-      text: `Te inscribirás en ${final.Abreviatura}`,
+      text: `Estas por inscribirte en el final de ${final.Abreviatura}`,
       showCancelButton: true,
       confirmButtonText: "Sí",
       cancelButtonText: "Cancelar",
@@ -80,10 +104,21 @@ const FinalExams = () => {
     if (!confirm.isConfirmed) return;
 
     try {
-      await registerStudentToFinal(final.Numero, permiso, final.Curso, final.Libre);
+      console.log("🎯 Inscribiendo a mesa:", final.Numero);
+      await registerStudentToFinal(
+        final.Numero,
+        permiso,
+        final.Curso,
+        final.Libre
+      );
 
-      const updated = finals.map((f) =>
-        f.Numero === final.Numero ? { ...f, Inscripto: 1 } : f
+      Swal.fire("¡Inscripción exitosa!", "Te has inscripto correctamente.", "success");
+
+      // Actualizar estado local
+      setFinals((prev) =>
+        prev.map((f) =>
+          f.Numero === final.Numero ? { ...f, Inscripto: 1 } : f
+        )
       );
 
       setFinals(updated);
@@ -91,7 +126,8 @@ const FinalExams = () => {
 
       Swal.fire("¡Listo!", "Inscripción realizada con éxito", "success");
     } catch (error) {
-      Swal.fire("Error", "No se pudo inscribir.", "error");
+      console.error("❌ Error en inscripción:", error);
+      Swal.fire("Error", error.message || "No se pudo realizar la inscripción.", "error");
     }
   };
 
@@ -114,8 +150,12 @@ const FinalExams = () => {
     try {
       await deleteFinalInscription(final.Numero, permiso);
 
-      const updated = finals.map((f) =>
-        f.Numero === final.Numero ? { ...f, Inscripto: 0 } : f
+      Swal.fire("Desinscripción exitosa", "Has sido dado de baja.", "success");
+
+      setFinals((prev) =>
+        prev.map((f) =>
+          f.Numero === final.Numero ? { ...f, Inscripto: 0 } : f
+        )
       );
 
       setFinals(updated);
@@ -123,91 +163,166 @@ const FinalExams = () => {
 
       Swal.fire("¡Baja realizada!", "Te desinscribiste correctamente", "success");
     } catch (error) {
-      Swal.fire("Error", "No se pudo cancelar la inscripción", "error");
+      Swal.fire("Error", "No se pudo cancelar la inscripción.", "error");
     }
   };
 
-  const materiasDisponibles = finals.filter((f) => f.Inscripto === 0);
-  const materiasInscriptas = finals.filter((f) => f.Inscripto === 1);
+  const materiasDisponibles = finals.filter((f) => Number(f.Inscripto) === 0);
+  const materiasInscriptas = finals.filter((f) => Number(f.Inscripto) === 1);
+
+  console.log("📊 FinalExams - Estado:", {
+    loading,
+    totalFinales: finals.length,
+    disponibles: materiasDisponibles.length,
+    inscriptas: materiasInscriptas.length
+  });
+
+  if (loading) {
+    return (
+      <div className="final-exams-container">
+        <div className="loading-container">
+          <div className="loading-spinner"></div>
+          <p>Cargando finales...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="final-exams-container">
       <div className="final-exams-header">
         <h1>{isMobile ? getAbreviatura() : nombreCarrera}</h1>
+
         <div className="user-info-container">
           <div className="user-info-card">
-            <span>📚 Exámenes Finales</span>
+            <span>Exámenes Finales</span>
           </div>
         </div>
       </div>
 
       <div className="final-exams-grid">
-        
-        {/* ======================= */}
-        {/*       INSCRIPTAS        */}
-        {/* ======================= */}
         <div className="final-exams-column">
           <div className="final-exams-card">
-            <h2 className="card-title"><FaBookBookmark /> Inscriptas ({materiasInscriptas.length})</h2>
+            <h2 className="card-title">
+              <FaBookBookmark /> Materias Inscriptas ({materiasInscriptas.length})
+            </h2>
 
-            {materiasInscriptas.length ? materiasInscriptas.map((final) => (
-              <div key={final.Numero} className="final-item inscripta">
-                <h3 className="final-subject">{final.Abreviatura}</h3>
-
-                <div className="final-info-grid">
-                  <span><FaCalendarAlt /> {final.Fecha}</span>
-                  <span><FaClock /> {final.Hora}</span>
-                  <span><FaMapMarkerAlt /> {final.Lugar}</span>
-                  <span><FaUserGraduate /> {final.Titular}</span>
-                </div>
-
-                <button className="action-button regular" onClick={() => handleDeregister(final)}>
-                  Desinscribirse
-                </button>
+            {materiasInscriptas.length === 0 ? (
+              <div className="empty-state">
+                <p>No hay materias inscriptas</p>
               </div>
-            )) : <p className="empty-state">No hay materias inscriptas</p>}
+            ) : (
+              materiasInscriptas.map((final) => (
+                <div key={final.Numero} className="final-item inscripta">
+                  <div className="final-header">
+                    <h3 className="final-subject">{final.Abreviatura}</h3>
+                  </div>
+
+                  <div className="final-info-grid">
+                    <div className="final-info-row">
+                      <span className="final-info-item">
+                        <FaCalendarAlt /> {final.Fecha}
+                      </span>
+                      <span className="final-info-item">
+                        <FaClock /> {final.Hora}
+                      </span>
+                    </div>
+
+                    <div className="final-info-row">
+                      <span className="final-info-item">
+                        <FaMapMarkerAlt /> {final.Lugar}
+                      </span>
+                      <span className="final-info-item">
+                        <FaUserGraduate /> {final.Titular}
+                      </span>
+                    </div>
+                  </div>
+
+                  <button
+                    className="action-button regular"
+                    onClick={() => handleDeregister(final)}
+                  >
+                    Desinscribirse
+                  </button>
+                </div>
+              ))
+            )}
           </div>
         </div>
 
-        {/* ======================= */}
-        {/*      DISPONIBLES        */}
-        {/* ======================= */}
         <div className="final-exams-column">
           <div className="final-exams-card">
-            <h2 className="card-title"><FaBook /> Disponibles ({materiasDisponibles.length})</h2>
+            <h2 className="card-title">
+              <FaBook /> Materias Disponibles ({materiasDisponibles.length})
+            </h2>
 
-            {materiasDisponibles.length ? materiasDisponibles.map((final) => (
-              <div key={final.Numero}
-                className={`final-item disponible ${
-                  final.Asistencia === "0" || final.PerdioTurno === "1" ? "disabled" : ""
-                }`}
-              >
-                <h3 className="final-subject">{final.Abreviatura}</h3>
-                {final.Libre === "1" && <span className="libre-badge">Libre</span>}
-
-                <div className="final-info-grid">
-                  <span><FaCalendarAlt /> {final.Fecha}</span>
-                  <span><FaClock /> {final.Hora}</span>
-                  <span><FaMapMarkerAlt /> {final.Lugar}</span>
-                  <span><FaUserGraduate /> {final.Titular}</span>
-                </div>
-
-                <button
-                  disabled={final.Asistencia === "0" || final.PerdioTurno === "1"}
-                  onClick={() => handleRegister(final)}
-                  className={`action-button ${final.Libre === "1" ? "libre" : "regular"}`}
-                >
-                  {final.Libre === "1" ? "Inscribirse (Libre)" : "Inscribirse"}
-                </button>
-
-                {(final.Asistencia === "0" || final.PerdioTurno === "1") &&
-                  <small className="disabled-reason">
-                    {final.Asistencia === "0"
-                      ? "No tiene asistencia suficiente"
-                      : "Perdió el turno anterior"}
-                  </small>}
+            {materiasDisponibles.length === 0 ? (
+              <div className="empty-state">
+                <p>No hay materias disponibles</p>
               </div>
-            )) : <p className="empty-state">No hay materias disponibles</p>}
+            ) : (
+              materiasDisponibles.map((final) => (
+                <div
+                  key={final.Numero}
+                  className={`final-item disponible ${
+                    final.Asistencia === "0" || final.PerdioTurno === "1"
+                      ? "disabled"
+                      : ""
+                  }`}
+                >
+                  <div className="final-header">
+                    <h3 className="final-subject">{final.Abreviatura}</h3>
+                    {final.Libre === "1" && (
+                      <span className="libre-badge">Libre</span>
+                    )}
+                  </div>
+
+                  <div className="final-info-grid">
+                    <div className="final-info-row">
+                      <span className="final-info-item">
+                        <FaCalendarAlt /> {final.Fecha}
+                      </span>
+                      <span className="final-info-item">
+                        <FaClock /> {final.Hora}
+                      </span>
+                    </div>
+
+                    <div className="final-info-row">
+                      <span className="final-info-item">
+                        <FaMapMarkerAlt /> {final.Lugar}
+                      </span>
+                      <span className="final-info-item">
+                        <FaUserGraduate /> {final.Titular}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="final-actions">
+                    <button
+                      className={`action-button ${
+                        final.Libre === "1" ? "libre" : "regular"
+                      }`}
+                      disabled={
+                        final.Asistencia === "0" || final.PerdioTurno === "1"
+                      }
+                      onClick={() => handleRegister(final)}
+                    >
+                      {final.Libre === "1"
+                        ? "Inscribirse (Libre)"
+                        : "Inscribirse"}
+                    </button>
+
+                    {(final.Asistencia === "0" || final.PerdioTurno === "1") && (
+                      <small className="disabled-reason">
+                        {final.Asistencia === "0"
+                          ? "No tiene asistencia suficiente"
+                          : "Perdió el turno anterior"}
+                      </small>
+                    )}
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
 

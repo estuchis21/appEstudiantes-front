@@ -44,14 +44,14 @@ const HomeUser = () => {
         });
       }
 
-      console.log("Permiso del usuario:", permiso);
-      console.log("Código carrera:", codigoCarrera);
+      //console.log("Permiso del usuario:", permiso);
+      //console.log("Código carrera:", codigoCarrera);
 
       // Obtener notificaciones
       const fetchNotifications = async () => {
         try {
           const notificaciones = await getNotifications(permiso);
-          console.log("Notificaciones obtenidas:", notificaciones);
+          //console.log("Notificaciones obtenidas:", notificaciones);
           
           // TRANSFORMAR LOS DATOS A LA ESTRUCTURA CORRECTA
           const noticiasTransformadas = notificaciones.map(noticia => ({
@@ -61,7 +61,7 @@ const HomeUser = () => {
           }));
           
           setNoticias(noticiasTransformadas);
-          console.log("Noticias transformadas:", noticiasTransformadas);
+          //console.log("Noticias transformadas:", noticiasTransformadas);
         } catch (err) {
           console.error("Error al obtener notificaciones:", err);
         }
@@ -72,7 +72,7 @@ const HomeUser = () => {
         if (permiso && codigoCarrera) {
           try {
             const finales = await getFinalExamsByStudentAndCareer(permiso, codigoCarrera);
-            console.log("Finales obtenidos:", finales);
+            //console.log("Finales obtenidos:", finales);
             
             // Filtrar solo los finales disponibles (no inscriptos) y transformarlos
             const finalesProximos = finales
@@ -87,7 +87,7 @@ const HomeUser = () => {
               }));
             
             setProximosFinales(finalesProximos);
-            console.log("Próximos finales procesados:", finalesProximos);
+            //console.log("Próximos finales procesados:", finalesProximos);
           } catch (error) {
             console.error("Error al obtener los finales:", error);
             // En caso de error, mantener los datos de ejemplo

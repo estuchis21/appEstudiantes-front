@@ -1,52 +1,54 @@
-import { useState } from "react";
+// pages/LoginPage.jsx
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Swal from "sweetalert2";
-import loginService from "../services/loginService";
+import Swal from 'sweetalert2';
+import loginService from '../services/loginService';
 
 const Login = () => {
     const navigate = useNavigate();
+    const [formData, setFormData] = useState({
+        Documento: '',
+        Contrasena: ''
+    });
+    const [loading, setLoading] = useState(false);
 
-    const [Documento, setDocumento] = useState("");
-    const [Contrasena, setContrasena] = useState("");
+    const handleChange = (e) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value
+        });
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
 
         try {
-            const payload = {
-                Documento: Documento.trim(),
-                Contrasena: Contrasena.trim(),
-            };
-
-            const result = await loginService(payload);
-
-            console.log("RESPUESTA DEL BACK:", result);
-
-            // ⛔ Validación correcta para objeto (no array)
-            if (!result || !result.datosAlumno || typeof result.datosAlumno !== "object") {
-                return Swal.fire("Error", "Credenciales incorrectas.", "error");
-            }
-
-            const alumno = result.datosAlumno;
-
+            console.log('Enviando datos:', formData);
+            const result = await loginService(formData);
+            console.log('Login exitoso:', result);
+            
+            localStorage.setItem('isLoggedIn', 'true');
+            localStorage.setItem('userData', JSON.stringify(result.datosAlumno));
+            localStorage.setItem('careerData', JSON.stringify(result.datosCarrera));
+            
+            console.log('Redirigiendo a /');
+            // FORZAR el reload
+            window.location.href = '/';
+            
+        } catch (error) {
+            console.log('Error completo:', error);
+            console.log('Mensaje de error:', error.message);
+            
+            // SweetAlert directo sin condiciones primero
             Swal.fire({
-                icon: "success",
-                title: "Bienvenido",
-                text: `Hola ${alumno.Nombre}!`,
-                timer: 1500,
-                showConfirmButton: false,
+                icon: 'error',
+                title: 'Error de login',
+                text: 'DNI o contraseña incorrectos',
+                confirmButtonColor: '#3085d6'
             });
-
-            // Guardamos sesión
-            localStorage.setItem("isLoggedIn", "true");
-            localStorage.setItem("datosAlumno", JSON.stringify(result.datosAlumno));
-            localStorage.setItem("datosCarrera", JSON.stringify(result.datosCarrera));
-
-            setTimeout(() => navigate("/"), 1200);
-
-        } catch (err) {
-            console.error(err);
-            Swal.fire("Error", "Error al conectar con el servidor.", "error");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -54,31 +56,39 @@ const Login = () => {
         <div className="login-container">
             <form className="login-form" onSubmit={handleSubmit}>
                 <h2>Iniciar Sesión</h2>
-
+                
                 <div className="form-group">
                     <label>DNI:</label>
-                    <input
-                        type="number"
-                        value={Documento}
-                        onChange={(e) => setDocumento(e.target.value)}
+                    <input 
+                        name="Documento"
+                        type="number" 
                         placeholder="Ingresa tu DNI"
+                        value={formData.Documento}
+                        onChange={handleChange}
+                        disabled={loading}
                         required
                     />
                 </div>
-
+                
                 <div className="form-group">
                     <label>Contraseña:</label>
-                    <input
-                        type="password"
-                        value={Contrasena}
-                        onChange={(e) => setContrasena(e.target.value)}
+                    <input 
+                        name="Contrasena"
+                        type="password" 
                         placeholder="Ingresa tu contraseña"
+                        value={formData.Contrasena}
+                        onChange={handleChange}
+                        disabled={loading}
                         required
                     />
                 </div>
-
-                <button type="submit" className="login-button">
-                    Ingresar
+                
+                <button 
+                    type="submit" 
+                    className="login-button"
+                    disabled={loading}
+                >
+                    {loading ? 'Iniciando sesión...' : 'Ingresar'}
                 </button>
             </form>
         </div>
