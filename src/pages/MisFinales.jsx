@@ -48,8 +48,8 @@ const MisFinales = () => {
       setError("");
 
       const finalesRendidosData = await getFinalExamsTaken(
-        usuario.Permiso,   // ← CORRECTO
-        carrera.Codigo     // ← CORRECTO
+        usuario.Permiso,  
+        carrera.Codigo     
       );
 
       setFinalesRendidos(finalesRendidosData || []);
