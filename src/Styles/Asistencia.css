@@ -1,408 +1,116 @@
+/* CONTENEDOR GENERAL */
 .asistencias-container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 80px 20px;
-<<<<<<< HEAD
-    background-color: #ffffff;
-=======
+    padding: 60px 20px;
     background: linear-gradient(135deg, #f8faff 0%, #ffffff 100%);
->>>>>>> b72f7447b7bac56b3eac7d79a9efa33d0fd2aa0f
     min-height: 100vh;
 }
 
-.asistencias-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
-    padding-bottom: 20px;
-    border-bottom: 2px solid rgba(52, 47, 97, 0.1);
-}
-
-.asistencias-title {
-    color: #343761;
-    margin: 0;
-    font-size: 2.5rem;
-<<<<<<< HEAD
-    font-weight: 300;
-}
-
-.info-badge {
-    background: rgba(52, 47, 97, 0.1);
-    padding: 8px 16px;
-    border-radius: 20px;
-    border: 1px solid rgba(52, 47, 97, 0.3);
-}
-
-.badge-text {
-    color: #343761;
-    font-weight: 500;
-    font-size: 0.9rem;
-}
-
-.stats-section {
-    margin-bottom: 40px;
-}
-
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
-}
-
-.stat-card {
-    background: white;
-    padding: 24px;
-    border-radius: 12px;
+/* TÍTULOS */
+.asistencias-container h1 {
+    font-size: 2.4rem;
+    font-weight: 600;
     text-align: center;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    border: 1px solid #f0f0f0;
-    transition: transform 0.2s ease;
-}
-
-.stat-card:hover {
-    transform: translateY(-2px);
-}
-
-.stat-number {
-    display: block;
-    font-size: 2.5rem;
-    font-weight: 300;
     color: #343761;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
 }
 
-.stat-label {
-    color: #666;
-    font-size: 0.9rem;
-    font-weight: 500;
-}
-
-.tabla-section {
-    margin-bottom: 40px;
-}
-
-.section-card {
-    background: white;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    border: 1px solid #f0f0f0;
-}
-
-.section-card h2 {
-    color: #343761;
-    margin-top: 0;
-    margin-bottom: 20px;
-    font-size: 1.5rem;
+.asistencias-container h3 {
+    text-align: center;
     font-weight: 400;
-}
-
-/* Estados de asistencia */
-.estado-asistencia {
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.estado-asistencia.presente {
-    background: rgba(76, 175, 80, 0.1);
-    color: #4caf50;
-    border: 1px solid rgba(76, 175, 80, 0.3);
-}
-
-.estado-asistencia.ausente {
-    background: rgba(244, 67, 54, 0.1);
-    color: #f44336;
-    border: 1px solid rgba(244, 67, 54, 0.3);
-}
-
-.estado-asistencia.justificado {
-    background: rgba(255, 152, 0, 0.1);
-    color: #ff9800;
-    border: 1px solid rgba(255, 152, 0, 0.3);
-}
-
-.estado-asistencia.tardanza {
-    background: rgba(156, 39, 176, 0.1);
-    color: #9c27b0;
-    border: 1px solid rgba(156, 39, 176, 0.3);
-}
-
-/* Mejoras para la tabla */
-:global(.tabla-container) {
-    border-radius: 8px;
-    overflow: hidden;
-}
-
-:global(.tabla-header) {
-    background: rgba(52, 47, 97, 0.05);
-    border-bottom: 2px solid rgba(52, 47, 97, 0.1);
-}
-
-:global(.tabla-header-cell) {
-    color: #343761;
-    font-weight: 600;
-    padding: 16px;
-    text-align: left;
-}
-
-:global(.tabla-row) {
-    border-bottom: 1px solid #f0f0f0;
-    transition: background-color 0.2s ease;
-}
-
-:global(.tabla-row:hover) {
-    background: rgba(52, 47, 97, 0.02);
-}
-
-:global(.tabla-cell) {
-    padding: 16px;
-    color: #666;
-}
-
-:global(.tabla-vacia) {
-    color: #999;
-    text-align: center;
-    padding: 40px;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .asistencias-container {
-        padding: 60px 16px;
-    }
-
-    .asistencias-header {
-        flex-direction: column;
-        gap: 16px;
-        text-align: center;
-    }
-
-    .asistencias-title {
-        font-size: 2rem;
-    }
-
-    .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .section-card {
-        padding: 20px;
-    }
-
-    :global(.tabla-header-cell),
-    :global(.tabla-cell) {
-        padding: 12px 8px;
-        font-size: 0.9rem;
-    }
-
-    .estado-asistencia {
-        font-size: 0.8rem;
-        padding: 4px 8px;
-    }
-}
-
-@media (max-width: 480px) {
-    .asistencias-container {
-        padding: 40px 12px;
-    }
-
-    .asistencias-title {
-        font-size: 1.75rem;
-    }
-
-    .stats-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .stat-number {
-        font-size: 2rem;
-    }
-
-    .section-card {
-        padding: 16px;
-    }
-}
-=======
-    font-weight: 600;
-    background: linear-gradient(135deg, #343761 0%, #4a457a 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-.info-badge {
-    background: linear-gradient(135deg, #343761 0%, #4a457a 100%);
-    padding: 10px 20px;
-    border-radius: 25px;
-    box-shadow: 0 4px 12px rgba(52, 47, 97, 0.2);
-}
-
-.badge-text {
-    color: white;
-    font-weight: 600;
-    font-size: 0.9rem;
-    letter-spacing: 0.5px;
-}
-
-.tabla-section {
+    color: #555;
     margin-bottom: 40px;
 }
 
-.section-card {
-    background: white;
-    padding: 30px;
-    border-radius: 16px;
-    box-shadow: 0 8px 24px rgba(52, 47, 97, 0.1);
-    border: 1px solid rgba(52, 47, 97, 0.08);
+/* LISTA DE MATERIAS */
+.lista-materias {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
 }
 
-.section-card h2 {
+/* ---------- CARD ---------- */
+.item-materia {
+    background: #ffffff;
+    padding: 22px;
+    border-radius: 14px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    border: 1px solid rgba(52, 47, 97, 0.05);
+    transition: 0.25s ease;
+}
+
+.item-materia:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 28px rgba(0,0,0,0.12);
+}
+
+/* NOMBRE DE MATERIA */
+.item-materia strong {
+    font-size: 1.25rem;
     color: #343761;
-    margin-top: 0;
-    margin-bottom: 25px;
-    font-size: 1.5rem;
-    font-weight: 600;
-    border-left: 4px solid #343761;
-    padding-left: 15px;
+    display: block;
+    margin-bottom: 6px;
 }
 
-/* Estilos para las celdas de la tabla */
-.materia-nombre {
-    font-weight: 600;
-    color: #343761;
+/* TEXTO INTERNO */
+.item-materia br {
+    margin-bottom: 4px;
 }
 
-.fecha-asistencia {
-    font-weight: 500;
-    color: #343761;
-}
-
-.profesor-nombre {
-    color: #6c757d;
-    font-weight: 500;
-}
-
-/* Estilos para los porcentajes de asistencia */
+/* ---------- PORCENTAJES COLOREADOS ---------- */
 .porcentaje-asistencia {
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-weight: 600;
-    font-size: 0.85rem;
-    text-align: center;
-    display: inline-block;
-    min-width: 60px;
-}
-
-.porcentaje-asistencia.alto {
-    background: rgba(76, 175, 80, 0.15);
-    color: #2e7d32;
-    border: 1px solid rgba(76, 175, 80, 0.3);
-}
-
-.porcentaje-asistencia.medio {
-    background: rgba(255, 152, 0, 0.15);
-    color: #ef6c00;
-    border: 1px solid rgba(255, 152, 0, 0.3);
-}
-
-.porcentaje-asistencia.bajo {
-    background: rgba(244, 67, 54, 0.15);
-    color: #d32f2f;
-    border: 1px solid rgba(244, 67, 54, 0.3);
-}
-
-.porcentaje-asistencia.critico {
-    background: rgba(183, 28, 28, 0.15);
-    color: #c62828;
-    border: 1px solid rgba(183, 28, 28, 0.3);
+    padding: 6px 14px;
+    border-radius: 18px;
     font-weight: 700;
-}
-
-/* Estados de carga y vacío */
-.loading-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 40px;
-    color: #343761;
-}
-
-.loading-spinner {
-    width: 40px;
-    height: 40px;
-    border: 4px solid rgba(52, 47, 97, 0.1);
-    border-left: 4px solid #343761;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin-bottom: 16px;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-.empty-message {
+    font-size: 0.85rem;
+    display: inline-block;
+    margin-top: 6px;
     text-align: center;
-    color: #6c757d;
-    padding: 40px;
-    font-style: italic;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-    .asistencias-container {
-        padding: 60px 16px;
-    }
-    
-    .asistencias-header {
-        flex-direction: column;
-        gap: 16px;
-        text-align: center;
+/* VERDE - BUENA ASISTENCIA */
+.porcentaje-asistencia.alto {
+    background: rgba(76, 175, 80, 0.18);
+    color: #1b5e20;
+    border: 1px solid rgba(76, 175, 80, 0.35);
+}
+
+/* AMARILLO - ZONA MEDIA */
+.porcentaje-asistencia.medio {
+    background: rgba(255, 193, 7, 0.22);
+    color: #d47f00;
+    border: 1px solid rgba(255, 193, 7, 0.45);
+}
+
+/* NARANJA/ROJO - BAJA PERO NO CRÍTICA */
+.porcentaje-asistencia.bajo {
+    background: rgba(244, 67, 54, 0.22);
+    color: #c62828;
+    border: 1px solid rgba(244, 67, 54, 0.45);
+}
+
+/* ROJO FUERTE - CRÍTICO */
+.porcentaje-asistencia.critico {
+    background: rgba(183, 28, 28, 0.30);
+    color: #b71c1c;
+    border: 1px solid rgba(183, 28, 28, 0.50);
+}
+
+/* ---------------- RESPONSIVE ---------------- */
+@media (max-width: 480px) {
+    .asistencias-container h1 {
+        font-size: 1.9rem;
     }
 
-    .asistencias-title {
-        font-size: 2rem;
-    }
-
-    .section-card {
-        padding: 20px;
-    }
-
-    .materia-nombre,
-    .fecha-asistencia,
-    .profesor-nombre {
-        font-size: 0.9rem;
+    .item-materia {
+        padding: 18px;
     }
 
     .porcentaje-asistencia {
-        padding: 4px 8px;
         font-size: 0.8rem;
-        min-width: 50px;
+        padding: 5px 10px;
     }
 }
-
-@media (max-width: 480px) {
-    .asistencias-container {
-        padding: 40px 12px;
-    }
-
-    .asistencias-title {
-        font-size: 1.75rem;
-    }
-
-    .section-card {
-        padding: 16px;
-    }
-
-    .section-card h2 {
-        font-size: 1.3rem;
-        padding-left: 12px;
-    }
-}
->>>>>>> b72f7447b7bac56b3eac7d79a9efa33d0fd2aa0f
