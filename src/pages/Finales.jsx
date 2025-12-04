@@ -5,6 +5,7 @@ import {
   getFinalExamsByStudentAndCareer,
   registerStudentToFinal
 } from "../services/finalsService";
+import '../styles/Finales.css';
 
 const Finales = () => {
   const [finalesDisponibles, setFinalesDisponibles] = useState([]);
@@ -76,53 +77,80 @@ const Finales = () => {
   };
 
   return (
-    <div style={{ padding:25 }}>
+    <div className="final-exams-container">
 
-      {/* DISPONIBLES */}
-      <h2>Finales disponibles</h2>
-      {finalesDisponibles.length === 0 && <p>No hay finales para inscribirse 🎓</p>}
+      <div className="final-exams-header">
+        <h1>Finales</h1>
+      </div>
 
-      <ul style={{ listStyle:"none", padding:0 }}>
-        {finalesDisponibles.map(f => (
-          <li key={f.Numero}
-              style={{border:"1px solid #ccc",padding:12,marginBottom:10,borderRadius:6}}>
+      <div className="user-info-container">
+        <div className="user-info-card">
+          <span>Alumno #{permisoUsuario}</span>
+        </div>
+      </div>
 
-            <h3>{f.Abreviatura}</h3>
-            <p><b>Fecha:</b> {f.Fecha} {f.Hora}</p>
+      <div className="final-exams-grid">
 
-            <button onClick={() => inscribir(f.Numero)}
-              style={{background:"#1464d2",color:"#fff",padding:"8px 15px",
-              border:"none",borderRadius:5,cursor:"pointer"}}>
-              Inscribirme
-            </button>
+        {/* DISPONIBLES */}
+        <div className="final-exams-column">
+          <div className="final-exams-card">
+            <h2 className="card-title">📘 Finales disponibles</h2>
 
-          </li>
-        ))}
-      </ul>
+            {finalesDisponibles.length === 0 && (
+              <div className="empty-state"><p>No hay finales disponibles 🎓</p></div>
+            )}
+
+            {finalesDisponibles.map(f => (
+              <div key={f.Numero} className="final-item disponible">
+                <div className="final-header">
+                  <h3 className="final-subject">{f.Abreviatura}</h3>
+                </div>
+
+                <div className="final-info-grid">
+                  <div className="final-info-item"><b>Fecha:</b> {f.Fecha} - {f.Hora}</div>
+                </div>
+
+                <div className="final-actions">
+                  <button className="action-button regular" onClick={() => inscribir(f.Numero)}>
+                    Inscribirme
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
 
 
-      {/* INSCRIPTOS */}
-      <h2 style={{marginTop:30}}>Finales inscriptos</h2>
-      {finalesInscriptos.length === 0 && <p>No estás inscripto en ningún final.</p>}
+        {/* INSCRIPTOS */}
+        <div className="final-exams-column">
+          <div className="final-exams-card">
+            <h2 className="card-title">📗 Finales inscriptos</h2>
 
-      <ul style={{ listStyle:"none", padding:0 }}>
-        {finalesInscriptos.map(f => (
-          <li key={f.Numero}
-              style={{border:"1px solid green",padding:12,marginBottom:10,borderRadius:6}}>
+            {finalesInscriptos.length === 0 && (
+              <div className="empty-state"><p>No estás inscripto en finales.</p></div>
+            )}
 
-            <h3>{f.Abreviatura}</h3>
-            <p><b>Fecha:</b> {f.Fecha} {f.Hora}</p>
-            <p style={{color:"green", fontWeight:"bold"}}>INSCRIPTO ✔</p>
+            {finalesInscriptos.map(f => (
+              <div key={f.Numero} className="final-item inscripta">
+                <div className="final-header">
+                  <h3 className="final-subject">{f.Abreviatura}</h3>
+                </div>
 
-            <button onClick={() => cancelarInscripcion(f.Numero)}
-              style={{background:"red",color:"#fff",padding:"6px 12px",
-              border:"none",borderRadius:5,cursor:"pointer",marginTop:8}}>
-              Cancelar Inscripción
-            </button>
-          </li>
-        ))}
-      </ul>
+                <div className="final-info-grid">
+                  <div className="final-info-item"><b>Fecha:</b> {f.Fecha} - {f.Hora}</div>
+                </div>
 
+                <div className="final-actions">
+                  <button className="action-button libre" onClick={() => cancelarInscripcion(f.Numero)}>
+                    Cancelar inscripción
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+      </div>
     </div>
   );
 };
