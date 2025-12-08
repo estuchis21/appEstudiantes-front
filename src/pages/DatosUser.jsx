@@ -23,8 +23,8 @@ const DatosUser = () => {
 
   const cargarDatosUsuario = () => {
     try {
-      const usuarioStorage = localStorage.getItem("usuario");
-      const datosCarreraStorage = localStorage.getItem("datosCarrera");
+      const usuarioStorage = localStorage.getItem("userData");
+      const datosCarreraStorage = localStorage.getItem("careerData");
 
       if (usuarioStorage) {
         const usuarioData = JSON.parse(usuarioStorage);

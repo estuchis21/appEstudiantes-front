@@ -28,10 +28,11 @@ const HomeUser = () => {
   }
 
   useEffect(() => {
-    const usuarioGuardado = JSON.parse(localStorage.getItem("usuario"));
-    const permiso = localStorage.getItem("permiso");
-    const codigoCarrera = localStorage.getItem("codigoCarrera");
-    const nombreCarrera = localStorage.getItem("nombreCarrera");
+
+    const usuarioGuardado = JSON.parse(localStorage.getItem("userData"));
+    const carreraGuardada = JSON.parse(localStorage.getItem("careerData"));
+    const nombreCarrera = carreraGuardada.Nombre ;
+    const codigoCarrera = carreraGuardada.Codigo;
 
     if (usuarioGuardado) {
       setUsuario(usuarioGuardado);
@@ -39,13 +40,14 @@ const HomeUser = () => {
       // Establecer información de la carrera desde localStorage
       if (nombreCarrera && codigoCarrera) {
         setCarreraInfo({
-          nombre: formatCarreraName(nombreCarrera),
+          nombre: nombreCarrera,
           codigo: codigoCarrera
         });
       }
 
-      //console.log("Permiso del usuario:", permiso);
-      //console.log("Código carrera:", codigoCarrera);
+      console.log(carreraInfo)
+
+      const permiso = usuarioGuardado.Permiso;
 
       // Obtener notificaciones
       const fetchNotifications = async () => {
