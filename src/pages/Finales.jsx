@@ -6,6 +6,7 @@ import {
   registerStudentToFinal
 } from "../services/finalsService";
 import '../styles/Finales.css';
+import CareerSelector from "../components/CareerSelector";
 
 const Finales = () => {
   const [finalesDisponibles, setFinalesDisponibles] = useState([]);
@@ -24,11 +25,15 @@ const Finales = () => {
     try {
       const data = await getFinalExamsByStudentAndCareer(permisoUsuario, carreraUsuario);
 
-      const guardados = JSON.parse(localStorage.getItem("finalesInscriptos")) || [];
-      const disponiblesFiltrados = data.filter(f => !guardados.some(g => g.Numero === f.Numero));
+      // Usamos el campo 'Inscripto' que viene de la base de datos (puede ser 1, -1 o true)
+      // Nota: En bases de datos Access, 'True' suele devolverse como -1.
+      const isTrue = (val) => val === 1 || val === -1 || val === true;
 
-      setFinalesDisponibles(disponiblesFiltrados);
-      setFinalesInscriptos(guardados);
+      const inscriptos = data.filter(f => isTrue(f.Inscripto));
+      const disponibles = data.filter(f => !isTrue(f.Inscripto));
+
+      setFinalesDisponibles(disponibles);
+      setFinalesInscriptos(inscriptos);
 
     } catch (error) {
       console.error(error);
@@ -41,12 +46,14 @@ const Finales = () => {
 
       const finalSeleccionado = finalesDisponibles.find(f => f.Numero === numeroMesa);
 
-      const nuevosInscriptos = [...finalesInscriptos, finalSeleccionado];
+      // Actualizamos el estado 'Inscripto' a 1
+      const finalActualizado = { ...finalSeleccionado, Inscripto: 1 };
+
+      const nuevosInscriptos = [...finalesInscriptos, finalActualizado];
       const nuevosDisponibles = finalesDisponibles.filter(f => f.Numero !== numeroMesa);
 
       setFinalesInscriptos(nuevosInscriptos);
       setFinalesDisponibles(nuevosDisponibles);
-      localStorage.setItem("finalesInscriptos", JSON.stringify(nuevosInscriptos));
 
       Swal.fire("Inscripción confirmada", "Te anotaste al final correctamente", "success");
 
@@ -55,19 +62,20 @@ const Finales = () => {
     }
   };
 
-  // 🔥 nuevo: cancelar inscripción
   const cancelarInscripcion = async (numeroMesa) => {
     try {
       await deleteFinalInscription(numeroMesa, permisoUsuario);
 
       const finalCancelado = finalesInscriptos.find(f => f.Numero === numeroMesa);
 
+      // Actualizamos el estado 'Inscripto' a 0
+      const finalActualizado = { ...finalCancelado, Inscripto: 0 };
+
       const nuevosInscriptos = finalesInscriptos.filter(f => f.Numero !== numeroMesa);
-      const nuevosDisponibles = [...finalesDisponibles, finalCancelado];
+      const nuevosDisponibles = [...finalesDisponibles, finalActualizado];
 
       setFinalesInscriptos(nuevosInscriptos);
       setFinalesDisponibles(nuevosDisponibles);
-      localStorage.setItem("finalesInscriptos", JSON.stringify(nuevosInscriptos));
 
       Swal.fire("Inscripción eliminada", "Ya no estás anotado en ese final", "info");
 
@@ -81,12 +89,7 @@ const Finales = () => {
 
       <div className="final-exams-header">
         <h1>Finales</h1>
-      </div>
-
-      <div className="user-info-container">
-        <div className="user-info-card">
-          <span>Alumno #{permisoUsuario}</span>
-        </div>
+        <CareerSelector />
       </div>
 
       <div className="final-exams-grid">
@@ -156,4 +159,3 @@ const Finales = () => {
 };
 
 export default Finales;
-
