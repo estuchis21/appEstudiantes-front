@@ -1,115 +1,91 @@
-import React, { useState, useEffect } from "react";
-import { getNotifications } from "../services/notificationsService";
-import { getFinalExamsByStudentAndCareer } from "../services/finalsService";
-import { FaCalendarDays } from "react-icons/fa6";
+import { useEffect, useState } from "react";
 import { FaClock } from "react-icons/fa";
+import { FaCalendarDays } from "react-icons/fa6";
+import { getFinalExamsByStudentAndCareer } from "../services/finalsService";
+import { getNotifications } from "../services/notificationsService";
 
 const HomeUser = () => {
   const [usuario, setUsuario] = useState({});
   const [proximosFinales, setProximosFinales] = useState([]);
   const [noticias, setNoticias] = useState([]);
-  const [carreraInfo, setCarreraInfo] = useState({
-    nombre: "",
-    codigo: ""
-  });
 
-  // Función para darle formato al nombre de la carrera
-  function formatCarreraName(nombre) {
+  const [carreras, setCarreras] = useState([]);
+  const [carreraActiva, setCarreraActiva] = useState(null);
+
+  const formatCarreraName = (nombre) => {
+    if (!nombre) return "";
     const palabrasMin = ["en", "de", "y"];
     return nombre
       .toLowerCase()
       .split(" ")
-      .map((palabra) =>
-        palabrasMin.includes(palabra)
-          ? palabra
-          : palabra.charAt(0).toUpperCase() + palabra.slice(1)
-      )
+      .map((p) => (palabrasMin.includes(p) ? p : p[0].toUpperCase() + p.slice(1)))
       .join(" ");
-  }
+  };
 
   useEffect(() => {
 
     const usuarioGuardado = JSON.parse(localStorage.getItem("userData"));
-    const carreraGuardada = JSON.parse(localStorage.getItem("careerData"));
-    const nombreCarrera = carreraGuardada.Nombre ;
-    const codigoCarrera = carreraGuardada.Codigo;
+    let carrerasGuardadas = JSON.parse(localStorage.getItem("careerData")) || [];
 
-    if (usuarioGuardado) {
-      setUsuario(usuarioGuardado);
-      
-      // Establecer información de la carrera desde localStorage
-      if (nombreCarrera && codigoCarrera) {
-        setCarreraInfo({
-          nombre: nombreCarrera,
-          codigo: codigoCarrera
-        });
-      }
-
-      console.log(carreraInfo)
-
-      const permiso = usuarioGuardado.Permiso;
-
-      // Obtener notificaciones
-      const fetchNotifications = async () => {
-        try {
-          const notificaciones = await getNotifications(permiso);
-          //console.log("Notificaciones obtenidas:", notificaciones);
-          
-          // TRANSFORMAR LOS DATOS A LA ESTRUCTURA CORRECTA
-          const noticiasTransformadas = notificaciones.map(noticia => ({
-            titulo: new Date(noticia.Fecha).toLocaleDateString('es-ES'),
-            contenido: noticia.Notificaciones,
-            importante: true
-          }));
-          
-          setNoticias(noticiasTransformadas);
-          //console.log("Noticias transformadas:", noticiasTransformadas);
-        } catch (err) {
-          console.error("Error al obtener notificaciones:", err);
-        }
-      };
-
-      // Obtener próximos finales usando el servicio
-      const fetchProximosFinales = async () => {
-        if (permiso && codigoCarrera) {
-          try {
-            const finales = await getFinalExamsByStudentAndCareer(permiso, codigoCarrera);
-            //console.log("Finales obtenidos:", finales);
-            
-            // Filtrar solo los finales disponibles (no inscriptos) y transformarlos
-            const finalesProximos = finales
-              .filter(final => final.Inscripto === 0) // Solo finales disponibles
-              .slice(0, 3) // Limitar a 3 finales próximos
-              .map(final => ({
-                materia: final.Abreviatura,
-                fecha: final.Fecha,
-                horario: final.Hora,
-                aula: final.Lugar,
-                profesor: final.Titular
-              }));
-            
-            setProximosFinales(finalesProximos);
-            //console.log("Próximos finales procesados:", finalesProximos);
-          } catch (error) {
-            console.error("Error al obtener los finales:", error);
-            // En caso de error, mantener los datos de ejemplo
-            setProximosFinales([
-              { materia: "Programación orientada a objetos", fecha: "15/12/2024", horario: "09:00", aula: "A-201" },
-              { materia: "Inglés Técnico XVII", fecha: "18/12/2024", horario: "14:00", aula: "B-105" }
-            ]);
-          }
-        } else {
-          // Datos de ejemplo si no hay permiso o código de carrera
-          setProximosFinales([
-            { materia: "Programación orientada a objetos", fecha: "15/12/2024", horario: "09:00", aula: "A-201" },
-            { materia: "Inglés Técnico XVII", fecha: "18/12/2024", horario: "14:00", aula: "B-105" }
-          ]);
-        }
-      };
-
-      fetchNotifications();
-      fetchProximosFinales();
+    // 🔥 Si viene un solo objeto → convertir a array
+    if (!Array.isArray(carrerasGuardadas)) {
+      carrerasGuardadas = [carrerasGuardadas];
     }
+
+    setUsuario(usuarioGuardado || {});
+    setCarreras(carrerasGuardadas); 
+
+    const carreraSeleccionada = carrerasGuardadas[0] || null;
+    setCarreraActiva(carreraSeleccionada);
+
+    const permiso = usuarioGuardado?.Permiso;
+    const codigoCarrera = carreraSeleccionada?.Codigo;
+
+    const fetchNotifications = async () => {
+      if (!permiso) return;
+
+      try {
+        const notificaciones = await getNotifications(permiso);
+
+        const noticiasTransformadas = notificaciones.map(n => ({
+          titulo: new Date(n.Fecha).toLocaleDateString("es-ES"),
+          contenido: n.Notificaciones,
+          importante: true
+        }));
+
+        setNoticias(noticiasTransformadas);
+
+      } catch (err) {
+        console.error("❌ Error al obtener notificaciones:", err);
+      }
+    };
+
+    const fetchProximosFinales = async () => {
+      if (!permiso || !codigoCarrera) return;
+
+      try {
+        const finales = await getFinalExamsByStudentAndCareer(permiso, codigoCarrera);
+
+        const finalesProximos = finales
+          .filter(f => f.Inscripto === 0)
+          .slice(0, 3)
+          .map(f => ({
+            materia: f.Abreviatura,
+            fecha: f.Fecha,
+            horario: f.Hora,
+            aula: f.Lugar,
+            profesor: f.Titular
+          }));
+
+        setProximosFinales(finalesProximos);
+
+      } catch (err) {
+        console.error("❌ Error en finales:", err);
+      }
+    };
+
+    fetchNotifications();
+    fetchProximosFinales();
   }, []);
 
   return (
@@ -117,9 +93,11 @@ const HomeUser = () => {
       <div className="home-user-header">
         <h1>Bienvenido, {usuario.Nombre}</h1>
         <p className="user-email">{usuario.Correo}</p>
+
         <div className="user-info-container">
           <div className="user-info-card">
-            <strong>Carrera:</strong> {carreraInfo.nombre || usuario.Carrera || "No disponible"}
+            <strong>Carrera:</strong>{" "}
+            {carreraActiva ? formatCarreraName(carreraActiva.Nombre) : "No asignada"}
           </div>
         </div>
       </div>
@@ -128,21 +106,20 @@ const HomeUser = () => {
         <div className="home-user-column">
           <div className="home-user-card">
             <h2>Próximos Finales</h2>
+
             {proximosFinales.length > 0 ? (
-              proximosFinales.map((final, index) => (
-                <div key={index} className="final-item">
+              proximosFinales.map((final, i) => (
+                <div key={i} className="final-item">
                   <strong>{final.materia}</strong>
                   <p className="final-info">
-                    <FaCalendarDays /> {final.fecha} - <FaClock /> {final.horario}
+                    <FaCalendarDays /> {final.fecha} — <FaClock /> {final.horario}
                   </p>
                   <p className="final-aula">Aula: {final.aula}</p>
-                  {final.profesor && (
-                    <p className="final-profesor">Profesor: {final.profesor}</p>
-                  )}
+                  {final.profesor && <p className="final-profesor">Profesor: {final.profesor}</p>}
                 </div>
               ))
             ) : (
-              <p>No hay finales próximos disponibles.</p>
+              <p>No hay finales próximos.</p>
             )}
           </div>
         </div>
@@ -150,13 +127,12 @@ const HomeUser = () => {
         <div className="home-user-column">
           <div className="home-user-card">
             <h2>Noticias y Avisos</h2>
+
             {noticias.length > 0 ? (
-              noticias.map((noticia, index) => (
-                <div key={index} className={`noticia-item ${noticia.importante ? "noticia-importante" : ""}`}>
-                  <div className="noticia-header">
-                    <strong>{noticia.titulo}</strong>
-                  </div>
-                  <p className="noticia-contenido">{noticia.contenido}</p>
+              noticias.map((n, i) => (
+                <div key={i} className={`noticia-item ${n.importante ? "noticia-importante" : ""}`}>
+                  <strong>{n.titulo}</strong>
+                  <p>{n.contenido}</p>
                 </div>
               ))
             ) : (

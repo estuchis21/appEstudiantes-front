@@ -10,29 +10,26 @@ const MisFinales = () => {
   const [usuario, setUsuario] = useState(null);
   const [carrera, setCarrera] = useState(null);
 
-  // 🔹 Carga usuario y carrera desde LocalStorage al montar
+  // 📌 Cargar usuario y carrera
   useEffect(() => {
     try {
-      const savedUser = JSON.parse(localStorage.getItem("userData"));
-      const savedCarrera = JSON.parse(localStorage.getItem("careerData"));
+      const user = JSON.parse(localStorage.getItem("userData"));
+      const career = JSON.parse(localStorage.getItem("careerData"));
 
-      console.log("Usuario cargado:", savedUser);
-      console.log("Carrera cargada:", savedCarrera);
-
-
-      if (!savedUser || !savedCarrera) {
+      if (!user || !career) {
         setError("Debes iniciar sesión nuevamente");
         return;
       }
 
-      setUsuario(savedUser);
-      setCarrera(savedCarrera);
+      setUsuario(user);      
+      setCarrera(career);     
+
     } catch {
-      setError("Error leyendo datos almacenados.");
+      setError("Error leyendo datos guardados");
     }
   }, []);
 
-  // 🔹 Carga finales una vez que usuario y carrera existen
+  // 📌 Traer finales una vez listo user + carrera
   useEffect(() => {
     if (!usuario || !carrera) return;
 
@@ -42,8 +39,10 @@ const MisFinales = () => {
         setError("");
 
         const res = await getFinalExamsTaken(usuario.Permiso, carrera.Codigo);
-        setFinalesRendidos(res || []);
-        console.log("Finales rendidos:", res);
+
+        const data = Array.isArray(res) ? res : (res?.data ?? []);
+        setFinalesRendidos(Array.isArray(data) ? data : []);
+
       } catch (err) {
         setError("Error al cargar los finales: " + err.message);
       } finally {
@@ -54,10 +53,12 @@ const MisFinales = () => {
     cargarFinales();
   }, [usuario, carrera]);
 
-  const finalesPorAnio = finalesRendidos.reduce((acc, final) => {
-    const año = final.Ano;
+  if (!Array.isArray(finalesRendidos)) return null;
+
+  const finalesPorAnio = finalesRendidos.reduce((acc, f) => {
+    const año = f.Ano;
     acc[año] = acc[año] || [];
-    acc[año].push(final);
+    acc[año].push(f);
     return acc;
   }, {});
 
@@ -72,11 +73,8 @@ const MisFinales = () => {
     return "Otro";
   };
 
-  if (cargando)
-    return <div className="inscripcion-container"><div className="cargando">Cargando finales...</div></div>;
-
-  if (error)
-    return <div className="inscripcion-container"><div className="error">{error}</div></div>;
+  if (cargando) return <div className="inscripcion-container"><div className="cargando">Cargando finales...</div></div>;
+  if (error) return <div className="inscripcion-container"><div className="error">{error}</div></div>;
 
   return (
     <div className="inscripcion-container">
@@ -96,7 +94,6 @@ const MisFinales = () => {
         </div>
       </div>
 
-      {/* Estadísticas */}
       {finalesRendidos.length > 0 && (
         <div className="stats-section">
           <div className="stats-grid">
@@ -106,7 +103,7 @@ const MisFinales = () => {
             </div>
             <div className="stat-card">
               <span className="stat-number">
-                {(finalesRendidos.reduce((s, f) => s + parseFloat(f.Nota), 0) / finalesRendidos.length).toFixed(1)}
+                {(finalesRendidos.reduce((s, f) => s + parseFloat(f.Nota || 0), 0) / finalesRendidos.length).toFixed(1)}
               </span>
               <span className="stat-label">Promedio</span>
             </div>
@@ -114,7 +111,6 @@ const MisFinales = () => {
         </div>
       )}
 
-      {/* Finales por Año */}
       {añosOrdenados.map(año => (
         <div key={año} className="inscripciones-section">
           <div className="section-card">

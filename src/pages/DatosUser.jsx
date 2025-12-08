@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
-import { editDatos } from "../services/userService";
-import Swal from 'sweetalert2';
+import { useEffect, useState } from "react";
 import { FaClipboardUser } from "react-icons/fa6";
 import { MdContacts } from "react-icons/md";
-import "../Styles/Datos.css"; 
+import Swal from 'sweetalert2';
+import { editDatos } from "../services/userService";
+import "../Styles/Datos.css";
 
 const DatosUser = () => {
   const [usuario, setUsuario] = useState(null);
@@ -18,32 +18,31 @@ const DatosUser = () => {
   });
 
   useEffect(() => {
-    cargarDatosUsuario();
-  }, []);
-
-  const cargarDatosUsuario = () => {
     try {
-      const usuarioStorage = localStorage.getItem("userData");
-      const datosCarreraStorage = localStorage.getItem("careerData");
+      const dataUser = JSON.parse(localStorage.getItem("userData"));
+      let dataCareer = JSON.parse(localStorage.getItem("careerData")) || [];
 
-      if (usuarioStorage) {
-        const usuarioData = JSON.parse(usuarioStorage);
-        setUsuario(usuarioData);
+      if (!Array.isArray(dataCareer)) {
+        dataCareer = [dataCareer];
+      }
+
+      setUsuario(dataUser || null);
+      setCarrera(dataCareer[0] || null);
+
+      if (dataUser) {
         setFormData({
-          Telefono: usuarioData.Telefono || "",
-          Correo: usuarioData.Correo || "",
-          Domicilio: usuarioData.Domicilio || ""
+          Telefono: dataUser.Telefono || "",
+          Correo: dataUser.Correo || "",
+          Domicilio: dataUser.Domicilio || ""
         });
       }
 
-      if (datosCarreraStorage) {
-        const carreraData = JSON.parse(datosCarreraStorage);
-        setCarrera(carreraData);
-      }
     } catch (error) {
-      console.error("❌ Error cargando datos del usuario:", error);
+      console.error("❌ Error cargando datos:", error);
     }
-  };
+  }, []);
+  
+  // ⇩ Todo lo demás queda EXACTAMENTE igual ⇩
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

@@ -30,17 +30,21 @@ const Login = () => {
             
             localStorage.setItem('isLoggedIn', 'true');
             localStorage.setItem('userData', JSON.stringify(result.datosAlumno));
-            localStorage.setItem('careerData', JSON.stringify(result.datosCarrera));
+
+            // 🔥 Guarda todas las carreras (1 o varias)
+            const carreras = Array.isArray(result.datosCarrera)
+                ? result.datosCarrera
+                : [result.datosCarrera];
+
+            localStorage.setItem('careerData', JSON.stringify(carreras));
             
             console.log('Redirigiendo a /');
-            // FORZAR el reload
-            window.location.href = '/';
-            
+            window.location.href = '/';  // forza actualización visual
+
         } catch (error) {
             console.log('Error completo:', error);
             console.log('Mensaje de error:', error.message);
-            
-            // SweetAlert directo sin condiciones primero
+
             Swal.fire({
                 icon: 'error',
                 title: 'Error de login',
