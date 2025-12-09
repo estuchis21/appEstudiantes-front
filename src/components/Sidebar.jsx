@@ -25,7 +25,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         { label: "Datos personales", action: () => navigate('/DatosPersonales') },
         { label: "Mis finales", action: () => navigate('/MisFinales') },
         { label: "Asistencias", action: () => navigate('/Asistencia') },
-        { label: "Analitico", action: () => navigate('/Analitico') },
+        { label: "Cursadas", action: () => navigate('/Analitico') },
         { label: "Inscribirse a finales", action: () => navigate('/Finales') },
         { label: "Matriculacion", action: () => navigate('/Matriculacion') },
         { label: "Moodle", action: () => setShowMoodlePopup(true) },

@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
-import TablaReutilizable from "../components/Tabla";
-import listCoursesService from "../services/listCoursesService";
+import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import "../Styles/Analitico.css";
 import CareerSelector from "../components/CareerSelector";
+import TablaReutilizable from "../components/Tabla";
+import listCoursesService from "../services/listCoursesService";
 
 const Analitico = () => {
   const [materias, setMaterias] = useState([]);
@@ -16,6 +16,35 @@ const Analitico = () => {
   const permiso = userData?.Permiso || "";
   const codigo = careerData?.Codigo || "";
 
+  // Función para formatear fechas a dd/mm/yy
+  const formatDate = (fechaStr) => {
+    if (!fechaStr) return "-";
+    const date = new Date(fechaStr);
+    if (isNaN(date)) return "-";
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = String(date.getFullYear()).slice(-2);
+    return `${day}/${month}/${year}`;
+  };
+
+  // Función para convertir número de año en texto
+  const formatCurso = (num) => {
+    switch (num) {
+      case 1: return "1ro";
+      case 2: return "2do";
+      case 3: return "3ro";
+      case 4: return "4to";
+      case 5: return "5to";
+      default: return num || "-";
+    }
+  };
+
+  const formatAsistencia = (valor) => {
+    return valor != null ? `${valor}%` : "-";
+  }
+
+  // Función para mostrar check si está aprobado
+  const formatAprobacion = (valor) => valor == 1 ? "✅" : "❌";
 
   const showMateriaDetails = (materia) => {
     const notasContent = `
@@ -31,10 +60,16 @@ const Analitico = () => {
             <strong>División:</strong> ${materia.Division}
           </div>
           <div class="swal-info-item">
-            <strong>Asistencia:</strong> ${materia.AsistenciaPorcentaje}%
+            <strong>Asistencia:</strong> ${materia.AsistenciaPorcentaje || "-"}%
           </div>
           <div class="swal-info-item">
-            <strong>Asistencia Hasta:</strong> ${materia.AsistenciaHasta || "-"}
+            <strong>Asistencia Hasta:</strong> ${formatDate(materia.AsistenciaHasta)}
+          </div>
+          <div class="swal-info-item">
+            <strong>Cursada:</strong> ${formatAprobacion(materia.Cursada)}
+          </div>
+          <div class="swal-info-item">
+            <strong>Promoción:</strong> ${formatAprobacion(materia.Promocion)}
           </div>
         </div>
 
@@ -100,17 +135,13 @@ const Analitico = () => {
   useEffect(() => {
     const fetchCourses = async () => {
       if (!permiso || !codigo) {
-        console.warn("⚠️ Missing permiso or codigo; skipping fetch.");
-        console.log("permiso:", permiso, "codigo:", codigo);
         setError("No se encontraron los datos del usuario. Por favor, inicie sesión nuevamente.");
         setLoading(false);
         return;
       }
 
       try {
-        console.log("📡 Llamando a listCoursesService con:", { permiso, codigo });
         const data = await listCoursesService(permiso, codigo);
-        console.log("📦 Datos recibidos:", data);
 
         if (data.mensaje) {
           setError(data.mensaje);
@@ -118,44 +149,16 @@ const Analitico = () => {
           return;
         }
 
-        const transformed = data.map((item) => {
-          const parciales = [
-            item.Parcial1,
-            item.Parcial2,
-            item.Recuperatorio1,
-            item.Recuperatorio2,
-          ];
-          const practicos = [
-            item.Practico1,
-            item.Practico2,
-            item.Practico3,
-            item.Practico4,
-            item.Practico5,
-          ];
-          const totalNotas = [...parciales, ...practicos].filter(
-            (n) => n > 0
-          ).length;
-
-          let estado = "Pendiente";
-          if (
-            totalNotas > 0 &&
-            totalNotas < parciales.length + practicos.length
-          )
-            estado = "Cursando";
-          if (
-            totalNotas === parciales.length + practicos.length &&
-            totalNotas > 0
-          )
-            estado = "Aprobada";
-
-          return {
-            materia: item.Materia,
-            año: new Date().getFullYear(),
-            estado,
-            profesor: item.Profesor,
-            ...item,
-          };
-        });
+        const transformed = data.map((item) => ({
+          materia: item.Materia,
+          curso: formatCurso(item.Curso),
+          profesor: item.Profesor,
+          cursada: formatAprobacion(item.Cursada),
+          promocion: formatAprobacion(item.Promocion),
+          asistencia: formatAsistencia(item.AsistenciaPorcentaje),
+          asistenciaHasta: formatDate(item.AsistenciaHasta),
+          ...item,
+        }));
 
         setMaterias(transformed);
       } catch (err) {
@@ -171,22 +174,11 @@ const Analitico = () => {
 
   const columnas = [
     { key: "materia", header: "Materia" },
-    { key: "año", header: "Año", align: "center" },
-    {
-      key: "estado",
-      header: "Estado",
-      align: "center",
-      render: (fila) => (
-        <span className={`estado-materia ${fila.estado.toLowerCase()}`}>
-          {fila.estado}
-        </span>
-      ),
-    },
-    {
-      key: "profesor",
-      header: "Profesor",
-      align: "center",
-    },
+    { key: "curso", header: "Año", align: "center" },
+    { key: "profesor", header: "Profesor", align: "center" },
+    { key: "cursada", header: "Cursada", align: "center" },
+    { key: "promocion", header: "Promoción", align: "center" },
+    { key: "asistencia", header: "Asistencia", align: "center" },
     {
       key: "acciones",
       header: "Acciones",
@@ -201,8 +193,6 @@ const Analitico = () => {
       ),
     },
   ];
-
-
 
   return (
     <div className="analitico-container">

@@ -110,6 +110,8 @@ const Finales = () => {
                 <div className="final-header"><h3 className="final-subject">{f.Abreviatura}</h3></div>
                 <div className="final-info-grid">
                   <div className="final-info-item"><b>Fecha:</b> {f.Fecha} - {f.Hora}</div>
+                  <div className="final-info-item"><b>Lugar:</b> {f.Lugar}</div>
+                  <div className="final-info-item"><b>Docente:</b> {f.Titular}</div>
                 </div>
                 <div className="final-actions">
                   <button className="action-button regular" onClick={() => inscribir(f.Numero)}>
@@ -135,6 +137,10 @@ const Finales = () => {
                 <div className="final-header"><h3 className="final-subject">{f.Abreviatura}</h3></div>
                 <div className="final-info-grid">
                   <div className="final-info-item"><b>Fecha:</b> {f.Fecha} - {f.Hora}</div>
+                  <div className="final-info-grid">
+                  <div className="final-info-item"><b>Lugar:</b> {f.Lugar}</div>
+                  <div className="final-info-item"><b>Docente:</b> {f.Titular}</div>
+                </div>
                 </div>
                 <div className="final-actions">
                   <button className="action-button libre" onClick={() => cancelarInscripcion(f.Numero)}>
