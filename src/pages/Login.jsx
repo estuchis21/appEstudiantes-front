@@ -1,5 +1,5 @@
 // pages/LoginPage.jsx
-import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from 'sweetalert2';
 import loginService from '../services/loginService';
@@ -27,24 +27,37 @@ const Login = () => {
             console.log('Enviando datos:', formData);
             const result = await loginService(formData);
             console.log('Login exitoso:', result);
-            
+
             localStorage.setItem('isLoggedIn', 'true');
             localStorage.setItem('userData', JSON.stringify(result.datosAlumno));
 
-            // Guarda carreras (1 o varias)
-            const carreras = Array.isArray(result.datosCarrera)
-                ? result.datosCarrera
-                : [result.datosCarrera];
+            // Lógica para manejar si datosCarrera es array (nuevo backend) o objeto (viejo/fallback)
+            let carreras = [];
+            let carreraActual = {};
 
-            localStorage.setItem('careerData', JSON.stringify(carreras));
-            
+            if (Array.isArray(result.datosCarrera)) {
+                // Nuevo formato: Array de carreras
+                carreras = result.datosCarrera;
+                carreraActual = carreras[0]; // Tomamos la primera por defecto
+            } else {
+                // Formato anterior o fallback: Objeto único
+                carreraActual = result.datosCarrera;
+                // Intentamos usar CarrerasVigentes si existe, sino creamos array con la única carrera
+                carreras = result.CarrerasVigentes || [carreraActual];
+            }
+
+            localStorage.setItem('careerData', JSON.stringify(carreraActual));
+            localStorage.setItem('carrerasVigentes', JSON.stringify(carreras));
+
             console.log('Redirigiendo a /');
+            // FORZAR el reload
             window.location.href = '/';
 
         } catch (error) {
             console.log('Error completo:', error);
             console.log('Mensaje de error:', error.message);
 
+            // SweetAlert directo sin condiciones primero
             Swal.fire({
                 icon: 'error',
                 title: 'Error de login',
@@ -60,12 +73,12 @@ const Login = () => {
         <div className="login-container">
             <form className="login-form" onSubmit={handleSubmit}>
                 <h2>Iniciar Sesión</h2>
-                
+
                 <div className="form-group">
                     <label>DNI:</label>
-                    <input 
+                    <input
                         name="Documento"
-                        type="number" 
+                        type="number"
                         placeholder="Ingresa tu DNI"
                         value={formData.Documento}
                         onChange={handleChange}
@@ -73,12 +86,12 @@ const Login = () => {
                         required
                     />
                 </div>
-                
+
                 <div className="form-group">
                     <label>Contraseña:</label>
-                    <input 
+                    <input
                         name="Contrasena"
-                        type="password" 
+                        type="password"
                         placeholder="Ingresa tu contraseña"
                         value={formData.Contrasena}
                         onChange={handleChange}
@@ -86,9 +99,9 @@ const Login = () => {
                         required
                     />
                 </div>
-                
-                <button 
-                    type="submit" 
+
+                <button
+                    type="submit"
                     className="login-button"
                     disabled={loading}
                 >
