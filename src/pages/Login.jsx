@@ -1,5 +1,5 @@
 // pages/LoginPage.jsx
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from 'sweetalert2';
 import loginService from '../services/loginService';
@@ -31,7 +31,7 @@ const Login = () => {
             localStorage.setItem('isLoggedIn', 'true');
             localStorage.setItem('userData', JSON.stringify(result.datosAlumno));
 
-            // 🔥 Guarda todas las carreras (1 o varias)
+            // Guarda carreras (1 o varias)
             const carreras = Array.isArray(result.datosCarrera)
                 ? result.datosCarrera
                 : [result.datosCarrera];
@@ -39,7 +39,7 @@ const Login = () => {
             localStorage.setItem('careerData', JSON.stringify(carreras));
             
             console.log('Redirigiendo a /');
-            window.location.href = '/';  // forza actualización visual
+            window.location.href = '/';
 
         } catch (error) {
             console.log('Error completo:', error);

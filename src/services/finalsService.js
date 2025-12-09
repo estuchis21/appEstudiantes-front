@@ -32,14 +32,14 @@ export const deleteFinalInscription = async (Mesa, Alumno) => {
   }
 };
 
-export const registerStudentToFinal = async (Mesa, Alumno, Cursada, Libre) => {
+export const registerStudentToFinal = async ({ Mesa, Alumno, Cursada, Libre }) => {
   try {
     const result = await apiClient('/session/inscribirfinal', {
       method: 'POST',
       body: JSON.stringify({ Mesa, Alumno, Cursada, Libre }),
     });
-    
-    // Verificar si la respuesta tiene un mensaje de error
+
+    // Manejo de errores devueltos por el backend
     if (result.mensaje && (
       result.mensaje.includes('Error') || 
       result.mensaje.includes('no puede') ||
@@ -49,7 +49,7 @@ export const registerStudentToFinal = async (Mesa, Alumno, Cursada, Libre) => {
     )) {
       throw new Error(result.mensaje);
     }
-    
+
     return result;
   } catch (error) {
     console.error('Error al inscribir al alumno', error);

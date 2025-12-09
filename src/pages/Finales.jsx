@@ -8,57 +8,76 @@ import {
 import '../styles/Finales.css';
 
 const Finales = () => {
+
+  const usuario = JSON.parse(localStorage.getItem("userData")) || {};
+  const permiso = usuario.Permiso;
+
+  // carreras (1 o varias)
+  let carrerasGuardadas = JSON.parse(localStorage.getItem("careerData")) || [];
+  if (!Array.isArray(carrerasGuardadas)) carrerasGuardadas = [carrerasGuardadas];
+
+  const [carreraActiva, setCarreraActiva] = useState(carrerasGuardadas[0] || null);
   const [finalesDisponibles, setFinalesDisponibles] = useState([]);
   const [finalesInscriptos, setFinalesInscriptos] = useState([]);
 
-  const user = JSON.parse(localStorage.getItem("userData")) || {};
-  const permisoUsuario = user.Permiso;
-  const carrera = JSON.parse(localStorage.getItem("careerData")) || {};
-  const carreraUsuario = carrera.Codigo;
-
+  // 🔥 Cargar finales al seleccionar carrera
   useEffect(() => {
+    if (!permiso || !carreraActiva) return;
     cargarFinales();
-  }, []);
+  }, [permiso, carreraActiva]);
 
   const cargarFinales = async () => {
     try {
-      const data = await getFinalExamsByStudentAndCareer(permisoUsuario, carreraUsuario);
+      const codigo = carreraActiva.Codigo || carreraActiva.codigo;
 
-      const guardados = JSON.parse(localStorage.getItem("finalesInscriptos")) || [];
-      const disponiblesFiltrados = data.filter(f => !guardados.some(g => g.Numero === f.Numero));
+      const data = await getFinalExamsByStudentAndCareer(permiso, codigo);
+      const finales = Array.isArray(data) ? data : [data];
 
-      setFinalesDisponibles(disponiblesFiltrados);
+      const guardados = JSON.parse(localStorage.getItem(`finalesInscriptos-${codigo}`)) || [];
+      const disponibles = finales.filter(f => !guardados.some(g => g.Numero === f.Numero));
+
+      setFinalesDisponibles(disponibles);
       setFinalesInscriptos(guardados);
 
     } catch (error) {
-      console.error(error);
+      console.error("❌ Error cargando finales:", error);
     }
   };
 
+  // 📌 Inscribir alumno
   const inscribir = async (numeroMesa) => {
-    try {
-      await registerStudentToFinal(numeroMesa, permisoUsuario, 1, 0);
+  try {
+    const codigo = carreraActiva.Codigo || carreraActiva.codigo;
 
-      const finalSeleccionado = finalesDisponibles.find(f => f.Numero === numeroMesa);
+    await registerStudentToFinal({
+      Mesa: numeroMesa,
+      Alumno: permiso,
+      Cursada: 0, // 0 = regular
+      Libre: 0
+    });
 
-      const nuevosInscriptos = [...finalesInscriptos, finalSeleccionado];
-      const nuevosDisponibles = finalesDisponibles.filter(f => f.Numero !== numeroMesa);
+    const finalSel = finalesDisponibles.find(f => f.Numero === numeroMesa);
 
-      setFinalesInscriptos(nuevosInscriptos);
-      setFinalesDisponibles(nuevosDisponibles);
-      localStorage.setItem("finalesInscriptos", JSON.stringify(nuevosInscriptos));
+    const nuevosInscriptos = [...finalesInscriptos, finalSel];
+    const nuevosDisponibles = finalesDisponibles.filter(f => f.Numero !== numeroMesa);
 
-      Swal.fire("Inscripción confirmada", "Te anotaste al final correctamente", "success");
+    setFinalesInscriptos(nuevosInscriptos);
+    setFinalesDisponibles(nuevosDisponibles);
 
-    } catch (error) {
-      Swal.fire("Error", error.message, "error");
-    }
-  };
+    localStorage.setItem(`finalesInscriptos-${codigo}`, JSON.stringify(nuevosInscriptos));
 
-  // 🔥 nuevo: cancelar inscripción
+    Swal.fire("OK", "Inscripción confirmada", "success");
+
+  } catch (error) {
+    Swal.fire("Error", error.message, "error");
+  }
+};
+
+
+  // ❌ Cancelar inscripción
   const cancelarInscripcion = async (numeroMesa) => {
     try {
-      await deleteFinalInscription(numeroMesa, permisoUsuario);
+      await deleteFinalInscription(numeroMesa, permiso);
 
       const finalCancelado = finalesInscriptos.find(f => f.Numero === numeroMesa);
 
@@ -67,9 +86,11 @@ const Finales = () => {
 
       setFinalesInscriptos(nuevosInscriptos);
       setFinalesDisponibles(nuevosDisponibles);
-      localStorage.setItem("finalesInscriptos", JSON.stringify(nuevosInscriptos));
 
-      Swal.fire("Inscripción eliminada", "Ya no estás anotado en ese final", "info");
+      const codigo = carreraActiva.Codigo || carreraActiva.codigo;
+      localStorage.setItem(`finalesInscriptos-${codigo}`, JSON.stringify(nuevosInscriptos));
+
+      Swal.fire("OK", "Inscripción eliminada", "info");
 
     } catch (error) {
       Swal.fire("Error al cancelar", error.message, "error");
@@ -83,10 +104,23 @@ const Finales = () => {
         <h1>Finales</h1>
       </div>
 
-      <div className="user-info-container">
-        <div className="user-info-card">
-          <span>Alumno #{permisoUsuario}</span>
-        </div>
+      {/* Selección de carrera */}
+      <div className="career-select-box">
+        <label><b>Seleccionar carrera:</b></label>
+        <select
+          value={carrerasGuardadas.indexOf(carreraActiva)}
+          onChange={(e) => setCarreraActiva(carrerasGuardadas[e.target.value])}
+        >
+          {carrerasGuardadas.map((c, i) => (
+            <option key={`${c.Codigo}-${i}`} value={i}>
+              {c.Nombre}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="user-info-card">
+        <span>Permiso #{permiso}</span>
       </div>
 
       <div className="final-exams-grid">
@@ -94,57 +128,30 @@ const Finales = () => {
         {/* DISPONIBLES */}
         <div className="final-exams-column">
           <div className="final-exams-card">
-            <h2 className="card-title">📘 Finales disponibles</h2>
+            <h2>📘 Finales disponibles</h2>
+            {finalesDisponibles.length === 0 && <p>No hay finales disponibles</p>}
 
-            {finalesDisponibles.length === 0 && (
-              <div className="empty-state"><p>No hay finales disponibles 🎓</p></div>
-            )}
-
-            {finalesDisponibles.map(f => (
-              <div key={f.Numero} className="final-item disponible">
-                <div className="final-header">
-                  <h3 className="final-subject">{f.Abreviatura}</h3>
-                </div>
-
-                <div className="final-info-grid">
-                  <div className="final-info-item"><b>Fecha:</b> {f.Fecha} - {f.Hora}</div>
-                </div>
-
-                <div className="final-actions">
-                  <button className="action-button regular" onClick={() => inscribir(f.Numero)}>
-                    Inscribirme
-                  </button>
-                </div>
+            {finalesDisponibles.map((f, i) => (
+              <div key={`${f.Numero}-disp-${i}`} className="final-item disponible">
+                <h3>{f.Abreviatura}</h3>
+                <p><b>Fecha:</b> {f.Fecha} - {f.Hora}</p>
+                <button onClick={() => inscribir(f.Numero)}>Inscribirme</button>
               </div>
             ))}
           </div>
         </div>
 
-
         {/* INSCRIPTOS */}
         <div className="final-exams-column">
           <div className="final-exams-card">
-            <h2 className="card-title">📗 Finales inscriptos</h2>
+            <h2>📗 Finales inscriptos</h2>
+            {finalesInscriptos.length === 0 && <p>No estás inscripto a ningún final</p>}
 
-            {finalesInscriptos.length === 0 && (
-              <div className="empty-state"><p>No estás inscripto en finales.</p></div>
-            )}
-
-            {finalesInscriptos.map(f => (
-              <div key={f.Numero} className="final-item inscripta">
-                <div className="final-header">
-                  <h3 className="final-subject">{f.Abreviatura}</h3>
-                </div>
-
-                <div className="final-info-grid">
-                  <div className="final-info-item"><b>Fecha:</b> {f.Fecha} - {f.Hora}</div>
-                </div>
-
-                <div className="final-actions">
-                  <button className="action-button libre" onClick={() => cancelarInscripcion(f.Numero)}>
-                    Cancelar inscripción
-                  </button>
-                </div>
+            {finalesInscriptos.map((f, i) => (
+              <div key={`${f.Numero}-insc-${i}`} className="final-item inscripta">
+                <h3>{f.Abreviatura}</h3>
+                <p><b>Fecha:</b> {f.Fecha} - {f.Hora}</p>
+                <button onClick={() => cancelarInscripcion(f.Numero)}>Cancelar</button>
               </div>
             ))}
           </div>
@@ -156,4 +163,3 @@ const Finales = () => {
 };
 
 export default Finales;
-
