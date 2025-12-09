@@ -12,7 +12,7 @@ const Finales = () => {
   const [finalesDisponibles, setFinalesDisponibles] = useState([]);
   const [finalesInscriptos, setFinalesInscriptos] = useState([]);
 
-  /** ⛑ Seguridad: si localStorage está vacío no rompe */
+  /** ⛑ Seguridad: si localStorage viene vacío no explota */
   const user = JSON.parse(localStorage.getItem("userData") ?? "{}");
   const carrera = JSON.parse(localStorage.getItem("careerData") ?? "{}");
 
@@ -23,16 +23,23 @@ const Finales = () => {
     if (permisoUsuario && carreraUsuario) cargarFinales();
   }, [permisoUsuario, carreraUsuario]);
 
-  /** 📌 Cargar finales con separación inscriptos / disponibles */
+  /** 📌 Cargar finales con separación entre Disponibles / Inscriptos */
   const cargarFinales = async () => {
     try {
-      const data = await getFinalExamsByStudentAndCareer(permisoUsuario, carreraUsuario);
+      let data = await getFinalExamsByStudentAndCareer(permisoUsuario, carreraUsuario);
+      
+      // 🔥 PREVENCIÓN CRÍTICA — evita "filter is not a function"
+      if (!Array.isArray(data)) {
+        console.warn("⚠ Backend no devolvió array, intentando detectar estructura...");
+        const posibles = [data, data?.data, data?.Finales, data?.result, data?.rows];
+        data = posibles.find(x => Array.isArray(x)) || [];
+      }
 
-      /** Access devuelve True como -1 -> Se normaliza */
-      const isTrue = (val) => val === 1 || val === -1 || val === true;
+      /** Access devuelve TRUE como -1 o 1 → normalizamos */
+      const bool = (v) => v === -1 || v === 1 || v === true;
 
-      setFinalesInscriptos(data.filter(f => isTrue(f.Inscripto)));
-      setFinalesDisponibles(data.filter(f => !isTrue(f.Inscripto)));
+      setFinalesInscriptos(data.filter(f => bool(f.Inscripto)));
+      setFinalesDisponibles(data.filter(f => !bool(f.Inscripto)));
 
     } catch (error) {
       console.error("Error cargando finales:", error);
@@ -40,7 +47,7 @@ const Finales = () => {
     }
   };
 
-  /** 📘 Inscribirse a un final */
+  /** 📘 Inscribirse */
   const inscribir = async (numeroMesa) => {
     try {
       await registerStudentToFinal({
@@ -50,16 +57,15 @@ const Finales = () => {
         Libre: 0
       });
 
-      const finalSeleccionado = finalesDisponibles.find(f => f.Numero === numeroMesa);
-      const finalActualizado = { ...finalSeleccionado, Inscripto: 1 };
+      const finalSel = finalesDisponibles.find(f => f.Numero === numeroMesa);
 
-      setFinalesInscriptos(prev => [...prev, finalActualizado]);
+      setFinalesInscriptos(prev => [...prev, { ...finalSel, Inscripto: 1 }]);
       setFinalesDisponibles(prev => prev.filter(f => f.Numero !== numeroMesa));
 
       Swal.fire("✔ Inscripción confirmada", "Te anotaste correctamente", "success");
 
     } catch (error) {
-      Swal.fire("Error", error.message || "No se pudo inscribir", "error");
+      Swal.fire("Error", error.message ?? "No se pudo inscribir", "error");
     }
   };
 
@@ -68,16 +74,15 @@ const Finales = () => {
     try {
       await deleteFinalInscription(numeroMesa, permisoUsuario);
 
-      const finalCancelado = finalesInscriptos.find(f => f.Numero === numeroMesa);
-      const finalActualizado = { ...finalCancelado, Inscripto: 0 };
+      const finalSel = finalesInscriptos.find(f => f.Numero === numeroMesa);
 
       setFinalesInscriptos(prev => prev.filter(f => f.Numero !== numeroMesa));
-      setFinalesDisponibles(prev => [...prev, finalActualizado]);
+      setFinalesDisponibles(prev => [...prev, { ...finalSel, Inscripto: 0 }]);
 
       Swal.fire("Inscripción cancelada", "Se eliminó correctamente", "info");
 
     } catch (error) {
-      Swal.fire("Error al cancelar", error.message || "No se pudo cancelar la inscripción", "error");
+      Swal.fire("Error al cancelar", error.message ?? "No se pudo cancelar", "error");
     }
   };
 
