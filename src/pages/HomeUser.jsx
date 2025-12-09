@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { FaClock } from "react-icons/fa";
 import { FaCalendarDays } from "react-icons/fa6";
+import CareerSelector from "../components/CareerSelector"; // ⬅⬅ AGREGADO SIN ROMPER NADA
 import { getFinalExamsByStudentAndCareer } from "../services/finalsService";
 import { getNotifications } from "../services/notificationsService";
 
@@ -27,7 +28,6 @@ const HomeUser = () => {
     const usuarioGuardado = JSON.parse(localStorage.getItem("userData"));
     let carrerasGuardadas = JSON.parse(localStorage.getItem("careerData")) || [];
 
-    // 🔥 Si viene un solo objeto → convertir a array
     if (!Array.isArray(carrerasGuardadas)) {
       carrerasGuardadas = [carrerasGuardadas];
     }
@@ -56,7 +56,7 @@ const HomeUser = () => {
         setNoticias(noticiasTransformadas);
 
       } catch (err) {
-        console.error("❌ Error al obtener notificaciones:", err);
+        console.error("Error al obtener notificaciones:", err);
       }
     };
 
@@ -80,7 +80,7 @@ const HomeUser = () => {
         setProximosFinales(finalesProximos);
 
       } catch (err) {
-        console.error("❌ Error en finales:", err);
+        console.error("Error en finales:", err);
       }
     };
 
@@ -90,6 +90,9 @@ const HomeUser = () => {
 
   return (
     <div className="home-user-container">
+
+      <CareerSelector />  
+
       <div className="home-user-header">
         <h1>Bienvenido, {usuario.Nombre}</h1>
         <p className="user-email">{usuario.Correo}</p>
