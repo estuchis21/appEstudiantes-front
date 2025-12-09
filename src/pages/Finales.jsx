@@ -12,75 +12,72 @@ const Finales = () => {
   const [finalesDisponibles, setFinalesDisponibles] = useState([]);
   const [finalesInscriptos, setFinalesInscriptos] = useState([]);
 
-  const user = JSON.parse(localStorage.getItem("userData")) || {};
-  const permisoUsuario = user.Permiso;
-  const carrera = JSON.parse(localStorage.getItem("careerData")) || {};
-  const carreraUsuario = carrera.Codigo;
+  /** ⛑ Seguridad: si localStorage está vacío no rompe */
+  const user = JSON.parse(localStorage.getItem("userData") ?? "{}");
+  const carrera = JSON.parse(localStorage.getItem("careerData") ?? "{}");
+
+  const permisoUsuario = user?.Permiso ?? null;
+  const carreraUsuario = carrera?.Codigo ?? null;
 
   useEffect(() => {
-    cargarFinales();
-  }, []);
+    if (permisoUsuario && carreraUsuario) cargarFinales();
+  }, [permisoUsuario, carreraUsuario]);
 
+  /** 📌 Cargar finales con separación inscriptos / disponibles */
   const cargarFinales = async () => {
     try {
       const data = await getFinalExamsByStudentAndCareer(permisoUsuario, carreraUsuario);
 
-      // Usamos el campo 'Inscripto' que viene de la base de datos (puede ser 1, -1 o true)
-      // Nota: En bases de datos Access, 'True' suele devolverse como -1.
+      /** Access devuelve True como -1 -> Se normaliza */
       const isTrue = (val) => val === 1 || val === -1 || val === true;
 
-      const inscriptos = data.filter(f => isTrue(f.Inscripto));
-      const disponibles = data.filter(f => !isTrue(f.Inscripto));
-
-      setFinalesDisponibles(disponibles);
-      setFinalesInscriptos(inscriptos);
+      setFinalesInscriptos(data.filter(f => isTrue(f.Inscripto)));
+      setFinalesDisponibles(data.filter(f => !isTrue(f.Inscripto)));
 
     } catch (error) {
-      console.error(error);
+      console.error("Error cargando finales:", error);
+      Swal.fire("Error", "No se pudieron cargar los finales", "error");
     }
   };
 
+  /** 📘 Inscribirse a un final */
   const inscribir = async (numeroMesa) => {
     try {
-      await registerStudentToFinal(numeroMesa, permisoUsuario, 1, 0);
+      await registerStudentToFinal({
+        Mesa: numeroMesa,
+        Alumno: permisoUsuario,
+        Cursada: 1,
+        Libre: 0
+      });
 
       const finalSeleccionado = finalesDisponibles.find(f => f.Numero === numeroMesa);
-
-      // Actualizamos el estado 'Inscripto' a 1
       const finalActualizado = { ...finalSeleccionado, Inscripto: 1 };
 
-      const nuevosInscriptos = [...finalesInscriptos, finalActualizado];
-      const nuevosDisponibles = finalesDisponibles.filter(f => f.Numero !== numeroMesa);
+      setFinalesInscriptos(prev => [...prev, finalActualizado]);
+      setFinalesDisponibles(prev => prev.filter(f => f.Numero !== numeroMesa));
 
-      setFinalesInscriptos(nuevosInscriptos);
-      setFinalesDisponibles(nuevosDisponibles);
-
-      Swal.fire("Inscripción confirmada", "Te anotaste al final correctamente", "success");
+      Swal.fire("✔ Inscripción confirmada", "Te anotaste correctamente", "success");
 
     } catch (error) {
-      Swal.fire("Error", error.message, "error");
+      Swal.fire("Error", error.message || "No se pudo inscribir", "error");
     }
   };
 
+  /** 📗 Cancelar inscripción */
   const cancelarInscripcion = async (numeroMesa) => {
     try {
       await deleteFinalInscription(numeroMesa, permisoUsuario);
 
       const finalCancelado = finalesInscriptos.find(f => f.Numero === numeroMesa);
-
-      // Actualizamos el estado 'Inscripto' a 0
       const finalActualizado = { ...finalCancelado, Inscripto: 0 };
 
-      const nuevosInscriptos = finalesInscriptos.filter(f => f.Numero !== numeroMesa);
-      const nuevosDisponibles = [...finalesDisponibles, finalActualizado];
+      setFinalesInscriptos(prev => prev.filter(f => f.Numero !== numeroMesa));
+      setFinalesDisponibles(prev => [...prev, finalActualizado]);
 
-      setFinalesInscriptos(nuevosInscriptos);
-      setFinalesDisponibles(nuevosDisponibles);
-
-      Swal.fire("Inscripción eliminada", "Ya no estás anotado en ese final", "info");
+      Swal.fire("Inscripción cancelada", "Se eliminó correctamente", "info");
 
     } catch (error) {
-      Swal.fire("Error al cancelar", error.message, "error");
+      Swal.fire("Error al cancelar", error.message || "No se pudo cancelar la inscripción", "error");
     }
   };
 
@@ -105,14 +102,10 @@ const Finales = () => {
 
             {finalesDisponibles.map(f => (
               <div key={f.Numero} className="final-item disponible">
-                <div className="final-header">
-                  <h3 className="final-subject">{f.Abreviatura}</h3>
-                </div>
-
+                <div className="final-header"><h3 className="final-subject">{f.Abreviatura}</h3></div>
                 <div className="final-info-grid">
                   <div className="final-info-item"><b>Fecha:</b> {f.Fecha} - {f.Hora}</div>
                 </div>
-
                 <div className="final-actions">
                   <button className="action-button regular" onClick={() => inscribir(f.Numero)}>
                     Inscribirme
@@ -122,7 +115,6 @@ const Finales = () => {
             ))}
           </div>
         </div>
-
 
         {/* INSCRIPTOS */}
         <div className="final-exams-column">
@@ -135,14 +127,10 @@ const Finales = () => {
 
             {finalesInscriptos.map(f => (
               <div key={f.Numero} className="final-item inscripta">
-                <div className="final-header">
-                  <h3 className="final-subject">{f.Abreviatura}</h3>
-                </div>
-
+                <div className="final-header"><h3 className="final-subject">{f.Abreviatura}</h3></div>
                 <div className="final-info-grid">
                   <div className="final-info-item"><b>Fecha:</b> {f.Fecha} - {f.Hora}</div>
                 </div>
-
                 <div className="final-actions">
                   <button className="action-button libre" onClick={() => cancelarInscripcion(f.Numero)}>
                     Cancelar inscripción
