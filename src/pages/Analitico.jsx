@@ -3,27 +3,19 @@ import TablaReutilizable from "../components/Tabla";
 import listCoursesService from "../services/listCoursesService";
 import Swal from "sweetalert2";
 import "../Styles/Analitico.css";
+import CareerSelector from "../components/CareerSelector";
 
 const Analitico = () => {
   const [materias, setMaterias] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // ✅ CORREGIDO: Obtener datos correctamente
   const userData = JSON.parse(localStorage.getItem("userData")) || {};
   const careerData = JSON.parse(localStorage.getItem("careerData")) || {};
-  
+
   const permiso = userData?.Permiso || "";
   const codigo = careerData?.Codigo || "";
 
-  // Para debuggear - agrega esto temporalmente
-  useEffect(() => {
-    console.log("🔍 Debug - Datos del localStorage:");
-    console.log("userData:", userData);
-    console.log("careerData:", careerData);
-    console.log("permiso:", permiso);
-    console.log("codigo:", codigo);
-  }, []);
 
   const showMateriaDetails = (materia) => {
     const notasContent = `
@@ -107,7 +99,6 @@ const Analitico = () => {
 
   useEffect(() => {
     const fetchCourses = async () => {
-      // ✅ Ahora con los datos corregidos
       if (!permiso || !codigo) {
         console.warn("⚠️ Missing permiso or codigo; skipping fetch.");
         console.log("permiso:", permiso, "codigo:", codigo);
@@ -120,6 +111,12 @@ const Analitico = () => {
         console.log("📡 Llamando a listCoursesService con:", { permiso, codigo });
         const data = await listCoursesService(permiso, codigo);
         console.log("📦 Datos recibidos:", data);
+
+        if (data.mensaje) {
+          setError(data.mensaje);
+          setLoading(false);
+          return;
+        }
 
         const transformed = data.map((item) => {
           const parciales = [
@@ -162,7 +159,7 @@ const Analitico = () => {
 
         setMaterias(transformed);
       } catch (err) {
-        console.error("❌ Error fetching courses:", err);
+        console.error("Error fetching courses:", err);
         setError("No se pudo cargar la lista de materias: " + (err.message || "Error desconocido"));
       } finally {
         setLoading(false);
@@ -205,10 +202,13 @@ const Analitico = () => {
     },
   ];
 
+
+
   return (
     <div className="analitico-container">
       <header className="analitico-header">
-        <h1 className="analitico-title">Analítico de Cursadas</h1>
+        <h1 className="analitico-title">Cursadas</h1>
+        <CareerSelector />
         <div className="info-badge">
           <span className="badge-text">Historial Completo</span>
         </div>
@@ -226,7 +226,7 @@ const Analitico = () => {
           ) : error ? (
             <div className="error-container">
               <p className="error-text">{error}</p>
-              <button 
+              <button
                 className="retry-btn"
                 onClick={() => window.location.reload()}
               >
