@@ -20,14 +20,13 @@ const DatosUser = () => {
   useEffect(() => {
     try {
       const dataUser = JSON.parse(localStorage.getItem("userData"));
-      let dataCareer = JSON.parse(localStorage.getItem("careerData")) || [];
 
-      if (!Array.isArray(dataCareer)) {
-        dataCareer = [dataCareer];
-      }
+      // 🔥 ahora tomamos TODAS las carreras, no solo una
+      const dataCareer = JSON.parse(localStorage.getItem("carrerasVigentes")) || [];
+      const listaCarreras = Array.isArray(dataCareer) ? dataCareer : [dataCareer];
 
       setUsuario(dataUser || null);
-      setCarreras(dataCareer);
+      setCarreras(listaCarreras);
 
       if (dataUser) {
         setFormData({
@@ -49,89 +48,44 @@ const DatosUser = () => {
 
   const mostrarConfirmacion = async () => {
     const cambios = [];
+
     if (formData.Telefono !== usuario.Telefono) cambios.push(`Teléfono: ${usuario.Telefono || "No especificado"} → ${formData.Telefono}`);
     if (formData.Correo !== usuario.Correo) cambios.push(`Email: ${usuario.Correo || "No especificado"} → ${formData.Correo}`);
     if (formData.Domicilio !== usuario.Domicilio) cambios.push(`Dirección: ${usuario.Domicilio || "No especificado"} → ${formData.Domicilio}`);
 
     if (cambios.length === 0) {
-      await Swal.fire({ icon: 'info', title: 'Sin cambios', text: 'No se detectaron cambios para guardar.', confirmButtonColor: '#667eea' });
+      await Swal.fire({ icon: 'info', title: 'Sin cambios', text: 'No se detectaron cambios para guardar.' });
       return false;
     }
 
-    const cambiosHTML = cambios.map(c => `<li>${c}</li>`).join('');
-
     const result = await Swal.fire({
       title: '¿Confirmar cambios?',
-      html: `
-        <div style="text-align: left;">
-          <p>Se modificarán los siguientes datos:</p>
-          <ul style="padding-left: 20px; margin: 10px 0;">${cambiosHTML}</ul>
-          <p style="color: #666; font-size: 0.9em; margin-top: 15px;">¿Deseas continuar?</p>
-        </div>
-      `,
+      html: `<ul>${cambios.map(c => `<li>${c}</li>`).join('')}</ul>`,
       icon: 'question',
       showCancelButton: true,
-      confirmButtonText: 'Sí, guardar cambios',
+      confirmButtonText: 'Guardar',
       cancelButtonText: 'Cancelar',
-      confirmButtonColor: '#28a745',
-      cancelButtonColor: '#6c757d',
-      showLoaderOnConfirm: true,
-      preConfirm: () => handleGuardarCambios(),
-      allowOutsideClick: () => !Swal.isLoading()
+      confirmButtonColor: '#28a745'
     });
 
-    return result.isConfirmed;
+    if (result.isConfirmed) handleGuardarCambios();
   };
 
   const handleGuardarCambios = async () => {
     try {
-      if (!usuario?.Permiso) throw new Error("No se encontró el permiso del usuario");
-
       await editDatos(formData.Telefono, formData.Correo, formData.Domicilio, usuario.Permiso);
 
       const usuarioActualizado = { ...usuario, ...formData };
       localStorage.setItem("userData", JSON.stringify(usuarioActualizado));
       setUsuario(usuarioActualizado);
 
-      await Swal.fire({ icon: 'success', title: '¡Éxito!', text: 'Tus datos han sido actualizados correctamente.', confirmButtonColor: '#28a745', timer: 3000, timerProgressBar: true });
+      Swal.fire({ icon: 'success', title: 'Cambios guardados', timer: 2000 });
 
       setEditando(false);
-      return true;
-
     } catch (error) {
-      console.error("❌ Error actualizando datos:", error);
-      await Swal.fire({ icon: 'error', title: 'Error', html: `<p>No se pudieron guardar los cambios: ${error.message || "Error al actualizar los datos"}</p>`, confirmButtonColor: '#dc3545' });
-      return false;
+      console.error(error);
+      Swal.fire({ icon: 'error', title: 'Error al guardar' });
     }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setCargando(true);
-    try { await mostrarConfirmacion(); } 
-    finally { setCargando(false); }
-  };
-
-  const cancelarEdicion = async () => {
-    const hasChanges = formData.Telefono !== usuario.Telefono || formData.Correo !== usuario.Correo || formData.Domicilio !== usuario.Domicilio;
-
-    if (hasChanges) {
-      const result = await Swal.fire({
-        title: '¿Descartar cambios?',
-        text: 'Tienes cambios sin guardar. ¿Estás seguro de que quieres cancelar?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Sí, descartar',
-        cancelButtonText: 'Seguir editando',
-        confirmButtonColor: '#dc3545',
-        cancelButtonColor: '#6c757d',
-      });
-
-      if (!result.isConfirmed) return;
-    }
-
-    if (usuario) setFormData({ Telefono: usuario.Telefono || "", Correo: usuario.Correo || "", Domicilio: usuario.Domicilio || "" });
-    setEditando(false);
   };
 
   if (!usuario) return <div className="datos-personales-container"><div className="cargando">Cargando datos del usuario...</div></div>;
@@ -151,34 +105,38 @@ const DatosUser = () => {
           <div className="datos-item"><strong className="datos-label">Estado:</strong> <span className="datos-value">{usuario.BloquearAutogestion === "0" ? "Activo" : "Bloqueado"}</span></div>
         </div>
 
-        {/* Carreras */}
+        {/* Carreras - 🔥 Ahora muestra TODAS mapeadas */}
         <div className="datos-section">
           <h2>🎓 Información Académica</h2>
-          {carreras.map((c, idx) => (
+
+          {carreras.length > 0 ? carreras.map((c, idx) => (
             <div key={idx} className="carrera-item">
               <div className="datos-item"><strong className="datos-label">Carrera:</strong> <span className="datos-value">{c.Nombre}</span></div>
               <div className="datos-item"><strong className="datos-label">Año de Ingreso:</strong> <span className="datos-value">{c.Ingreso}</span></div>
               <div className="datos-item"><strong className="datos-label">Código de Carrera:</strong> <span className="datos-value">{c.Codigo}</span></div>
               <hr/>
             </div>
-          ))}
+          )) : <p>No hay carreras vinculadas.</p>}
         </div>
 
         {/* Información de contacto */}
         <div className="datos-section">
           <h2><MdContacts /> Información de Contacto</h2>
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={(e) => { e.preventDefault(); mostrarConfirmacion(); }}>
+
             <div className="datos-item">
               <strong className="datos-label">Teléfono:</strong>
-              {editando ? <input type="text" name="Telefono" value={formData.Telefono} onChange={handleInputChange} placeholder="Ej: 2364444444" className="datos-value editing" /> : <span className="datos-value">{usuario.Telefono || "No especificado"}</span>}
+              {editando ? <input type="text" name="Telefono" value={formData.Telefono} onChange={handleInputChange} className="datos-value editing" /> : <span className="datos-value">{usuario.Telefono || "No especificado"}</span>}
             </div>
+
             <div className="datos-item">
               <strong className="datos-label">Email:</strong>
-              {editando ? <input type="email" name="Correo" value={formData.Correo} onChange={handleInputChange} placeholder="Ej: micorreo@instituto20.com.ar" className="datos-value editing" /> : <span className="datos-value">{usuario.Correo || "No especificado"}</span>}
+              {editando ? <input type="email" name="Correo" value={formData.Correo} onChange={handleInputChange} className="datos-value editing" /> : <span className="datos-value">{usuario.Correo || "No especificado"}</span>}
             </div>
+
             <div className="datos-item">
               <strong className="datos-label">Dirección:</strong>
-              {editando ? <input type="text" name="Domicilio" value={formData.Domicilio} onChange={handleInputChange} placeholder="Ej: Almafuerte 300" className="datos-value editing" /> : <span className="datos-value">{usuario.Domicilio || "No especificado"}</span>}
+              {editando ? <input type="text" name="Domicilio" value={formData.Domicilio} onChange={handleInputChange} className="datos-value editing" /> : <span className="datos-value">{usuario.Domicilio || "No especificado"}</span>}
             </div>
 
             <div className="flex-buttons">
@@ -187,10 +145,11 @@ const DatosUser = () => {
               ) : (
                 <>
                   <button type="submit" className={`datos-editar-btn ${cargando ? 'guardando' : ''}`} disabled={cargando}>{cargando ? "Guardando..." : "Guardar Cambios"}</button>
-                  <button type="button" className="datos-editar-btn" onClick={cancelarEdicion} disabled={cargando} style={{background: 'linear-gradient(135deg, #6c757d, #495057)'}}>Cancelar</button>
+                  <button type="button" className="datos-editar-btn cancelar" onClick={() => setEditando(false)} disabled={cargando}>Cancelar</button>
                 </>
               )}
             </div>
+
           </form>
         </div>
 
