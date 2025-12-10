@@ -30,11 +30,11 @@ const Analitico = () => {
   // Función para convertir número de año en texto
   const formatCurso = (num) => {
     switch (num) {
-      case 1: return "1ro";
-      case 2: return "2do";
-      case 3: return "3ro";
-      case 4: return "4to";
-      case 5: return "5to";
+      case 1: return "1°";
+      case 2: return "2°";
+      case 3: return "3°";
+      case 4: return "4°";
+      case 5: return "5°";
       default: return num || "-";
     }
   };
@@ -173,8 +173,8 @@ const Analitico = () => {
   }, [permiso, codigo]);
 
   const columnas = [
-    { key: "materia", header: "Materia" },
     { key: "curso", header: "Año", align: "center" },
+    { key: "materia", header: "Materia" },
     { key: "profesor", header: "Profesor", align: "center" },
     { key: "cursada", header: "Cursada", align: "center" },
     { key: "promocion", header: "Promoción", align: "center" },

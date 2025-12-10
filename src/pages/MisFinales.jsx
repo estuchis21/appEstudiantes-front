@@ -12,12 +12,24 @@ const MisFinales = () => {
   const [carrerasGuardadas, setCarrerasGuardadas] = useState([]);
   const [carreraActiva, setCarreraActiva] = useState(null);
 
+  const formatFecha = (fechaStr) => {
+  if (!fechaStr) return "-"; // si no hay fecha
+  const date = new Date(fechaStr);
+  if (isNaN(date)) return "-"; // si la fecha no es válida
+  const dia = String(date.getDate()).padStart(2, "0");
+  const mes = String(date.getMonth() + 1).padStart(2, "0");
+  const anio = date.getFullYear();
+  return `${dia}/${mes}/${anio}`;
+};
+
   /** Cargar usuario y carreras guardadas */
   useEffect(() => {
     try {
       const user = JSON.parse(localStorage.getItem("userData"));
       const careerData = JSON.parse(localStorage.getItem("careerData")) || [];
       const careersArray = Array.isArray(careerData) ? careerData : [careerData];
+
+      console.log(careerData)
 
       if (!user) return setError("No se encontró usuario");
       if (!careersArray.length) return setError("No hay carreras asociadas");
@@ -50,6 +62,7 @@ const MisFinales = () => {
         setCargando(true);
         const res = await getFinalExamsTaken(usuario.Permiso, carreraActiva.Codigo);
         const data = Array.isArray(res) ? res : res?.data ?? [];
+        console.log(data)
         setFinalesRendidos(Array.isArray(data) ? data : []);
       } catch (err) {
         setError("Error cargando finales: " + err.message);
@@ -70,6 +83,7 @@ const MisFinales = () => {
     return acc;
   }, {});
   const añosOrdenados = Object.keys(finalesPorAnio).sort((a, b) => b - a);
+
 
   /** Determinar año por código de materia */
   const obtenerAñoMateria = (codigo) => {
@@ -120,6 +134,7 @@ const MisFinales = () => {
             <li><strong>Carrera:</strong> {carreraActiva?.Nombre}</li>
             <li><strong>Año ingreso:</strong> {carreraActiva?.Ingreso}</li>
             <li><strong>Total rendidos:</strong> {finalesRendidos.length}</li>
+            <li><strong>Cantidad total de materias:</strong> {finalesRendidos.length > 0 ? finalesRendidos[0].CantidadPlan : 0}</li>
           </ul>
         </div>
       </div>
@@ -127,19 +142,33 @@ const MisFinales = () => {
       {finalesRendidos.length > 0 && (
         <div className="stats-section">
           <div className="stats-grid">
+
+            {/* Total de finales */}
             <div className="stat-card">
               <span className="stat-number">{finalesRendidos.length}</span>
               <span className="stat-label">Total finales</span>
             </div>
+
+            {/* Promedio */}
             <div className="stat-card">
               <span className="stat-number">
-                {(finalesRendidos.reduce((s,f)=>s+parseFloat(f.Nota||0),0)/finalesRendidos.length).toFixed(1)}
+                {(finalesRendidos.reduce((s, f)=> s + parseFloat(f.Nota || 0), 0) / finalesRendidos.length).toFixed(1)}
               </span>
               <span className="stat-label">Promedio</span>
             </div>
+
+            {/* Porcentaje de carrera */}
+            <div className="stat-card">
+              <span className="stat-number">
+                {((finalesRendidos.length / (finalesRendidos[0].CantidadPlan || 1)) * 100).toFixed(1)}%
+              </span>
+              <span className="stat-label">Avance de carrera</span>
+            </div>
+
           </div>
         </div>
       )}
+
 
       {añosOrdenados.map(año => (
         <div key={año} className="inscripciones-section">
@@ -153,14 +182,19 @@ const MisFinales = () => {
                     <div className="info-item"><strong>Año cursada:</strong> {obtenerAñoMateria(final.Codigo)}</div>
                     <span className={`nota ${final.Nota>=4 ? "nota-aprobada":"nota-desaprobada"}`}>{final.Nota}</span>
                     <div className="info-item"><strong>Estado:</strong>
-                      <span className={`estado ${final.Nota>=4?"estado-aprobado":"estado-desaprobado"}`}>
-                        {final.Nota>=4 ? "Aprobado" : "Desaprobado"}
-                      </span>
+                       <span className={`estado ${
+                          final.Promocion !== "0" ? "estado-promocionado" : "estado-acreditado"
+                        }`}>
+                          {final.Promocion !== "0" ? "Promocionado" : final.Cursada !== "0" ? "Acreditada" : "-"}
+                        </span>
                     </div>
                     <div className="info-item"><strong>Modalidad:</strong> {final.Libre==="1"?"Libre":"Regular"}</div>
+                    <div className="info-item"><strong>Profesor:</strong> {final.Profesor}</div>
+                    <div className="info-item"><strong>Fecha:</strong> {formatFecha(final.Fecha)}</div>
                   </div>
                 </div>
               ))}
+
             </div>
           </div>
         </div>

@@ -24,7 +24,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     const menuItems = [
         { label: "Datos personales", action: () => navigate('/DatosPersonales') },
         { label: "Mis finales", action: () => navigate('/MisFinales') },
-        { label: "Asistencias", action: () => navigate('/Asistencia') },
+        // { label: "Asistencias", action: () => navigate('/Asistencia') },
         { label: "Cursadas", action: () => navigate('/Analitico') },
         { label: "Inscribirse a finales", action: () => navigate('/Finales') },
         { label: "Matriculacion", action: () => navigate('/Matriculacion') },
