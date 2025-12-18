@@ -65,7 +65,7 @@ const Finales = () => {
       Swal.fire("✔ Inscripción confirmada", "Te anotaste correctamente", "success");
 
     } catch (error) {
-      Swal.fire("Error", error.message ?? "No se pudo inscribir", "error");
+      Swal.fire("warning", error.message ?? "No se pudo inscribir", "warning");
     }
   };
 

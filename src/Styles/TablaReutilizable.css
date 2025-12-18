@@ -1,0 +1,90 @@
+/* =========================
+   TABLA DESKTOP
+========================= */
+
+.tabla-reutilizable {
+  width: 100%;
+  border-collapse: collapse;
+  background: #ffffff;
+}
+
+.tabla-reutilizable th,
+.tabla-reutilizable td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 0.95rem;
+}
+
+.tabla-reutilizable th {
+  background-color: #f3f4f6;
+  font-weight: 600;
+  color: #111827;
+}
+
+.tabla-reutilizable tr:hover {
+  background-color: #f9fafb;
+}
+
+/* =========================
+   MOBILE (OCULTO EN DESKTOP)
+========================= */
+
+.tabla-mobile {
+  display: none;
+}
+
+/* =========================
+   BREAKPOINT MOBILE
+========================= */
+
+@media (max-width: 768px) {
+
+  /* Oculta tabla clásica */
+  .tabla-desktop {
+    display: none;
+  }
+
+  /* Muestra versión mobile */
+  .tabla-mobile {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .mobile-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 14px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    border: 1px solid #e5e7eb;
+  }
+
+  .mobile-row {
+    display: grid;
+    grid-template-columns: 45% 55%;
+    padding: 6px 0;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  .mobile-row:last-child {
+    border-bottom: none;
+  }
+
+  .mobile-label {
+    font-weight: 600;
+    color: #374151;
+    font-size: 0.85rem;
+  }
+
+  .mobile-value {
+    text-align: right;
+    color: #111827;
+    font-size: 0.85rem;
+    word-break: break-word;
+  }
+
+  .mobile-actions {
+    margin-top: 12px;
+    text-align: center;
+  }
+}

@@ -46,7 +46,7 @@ const CareerSelector = () => {
             >
                 {carreras.map((c) => (
                     <option key={c.Codigo} value={c.Codigo}>
-                        {c.Nombre} (Plan {c.Ingreso})
+                        {c.Abreviatura} (Plan {c.Ingreso})
                     </option>
                 ))}
             </select>
