@@ -1,55 +1,93 @@
-* {
-  box-sizing: border-box;
+/* ======================
+   BOTON VER DETALLE
+====================== */
+
+.ver-detalle-btn {
+  padding: 6px 12px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
 }
 
-/* CONTENEDOR */
-.analitico-container {
-  width: 100%;
-  padding: 24px;
-  position: relative;
-  overflow: visible;
+.ver-detalle-btn:hover {
+  background: #1d4ed8;
 }
 
-/* HEADER (CLAVE) */
-.analitico-header {
-  position: relative;
-  z-index: 10;
-  margin-bottom: 24px;
+/* ======================
+   SWEET ALERT
+====================== */
+
+.swal-responsive {
+  border-radius: 12px;
+  padding: 20px;
 }
 
-/* TITULO (FORZADO A MOSTRARSE) */
-.analitico-title {
-  font-size: 32px;
+/* Desktop / Tablet */
+@media (min-width: 769px) {
+  .swal-responsive {
+    width: 520px !important;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .swal-responsive {
+    width: 80% !important;
+  }
+}
+
+.swal-title {
+  font-size: 26px;
   font-weight: 700;
+}
+
+.swal-btn {
+  background: #2563eb !important;
+  padding: 8px 20px !important;
+  border-radius: 8px !important;
+}
+
+/* ======================
+   DETALLE GRID
+====================== */
+
+.swal-detalle-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.swal-detalle-grid div {
+  display: flex;
+  flex-direction: column;
+  font-size: 18px;
+}
+
+.swal-detalle-grid strong {
+  color: #374151;
+}
+
+.swal-detalle-grid span {
   color: #111827;
-  margin: 0 0 12px 0;
-  display: block;
 }
 
-/* SECCION TABLA */
-.tabla-section {
-  width: 100%;
-  overflow: visible;
+/* ======================
+   NOTAS
+====================== */
+
+.swal-subtitle {
+  margin: 10px 0;
+  font-size: 16px;
+  font-weight: 600;
 }
 
-.section-card {
-  background: #fff;
-  padding: 16px;
-  border-radius: 10px;
-}
-
-/* TABLA */
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-th, td {
-  padding: 10px;
-  text-align: left;
-  word-break: break-word;
-}
-
-th {
-  background: #f3f4f6;
+.swal-notas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  font-size: 18px;
 }
